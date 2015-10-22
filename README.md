@@ -3,6 +3,13 @@
 This repo contains both the server and the client 
 code for Rocky Mountain Farmer Union project.
 
+## setup
+
+1. Install mongodb: `$ brew install mongo`
+
+2. Run mongodb deamon: `$ mongod` 
+runs on default port
+
 ### run the server with:
 
     lein run 3000
