@@ -11,7 +11,9 @@
                  [compojure "1.4.0"]
                  [cljs-ajax "0.5.0"]
                  [ring-cors "0.1.7"]
-                 [ring/ring-json "0.4.0"]]
+                 [ring/ring-json "0.4.0"]
+                 [com.novemberain/monger "3.0.0-rc2"]
+                 [buddy "0.7.2"]]
 
   :plugins [[lein-cljsbuild "1.1.0"]
             [lein-figwheel "0.4.1"]]

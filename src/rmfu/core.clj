@@ -9,7 +9,8 @@
     [ring.util.response :refer [response]]
     [compojure.route :refer [not-found]]
     [ring.handler.dump :refer [handle-dump]]                ;; use handle-dump to inspect request
-    [ring.middleware.cors :refer [wrap-cors]]))
+    [ring.middleware.cors :refer [wrap-cors]]
+    [rmfu.persistance :as db]))
 
 (defn greet [req]
   (let [name (get-in req [:route-params :name])]
@@ -18,16 +19,19 @@
      :body    (str "hello, " name)}))
 
 (defn login [req]
-  (let [user (get-in req [:body :username])
-        pass (get-in req [:body :password])]
-    {:status  200
-     :headers {}
-     :body    (str user " : " pass)}))
+  (let [body (get-in req [:body])]
+    (if-let [user (db/find-user body)]
+      {:status  200
+       :headers {}
+       :body    (str user)}
+      {:status  401
+       :headers {}
+       :body    (str "Not Found")})))
 
 (defroutes app-routes
            (GET "/yo/:name" [] greet)
            (POST "/login" [] login)
-           ;(wrap-file "/" "resources/report") ;;
+           ;;(wrap-file "/" "resources/report")               ;; server static files from this directory
            (not-found "Resource not found"))
 
 (def app
