@@ -1,21 +1,20 @@
 # RMFU
 
-## Usage
+This repo contains both the server and the client 
+code for Rocky Mountain Farmer Union project.
 
-`$ lein run [PORT]`
+### run the server with:
 
+    lein run 3000
+
+There is no need to reload the server during development,
+leinegen will reload your code automatically unless 
+you add / remove a library.
 
 # RMFU-UI
 
-FIXME: Write a one-line description of your library/project.
 
-## Overview
-
-FIXME: Write a paragraph about the library/project and highlight its goals.
-
-## Setup
-
-To get an interactive development environment run:
+### Run interactive UI development environment with:
 
     lein figwheel
 
