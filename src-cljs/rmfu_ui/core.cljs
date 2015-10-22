@@ -9,14 +9,14 @@
 
 (defonce show-loading (atom {:show false}))
 
-(defn post-profile [profile]
-  ;(swap! show-loading assoc :show true)
-  (let []
-    (println "posting->" (:username profile) ":" (:password profile))
+(defn signin [profile]
+  (let [{:keys [username password]} profile]
+    (swap! show-loading assoc :show true)
+    (println "posting->" username ":" password)
     (POST "http://localhost:3000/login"
-          {:params  {:username (:username profile)
+          {:params  {:username username
                      ;; replace this with a string parser
-                     :password (:password profile)}
+                     :password password}
            :format  :json
            ;; :response-format :json
            ;:keywords? true
@@ -26,25 +26,54 @@
                         (println "res:" res))
                       )})))
 
-(defn app []
-  "This is our <root/> component"
-  (let [profile (atom {:username ""
-                       :password ""})
+(defn username-and-password-form [profile]
+  (let [
+        stop #(reset! profile {:username "reset" :password "reset"})
 
-        iconometry ["☴" "☳" "☱" "☲" " × " "~" "☀" "☁" "☄"]
+        sigin (fn [profile]
+                (signin profile))
 
-        stop #(reset! profile {:username "reset"
-                               :password "reset"})
-
-        enter #(let [username (:username @profile)
-                     password (:password @profile)]
+        enter (let [username (:username profile)
+                    password (:password profile)]
                 (if-not (or (empty? username) (empty? password))
-                  (post-profile profile)))
+                  (signin profile)))
 
         detect-key #(case (.-which %)
                      13 (enter)
                      27 (stop)
-                     nil)]
+                     )]
+    [:div.form-group {:style {:padding "1em"}}
+     [:label "username:"]
+     [:input {:type        "text"
+              :className   "form-control"
+              ;:value       (:username @profile)
+              ;:on-blur     enter
+              :placeholder "username"
+              :on-change   #(swap! profile assoc :username (-> % .-target .-value))
+              ;:on-key-down detect-key
+              }]
+     [:label "password:"]
+     [:input {:type        "password"
+              :className   "form-control"
+              ;:value       (:password @profile)
+              ;:on-blur     enter
+              :placeholder "*********"
+              :on-change   #(swap! profile assoc :password (-> % .-target .-value))
+              ;:on-key-down detect-key
+              }]
+     [:div.checkbox
+      [:label
+       [:input {:type "checkbox"}] "remember me ?"]]
+     [:button.btn.btn-default {:on-click #(sigin @profile)} "sign-in"]
+     [:button.btn.btn-default.pull-right {:type     "submit"
+                                          :on-click (fn [_] (println "clicked"))} "sign-up"]])
+  )
+
+(defn app []
+  "This is our <root/> component"
+  (let [profile (atom {:username ""
+                       :password ""})
+        iconometry ["☴" "☳" "☱" "☲" " × " "~" "☀" "☁" "☄"]]
 
     (add-watch profile :logger #(-> %4 clj->js js/console.log))
 
@@ -63,32 +92,7 @@
          [:small [:strong "Rocky Mountain Farmers Union"]]]]
        [:p.text-center "and " [:a {:href "http://www.codefordenver.org/" :target "blank"}
                                [:strong "Code For Denver"]]]
-       [:div.form-group {:style {:padding "1em"}}
-        [:label "username:"]
-        [:input {:type        "text"
-                 ;:value       (:username @profile)
-                 :on-blur     enter
-                 :className   "form-control"
-                 :placeholder "username"
-                 :on-change   #(swap! profile assoc :username (-> % .-target .-value))
-                 ;:on-key-down detect-key
-                 }]
-        [:label "password:"]
-        [:input {:className   "form-control"
-                 ;:value       (:password @profile)
-                 :type        "password"
-                 :placeholder "*********"
-                 :on-change   #(swap! profile assoc :password (-> % .-target .-value))
-                 ;:on-key-down detect-key
-                 }]
-        [:div.checkbox
-         [:label
-          [:input {:type "checkbox"}] "remember me ?"]]
-        [:button.btn.btn-default {:type     "submit"
-                                  :on-click (fn [e]
-                                              (post-profile @profile))} "sign-in"]
-        [:button.btn.btn-default.pull-right {:type     "submit"
-                                             :on-click (fn [x] (println "clicked"))} "sign-up"]]
+       [username-and-password-form profile]
        ((fn [state] (if (true? (:show state))
                       [:p.ball-loader.text-center {:style {:left   180
                                                            :bottom 69}}]
