@@ -20,11 +20,11 @@
 
   :min-lein-version "2.0.0"                                 ;; better support in heroku
   :uberjar-name "rmfu.jar"
-  ;; :main rmfu.core
+  :main rmfu.core
   ;; the dev flag for this dev profile is automatic
   ;; when running with $ lein run
   :profiles {:dev
-             {:main rmfu.core/dev-main}}
+             {:main rmfu.core/-dev-main}}
 
   :clean-targets ^{:protect false} ["resources/public/js/compiled" "target"]
 

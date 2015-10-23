@@ -1,10 +1,11 @@
 (ns rmfu.persistance
-  (:import org.bson.types.ObjectId)
   (:require [monger.core :as mg]
             [monger.collection :as mc]
             [monger.conversion :refer [from-db-object]]
             [buddy.hashers :as hasher]
-            [rmfu.model :as model]))
+            [rmfu.model :as model])
+  (:import org.bson.types.ObjectId))
+
 
 (defonce db-config {:name "rmfu"})
 
@@ -25,11 +26,12 @@
   )
 
 (defn valid-password? [provided saved]
-  (do (println (str provided saved))
-      (hasher/check provided saved)))
+  (let [valid? (hasher/check provided saved)]
+    (println (format "valid password: %s" valid?))
+    valid?))
 
 (defn find-user-by-email [email]
-  (mc/find-one-as-map db "users" email))
+  (mc/find-one-as-map db "users" {:email email}))
 
 (defn find-user [user]
   (let [{:keys [username password]} user
@@ -42,12 +44,13 @@
   (let [{:keys [email password]} user
         coll "users"
         oid (ObjectId.)
+        user-doc (merge user {:_id oid})
         hash-password #(hasher/encrypt %)]
     (if (nil? (find-user-by-email email))
-      (mc/insert-and-return db coll (merge user {:_id oid :password (hash-password password)}))
-      (throw (ex-info "user already exist with" {:email email})))))
+      (mc/insert-and-return db coll (merge user-doc {:password (hash-password password)}))
+      (format "User already exist with %s" {:email email}))))
 
-;; (add-user! (model/->User "jose" "maria" "123@soy.com" "123"))
+(add-user! (model/->User "david" "vira" "me@me.com" "123"))
 
 
 

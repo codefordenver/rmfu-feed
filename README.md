@@ -5,6 +5,8 @@ code for Rocky Mountain Farmer Union project.
 
 ## setup
 
+0. [Install leiningen](https://github.com/technomancy/leiningen)
+
 1. Install mongodb: `$ brew install mongo`
 
 2. Run mongodb deamon: `$ mongod` 
