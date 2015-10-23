@@ -41,16 +41,18 @@
         user))))
 
 (defn add-user! [user]
+  "Adds a user to DB that is by default unverified, we expect verification via email"
   (let [{:keys [email password]} user
         coll "users"
         oid (ObjectId.)
         user-doc (merge user {:_id oid})
         hash-password #(hasher/encrypt %)]
     (if (nil? (find-user-by-email email))
-      (mc/insert-and-return db coll (merge user-doc {:password (hash-password password)}))
-      (format "User already exist with %s" {:email email}))))
+      (mc/insert-and-return db coll (merge user-doc {:password  (hash-password password)
+                                                     :verified? false}))
+      (format "User already exist with %s" email))))
 
-(add-user! (model/->User "david" "vira" "me@me.com" "123"))
+(println (add-user! (model/->User "david" "vira" "me@me.com" "123")))
 
 
 

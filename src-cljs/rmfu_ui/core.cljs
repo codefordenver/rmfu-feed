@@ -9,6 +9,9 @@
 
 (defonce show-loading (atom {:show false}))
 
+;; -------------------------
+;; HTTP Request
+
 (defn signin [profile]
   (let [{:keys [username password]} profile]
     (swap! show-loading assoc :show true)
@@ -25,6 +28,9 @@
                         (swap! show-loading assoc :show false)
                         (println "res:" res))
                       )})))
+
+;; -------------------------
+;; <Components/>
 
 (defn username-and-password-form [profile]
   (let [
@@ -68,6 +74,9 @@
      [:button.btn.btn-default.pull-right {:type     "submit"
                                           :on-click (fn [_] (println "clicked"))} "sign-up"]])
   )
+
+;; -------------------------
+;; <Root/>
 
 (defn app []
   "This is our <root/> component"
