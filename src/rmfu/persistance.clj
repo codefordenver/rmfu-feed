@@ -52,7 +52,7 @@
                                                      :verified? false}))
       (format "User already exist with %s" email))))
 
-(println (add-user! (model/->User "david" "vira" "me@me.com" "123")))
+(println (add-user! (model/->User "david" "me@me.com" "123")))
 
 
 

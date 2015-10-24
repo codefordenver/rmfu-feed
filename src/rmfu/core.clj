@@ -30,7 +30,8 @@
 
 (defroutes app-routes
            (GET "/yo/:name" [] greet)
-           (POST "/login" [] login)
+           (POST "/signin" [] login)
+           (POST "/signup" [] handle-dump)
            ;;(wrap-file "/" "resources/report")               ;; server static files from this directory
            (not-found "Resource not found"))
 
