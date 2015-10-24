@@ -12,17 +12,17 @@
 ;; -------------------------
 ;; HTTP Request
 
-(defn signin [profile]
+(defn post-sign-in [profile]
   (let [{:keys [username password]} profile]
     (swap! show-loading assoc :show true)
     (println "posting->" username ":" password)
     (POST "http://localhost:3000/login"
+          ;; TODO: validate these fields
           {:params  {:username username
-                     ;; replace this with a string parser
                      :password password}
            :format  :json
            ;; :response-format :json
-           ;:keywords? true
+           ;; :keywords? true
            :handler (fn [res]
                       (do
                         (swap! show-loading assoc :show false)
@@ -30,50 +30,44 @@
                       )})))
 
 ;; -------------------------
+;; Utility functions
+
+(defn sign-in [profile]
+  (let [{:keys [username password]} profile]
+    (if (not (or (empty? username) (empty? password)))
+      (post-sign-in profile))))
+
+;; -------------------------
 ;; <Components/>
 
-(defn username-and-password-form [profile]
-  (let [
-        stop #(reset! profile {:username "reset" :password "reset"})
 
-        sigin (fn [profile]
-                (signin profile))
-
-        enter (let [username (:username profile)
-                    password (:password profile)]
-                (if-not (or (empty? username) (empty? password))
-                  (signin profile)))
-
-        detect-key #(case (.-which %)
-                     13 (enter)
-                     27 (stop)
-                     )]
-    [:div.form-group {:style {:padding "1em"}}
-     [:label "username:"]
-     [:input {:type        "text"
-              :className   "form-control"
-              ;:value       (:username @profile)
-              ;:on-blur     enter
-              :placeholder "username"
-              :on-change   #(swap! profile assoc :username (-> % .-target .-value))
-              ;:on-key-down detect-key
-              }]
-     [:label "password:"]
-     [:input {:type        "password"
-              :className   "form-control"
-              ;:value       (:password @profile)
-              ;:on-blur     enter
-              :placeholder "*********"
-              :on-change   #(swap! profile assoc :password (-> % .-target .-value))
-              ;:on-key-down detect-key
-              }]
-     [:div.checkbox
-      [:label
-       [:input {:type "checkbox"}] "remember me ?"]]
-     [:button.btn.btn-default {:on-click #(sigin @profile)} "sign-in"]
-     [:button.btn.btn-default.pull-right {:type     "submit"
-                                          :on-click (fn [_] (println "clicked"))} "sign-up"]])
+(defn username-field [profile]
+  (let [detect-key #(case (.-which %)
+                     13 (sign-in @profile)
+                     27 (swap! profile assoc :username "")
+                     nil)]
+    [:input {:type        "text"
+             :className   "form-control"
+             :value       (@profile :username)
+             :placeholder "username"
+             :on-change   #(swap! profile assoc :username (-> % .-target .-value))
+             :on-key-down detect-key
+             }])
   )
+
+(defn passsword-field [profile]
+  (let [detect-key #(case (.-which %)
+                     13 (sign-in @profile)
+                     27 (swap! profile assoc :password "")
+                     nil)]
+    [:input {:type        "password"
+             :className   "form-control"
+             :value        (@profile :password)
+             ;:on-blur     #(sign-in @profile)
+             :placeholder "*********"
+             :on-change   #(swap! profile assoc :password (-> % .-target .-value))
+             :on-key-down  detect-key
+             }]))
 
 ;; -------------------------
 ;; <Root/>
@@ -101,7 +95,22 @@
          [:small [:strong "Rocky Mountain Farmers Union"]]]]
        [:p.text-center "and " [:a {:href "http://www.codefordenver.org/" :target "blank"}
                                [:strong "Code For Denver"]]]
-       [username-and-password-form profile]
+       [:div.form-group {:style {:padding "1em"}}
+
+        [:label "username:"]
+        [username-field profile]
+        [:label "password:"]
+        [passsword-field profile]
+
+        [:div.checkbox
+         [:label
+          [:input {:type "checkbox"}] "remember me ?"]]
+
+        [:button.btn.btn-default {:on-click #(sign-in @profile)} "sign-in"]
+
+        [:button.btn.btn-default.pull-right {:type     "submit"
+                                             :on-click (fn [_] (println "clicked"))} "sign-up"]]
+
        ((fn [state] (if (true? (:show state))
                       [:p.ball-loader.text-center {:style {:left   180
                                                            :bottom 69}}]
