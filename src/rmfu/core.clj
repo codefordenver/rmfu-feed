@@ -12,15 +12,17 @@
     [ring.middleware.cors :refer [wrap-cors]]
     [rmfu.persistance :as db]))
 
+;; TODO: use transit intead of plain JSON
+
 (defn greet [req]
   (let [name (get-in req [:route-params :name])]
     {:status  200
      :headers {}
-     :body    (str "hello, " name)}))
+     :body    (str "yo, " name)}))
 
-(defn login [req]
+(defn sign-in [req]
   (let [body (get-in req [:body])]
-    (if-let [user (db/find-user body)]
+    (if-let [user (db/auth-user body)]
       {:status  200
        :headers {}
        :body    (str user)}
@@ -28,10 +30,22 @@
        :headers {}
        :body    (str "Not Found")})))
 
+(defn sign-up [req]
+  (let [body (get-in req [:body])
+        add-user! (db/add-user! body)]
+    (println "attempting to post with" body)
+    (if-not (or (empty? add-user!) (nil? add-user!))
+      {:status 201
+       :headers {}
+       :body (str body)}
+      {:status 409
+             :headers {}
+             :body (str add-user!)})))
+
 (defroutes app-routes
            (GET "/yo/:name" [] greet)
-           (POST "/signin" [] login)
-           (POST "/signup" [] handle-dump)
+           (POST "/signin" [] sign-in)
+           (POST "/signup" [] sign-up)
            ;;(wrap-file "/" "resources/report")               ;; server static files from this directory
            (not-found "Resource not found"))
 

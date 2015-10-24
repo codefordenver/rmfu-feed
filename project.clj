@@ -13,7 +13,8 @@
                  [ring-cors "0.1.7"]
                  [ring/ring-json "0.4.0"]
                  [com.novemberain/monger "3.0.0-rc2"]
-                 [buddy "0.7.2"]]
+                 [buddy "0.7.2"]
+                 [clj-mandrill "0.1.0"]]
 
   :plugins [[lein-cljsbuild "1.1.0"]
             [lein-figwheel "0.4.1"]]

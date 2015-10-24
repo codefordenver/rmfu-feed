@@ -14,12 +14,12 @@
 ;; HTTP Request
 
 (defn post-sign-in [profile]
-  (let [{:keys [username password]} @profile]
+  (let [{:keys [email password]} @profile]
     (swap! form-state assoc :show-loading (not (:show-loading @form-state)))
-    (println "posting->" username ":" password)
+    (println "posting->" email ":" password)
     (POST "http://localhost:3000/signin"
           ;; TODO: validate these fields
-          {:params  {:username username
+          {:params  {:email email
                      :password password}
            :format  :json
            ;; :response-format :json
@@ -134,8 +134,7 @@
        [:h1.text-center
         [:a {:href "/"
              :style {:color           "dimgray"
-                     :font-size       "1.15em"
-                     :font-decoration "underline"}} "FEED"]]
+                     :font-size       "1.15em"}} "FEED"]]
        [:hr]
        [:h4.text-center [:small "☴"]]
        [:h4.text-center
