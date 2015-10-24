@@ -14,7 +14,7 @@
 ;; HTTP Request
 
 (defn post-sign-in [profile]
-  (let [{:keys [email password]} @profile]
+  (let [{:keys [email password]} profile]
     (swap! form-state assoc :show-loading (not (:show-loading @form-state)))
     (println "posting->" email ":" password)
     (POST "http://localhost:3000/signin"
@@ -31,9 +31,8 @@
                       )})))
 
 (defn post-sign-up [profile]
-  (let [{:keys [username password email]} @profile]
+  (let [{:keys [username password email]} profile]
     (swap! form-state assoc :show-loading (not (:show-loading @form-state)))
-    (println "posting->" username ":" password)
     (POST "http://localhost:3000/signup"
           ;; TODO: validate these fields
           {:params  {:username username
@@ -55,12 +54,12 @@
   (let [{:keys [email password]} @profile]
     (swap! form-state assoc :signing-up false)
     (if (not (or (empty? email) (empty? password)))
-      (post-sign-in profile))))
+      (post-sign-in @profile))))
 
 (defn sign-up [profile]
   (let [{:keys [email username password]} @profile]
     (if (not (or (empty? email) (empty? username) (empty? password)))
-      (post-sign-up profile))))
+      (post-sign-up @profile))))
 
 ;; -------------------------
 ;; <Components/>

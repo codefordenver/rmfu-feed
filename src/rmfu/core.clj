@@ -5,14 +5,15 @@
     [ring.middleware.file :refer [wrap-file]]
     [ring.middleware.json :as middleware]
     [ring.middleware.reload :refer [wrap-reload]]
-    [compojure.core :refer [defroutes GET POST]]
-    [ring.util.response :refer [response]]
+    [compojure.core :refer [defroutes GET POST PUT]]
+    [ring.util.response :refer [response redirect]]
     [compojure.route :refer [not-found]]
     [ring.handler.dump :refer [handle-dump]]                ;; use handle-dump to inspect request
     [ring.middleware.cors :refer [wrap-cors]]
     [rmfu.persistance :as db]))
 
 ;; TODO: use transit intead of plain JSON
+;; TODO: add confirmation page for verified email
 
 (defn greet [req]
   (let [name (get-in req [:route-params :name])]
@@ -42,10 +43,20 @@
              :headers {}
              :body (str add-user!)})))
 
+(defn verify-email [req]
+  (let [email (get-in req [:route-params :email])
+        user-exists (db/find-user-by-email email)]
+    (println (str email  ":" (str user-exists)))
+    (do (if-not (nil? user-exists)
+          (db/update-verify-email user-exists))
+        (redirect "http://localhost:3449/registed"))))
+
 (defroutes app-routes
            (GET "/yo/:name" [] greet)
            (POST "/signin" [] sign-in)
            (POST "/signup" [] sign-up)
+           ;(PUT "/reset-password" [] reset-password)
+           (GET "/verify-email/:email" [] verify-email)
            ;;(wrap-file "/" "resources/report")               ;; server static files from this directory
            (not-found "Resource not found"))
 
