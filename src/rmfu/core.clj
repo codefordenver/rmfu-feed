@@ -44,20 +44,19 @@
         add-user! (db/add-user! body)]
     (println "attempting to post with" body)
     (if-not (or (empty? add-user!) (nil? add-user!))
-      {:status 201
+      {:status  201
        :headers {}
-       :body (str body)}
-      {:status 409
-             :headers {}
-             :body (str add-user!)})))
+       :body    (str body)}
+      {:status  409
+       :headers {}
+       :body    (str add-user!)})))
 
 (defn verify-email [req]
   (let [email (get-in req [:route-params :email])
         user-exists (db/find-user-by-email email)]
-    (println (str email  ":" (str user-exists)))
     (do (if-not (nil? user-exists)
-          (db/update-verify-email user-exists))
-        (redirect "http://localhost:3449/registed"))))
+          (db/update-verify-email! user-exists))
+        (redirect "http://localhost:3449/#/email-verified"))))
 
 (defroutes app-routes
            (GET "/yo/:name" [] greet)

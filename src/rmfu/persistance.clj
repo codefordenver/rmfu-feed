@@ -7,7 +7,7 @@
             [rmfu.email :as email])
   (:import org.bson.types.ObjectId))
 
-;; TODO: move all auth related fns to separete namespace
+;; TODO: move all auth related fns to separate namespace
 
 (defonce db-config {:name "rmfu"})
 
@@ -29,16 +29,18 @@
     (when-not (nil? lookup)
       (valid-password? password (:password lookup)))))
 
-(defn update-verify-email [user]
+(defn update-verify-email! [user]
+  "update :verified? field in doc, but only if :verified? is false"
   (let [coll "users"
         oid (:_id user)]
-    (try
-      (mc/update-by-id db coll oid (merge user {:verified? true}))
-      (catch Exception e (str "caught exception: " (.getMessage e))))))
+    (when-not (:verified? user)
+      (try
+        (mc/update-by-id db coll oid (merge user {:verified? true}))
+        (catch Exception e (str "caught exception: " (.getMessage e)))))))
 
 (defn add-user! [user]
   "Adds a user to DB that is by default unverified, we expect verification via email"
-  (let [{:keys [email password username]} user
+  (let [{:keys [email password]} user
         coll "users"
         oid (ObjectId.)
         user-doc (merge user {:_id oid})
@@ -47,10 +49,5 @@
       (do
         (email/send-confirmation-email user)
         (mc/insert-and-return db coll (merge user-doc {:password  (hash-password password)
-                                                         :verified? false})))
+                                                       :verified? false})))
       (format "User already exist with %s" email))))
-
-(println (add-user! (model/->User "david" "me@me.com" "123")))
-
-
-

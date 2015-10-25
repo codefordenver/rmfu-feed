@@ -7,6 +7,7 @@
                  [org.clojure/clojurescript "1.7.122"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [reagent "0.5.0"]
+                 [reagent-utils "0.1.5"]
                  [ring "1.4.0"]
                  [compojure "1.4.0"]
                  [cljs-ajax "0.5.0"]
@@ -14,7 +15,8 @@
                  [ring/ring-json "0.4.0"]
                  [com.novemberain/monger "3.0.0-rc2"]
                  [buddy "0.7.2"]
-                 [clj-mandrill "0.1.0"]]
+                 [clj-mandrill "0.1.0"]
+                 [secretary "1.2.3"]]
 
   :plugins [[lein-cljsbuild "1.1.0"]
             [lein-figwheel "0.4.1"]]
