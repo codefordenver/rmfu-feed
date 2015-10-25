@@ -12,7 +12,16 @@ code for Rocky Mountain Farmer Union project.
 2. Run mongodb deamon: `$ mongod` 
 runs on default port
 
-### run the server with:
+## App runtime configurations
+
+0. define the following enviorment vars: 
+
+```
+MANDRILL_API_KEY="API_KEY"
+RMFU_FROM_EMAIL="someone@mail.org"
+```
+
+### Run the server with:
 
     lein run 3000
 

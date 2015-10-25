@@ -22,11 +22,19 @@
      :body    (str "yo, " name)}))
 
 (defn sign-in [req]
-  (let [body (get-in req [:body])]
-    (if-let [user (db/auth-user body)]
-      {:status  200
-       :headers {}
-       :body    (str user)}
+  "Sings a user in, only reply with 200 if :verified? true"
+  (let [body (get-in req [:body])
+        email (body :email)]
+    (if (db/auth-user body)
+      (if (:verified? (db/find-user-by-email email))
+        {:status  200
+         :headers {}
+         :body    (str "verified and valid password")}
+        ;; TODO: :else ask user to go verify
+        {:status  201
+         :headers {}
+         :body    (str "user not verified")}
+        )
       {:status  401
        :headers {}
        :body    (str "Not Found")})))

@@ -125,7 +125,8 @@
 
         iconometry ["☴" "☳" "☱" "☲" " × " "~" "☀" "☁" "☄"]]
 
-    (add-watch profile :logger #(-> %4 clj->js js/console.log))
+    ;; (add-watch profile :logger #(-> %4 clj->js js/console.log))
+
     [:div.container.jumbotron
      [:div.row
       [:div.col-lg-12

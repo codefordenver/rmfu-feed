@@ -27,8 +27,7 @@
   (let [{:keys [email password]} user
         lookup (find-user-by-email email)]
     (when-not (nil? lookup)
-      (if (valid-password? password (:password lookup))
-        user))))
+      (valid-password? password (:password lookup)))))
 
 (defn update-verify-email [user]
   (let [coll "users"
