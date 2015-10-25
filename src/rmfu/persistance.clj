@@ -4,18 +4,10 @@
             [monger.conversion :refer [from-db-object]]
             [buddy.hashers :as hasher]
             [rmfu.model :as model]
-            [clj-mandrill.core :as mandrill])
+            [rmfu.email :as email])
   (:import org.bson.types.ObjectId))
 
 ;; TODO: move all auth related fns to separete namespace
-
-;(defonce mandrill-api-key (System/getenv "MANDRILL_API_KEY"))
-
-(println (mandrill/ping))
-
-;(println (mandrill/send-template "RMFU Feed Email Registration"
-;                                 {:subject "Verify your email" :from_email "" :from_name "Code For Denver"
-;                                  :to [{:email "" :verify "Bob"}]}))
 
 (defonce db-config {:name "rmfu"})
 
@@ -47,14 +39,16 @@
 
 (defn add-user! [user]
   "Adds a user to DB that is by default unverified, we expect verification via email"
-  (let [{:keys [email password]} user
+  (let [{:keys [email password username]} user
         coll "users"
         oid (ObjectId.)
         user-doc (merge user {:_id oid})
         hash-password #(hasher/encrypt %)]
     (if (nil? (find-user-by-email email))
-      (mc/insert-and-return db coll (merge user-doc {:password  (hash-password password)
-                                                     :verified? false}))
+      (do
+        (email/send-confirmation-email user)
+        (mc/insert-and-return db coll (merge user-doc {:password  (hash-password password)
+                                                         :verified? false})))
       (format "User already exist with %s" email))))
 
 (println (add-user! (model/->User "david" "me@me.com" "123")))
