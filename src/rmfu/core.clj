@@ -62,7 +62,7 @@
            (GET "/yo/:name" [] greet)
            (POST "/signin" [] sign-in)
            (POST "/signup" [] sign-up)
-           ;(PUT "/reset-password" [] reset-password)
+           (PUT "/reset-password" [] handle-dump)
            (GET "/verify-email/:email" [] verify-email)
            ;;(wrap-file "/" "resources/report")               ;; server static files from this directory
            (not-found "Resource not found"))

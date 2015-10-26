@@ -5,7 +5,7 @@
     [secretary.core :as secretary :include-macros true]
     [goog.events :as events]
     [goog.history.EventType :as EventType]
-    [ajax.core :refer [POST]])
+    [ajax.core :refer [POST PUT]])
   (:import goog.History))
 
 (enable-console-print!)
@@ -20,7 +20,6 @@
 
 (defn post-sign-in [profile]
   (let [{:keys [email password]} profile]
-    (println "posting->" email ":" password)
     (POST "http://localhost:3000/signin"
           ;; TODO: validate these fields
           {:params  {:email    email
@@ -51,6 +50,19 @@
                         (println "res:" res))
                       )})))
 
+(defn post-reset-password [profile]
+  (PUT "http://localhost:3000/reset-password"
+       ;; TODO: validate these fields
+       {:params  {:email (:email profile)}
+        :format  :json
+        ;; :response-format :json
+        ;; :keywords?
+        :handler (fn [res]
+                   (do
+                     ;(swap! form-state assoc :show-loading (not (:show-loading @form-state)))
+                     (println "res:" res))
+                   )}))
+
 ;; -------------------------
 ;; Utility functions
 
@@ -64,6 +76,10 @@
   (let [{:keys [email username password]} profile]
     (if (not (or (empty? email) (empty? username) (empty? password)))
       (post-sign-up profile))))
+
+(defn reset-password [profile]
+  (if (not (empty? (:email profile)))
+    (post-reset-password profile)))
 
 ;; -------------------------
 ;; <Components/>
@@ -103,9 +119,6 @@
            :placeholder "username"
            :on-change   #(swap! profile assoc :username (-> % .-target .-value))}])
 
-;; -------------------------
-;; <Root/>
-
 ;; (add-watch form-state :logger #(-> %4 clj->js js/console.log))
 
 (defn sign-in-sign-up-base-component-wrapper [element]
@@ -115,9 +128,9 @@
     [:div.col-lg-12
      [:p.text-center "welcome to"]
      [:h1.text-center
-      [:a {:href  "/"
-           :style {:color     "dimgray"
-                   :font-size "1.15em"}} "FEED"]]
+      [:a {:on-click #(secretary/dispatch! "/")
+           :style    {:color     "dimgray"
+                      :font-size "1.15em"}} "FEED"]]
      [:hr]
      [:h4.text-center [:small "☴"]]
      [:h4.text-center
@@ -132,20 +145,17 @@
                        :email    ""
                        :password ""})]
     [:div.form-group {:style {:padding "1em"}}
-
      [:p.text-center.bg-primary "Sign in"]
-
      [:label "email:"]
      [email-input-field profile]
      [:label "password:"]
      [passsword-input-field profile]
-
      [:br]
-
      [:div.checkbox
       [:label
-       [:input {:type "checkbox"}] "remember me ?"]]
+       [:input {:type "checkbox"}] "remember me?"]]
 
+     [:br]
      [:button.btn.btn-default {:type     "button"
                                :on-click (fn [e]
                                            (sign-in @profile)
@@ -154,7 +164,12 @@
 
      [:button.btn.btn-default.pull-right {:type     "button"
                                           :on-click #(secretary/dispatch! "/sign-up")
-                                          } "sign-up"]]))
+                                          } "sign-up"]
+     [:br]
+     [:p.text-center
+      [:button.btn.btn-sm {:type     "button"
+                           :on-click #(secretary/dispatch! "/reset-password")}
+       "forgot password?"]]]))
 
 
 (defn sign-up-component []
@@ -184,6 +199,26 @@
                                                       (sign-up @profile)
                                                       (.preventDefault e))
                                           } "sign-up"]]))
+(defn reset-password-component []
+  (let [profile (atom {:username ""
+                       :email    ""
+                       :password ""})]
+    [:div.form-group {:style {:padding "1em"}}
+     [:p.text-center.bg-primary "Reset Your Password"]
+     [:label "email:"]
+     [email-input-field profile]
+
+     [:br]
+
+     [:p.text-center
+      [:button.btn.btn-default {:type     "button"
+                                :on-click (fn [e]
+                                            (reset-password @profile)
+                                            (.preventDefault e))
+                                } "reset"]]]))
+
+(defn reset-email-component-wrapper []
+  (sign-in-sign-up-base-component-wrapper [reset-password-component]))
 
 (defn show-loading-component []
   [:p.ball-loader.text-center {:style {:left   180
@@ -213,6 +248,9 @@
 
 (secretary/defroute "/email-verified" []
                     (session/put! :current-page #'email-verified-component))
+
+(secretary/defroute "/reset-password" []
+                    (session/put! :current-page #'reset-email-component-wrapper))
 
 ;; -------------------------
 ;; History
