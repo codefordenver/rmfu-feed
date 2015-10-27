@@ -10,10 +10,10 @@
     [compojure.route :refer [not-found]]
     [ring.handler.dump :refer [handle-dump]]                ;; use handle-dump to inspect request
     [ring.middleware.cors :refer [wrap-cors]]
-    [rmfu.persistance :as db]))
+    [rmfu.persistance :as db]
+    [rmfu.email :as email]))
 
 ;; TODO: use transit intead of plain JSON
-;; TODO: add confirmation page for verified email
 
 (defn greet [req]
   (let [name (get-in req [:route-params :name])]
@@ -58,11 +58,32 @@
           (db/update-verify-email! user-exists))
         (redirect "http://localhost:3449/#/email-verified"))))
 
+(defn send-reset-password-email [req]
+  "handle reset-password request from user form,
+  if user found we simply send an email"
+  (let [email (get-in req [:body :email])
+        user-found (db/find-user-by-email email)]
+    (if user-found
+      (do
+        (email/send-reset-password-email user-found)
+        {:status  201
+         :headers {}
+         :body    (str (format "User found for : %s" email) ", please check your email.")})
+      {:status  404
+       :headers {}
+       :body    (str (format "no user found for %s" email))})))
+
+(defn reset-password [req new-password]
+  "handle reset password now from email"
+  (let [email (get-in req [:body :email])]
+    (db/update-password! email new-password)))
+
 (defroutes app-routes
            (GET "/yo/:name" [] greet)
            (POST "/signin" [] sign-in)
            (POST "/signup" [] sign-up)
-           (PUT "/reset-password" [] handle-dump)
+           (POST "/send-reset-password-email" [] send-reset-password-email)
+           ;(POST "/reset-password" [] reset-password)
            (GET "/verify-email/:email" [] verify-email)
            ;;(wrap-file "/" "resources/report")               ;; server static files from this directory
            (not-found "Resource not found"))
@@ -76,5 +97,5 @@
 (defn -main [port]
   (jetty/run-jetty app {:port (Integer. port)}))
 
-(defn -dev-main [port]
+(defn -dev [port]
   (jetty/run-jetty (wrap-reload #'app) {:port (Integer. port)}))

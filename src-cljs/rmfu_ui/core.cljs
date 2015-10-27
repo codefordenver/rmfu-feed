@@ -5,7 +5,7 @@
     [secretary.core :as secretary :include-macros true]
     [goog.events :as events]
     [goog.history.EventType :as EventType]
-    [ajax.core :refer [POST PUT]])
+    [ajax.core :refer [POST]])
   (:import goog.History))
 
 (enable-console-print!)
@@ -30,7 +30,8 @@
            :handler (fn [res]
                       (do
                         ;; (swap! form-state assoc :show-loading (not (:show-loading @form-state)))
-                        (println "res:" res))
+                        (println "res:" res)
+                        (js/alert res))
                       )})))
 
 (defn post-sign-up [profile]
@@ -47,11 +48,12 @@
            :handler (fn [res]
                       (do
                         ;(swap! form-state assoc :show-loading (not (:show-loading @form-state)))
-                        (println "res:" res))
+                        (println "res:" res)
+                        (js/alert res))
                       )})))
 
 (defn post-reset-password [profile]
-  (PUT "http://localhost:3000/reset-password"
+  (POST "http://localhost:3000/send-reset-password-email"
        ;; TODO: validate these fields
        {:params  {:email (:email profile)}
         :format  :json
@@ -60,7 +62,8 @@
         :handler (fn [res]
                    (do
                      ;(swap! form-state assoc :show-loading (not (:show-loading @form-state)))
-                     (println "res:" res))
+                     (println "res:" res)
+                     (js/alert res))
                    )}))
 
 ;; -------------------------

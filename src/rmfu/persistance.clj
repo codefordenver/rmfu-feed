@@ -2,23 +2,20 @@
   (:require [monger.core :as mg]
             [monger.collection :as mc]
             [monger.conversion :refer [from-db-object]]
+            [monger.operators :refer :all]
             [buddy.hashers :as hasher]
             [rmfu.model :as model]
-            [rmfu.email :as email])
+            [rmfu.email :as email]
+            [rmfu.auth :as auth])
   (:import org.bson.types.ObjectId))
 
-;; TODO: move all auth related fns to separate namespace
+;; TODO: move all auth related fns to auth namespace
 
 (defonce db-config {:name "rmfu"})
 
 (defonce conn (mg/connect))
 
 (defonce db (mg/get-db conn (:name db-config)))
-
-(defn valid-password? [provided saved]
-  (let [valid? (hasher/check provided saved)]
-    (println (format "valid password: %s" valid?))
-    valid?))
 
 (defn find-user-by-email [email]
   (mc/find-one-as-map db "users" {:email email}))
@@ -27,7 +24,7 @@
   (let [{:keys [email password]} user
         lookup (find-user-by-email email)]
     (when-not (nil? lookup)
-      (valid-password? password (:password lookup)))))
+      (auth/valid-password? password (:password lookup)))))
 
 (defn update-verify-email! [user]
   "update :verified? field in doc, but only if :verified? is false"
@@ -35,8 +32,17 @@
         oid (:_id user)]
     (when-not (:verified? user)
       (try
-        (mc/update-by-id db coll oid (merge user {:verified? true}))
+        (mc/update-by-id db coll oid {$set {:verified? true}})
         (catch Exception e (str "caught exception: " (.getMessage e)))))))
+
+(defn update-password! [email new-password]
+  (let [user (find-user-by-email email)
+        coll "users"
+        oid (:_id user)
+        hash-password #(hasher/encrypt %)]
+    (try
+      (mc/update-by-id db coll oid {$set {:password (hash-password new-password)}})
+      (catch Exception e (str "caught exception: " (.getMessage e))))))
 
 (defn add-user! [user]
   "Adds a user to DB that is by default unverified, we expect verification via email"

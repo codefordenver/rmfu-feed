@@ -2,11 +2,21 @@
 
 ## REPL driven development:
 
-1. `lein repl` then
+- `lein repl` then
  
 ```
 (ns user)
 (reset)
+```
+
+- require a namespace and start playing around:
+
+```
+(require '[rmfu.persistance])
+(ns rmfu.persistance)
+(find-user-by-email "me@mail.com")
+=> {:username "user", :password "bcrypt+sha..", :email "me@mail.com", :verified? true, :_id #[object]}
+
 ```
 
 ## Other Resources

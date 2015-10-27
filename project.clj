@@ -27,7 +27,9 @@
   ;; the dev flag for this dev profile is automatic
   ;; when running with $ lein run
   :profiles {:dev
-             {:main rmfu.core/-dev-main}}
+             {:main rmfu.core/-dev}
+             :repl
+             {:main rmfu.core}}
 
   :clean-targets ^{:protect false} ["resources/public/js/compiled" "target"]
 
