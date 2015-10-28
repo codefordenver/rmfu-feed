@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/codefordenver/rmfu-feed.png?label=ready&title=Ready)](https://waffle.io/codefordenver/rmfu-feed)
 # RMFU
 
 This repo contains both the server and the client 
