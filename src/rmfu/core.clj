@@ -61,7 +61,7 @@
 (defn send-reset-password-email [req]
   "handle reset-password request from user form,
   if user found we simply send an email"
-  (let [email (get-in req [:body :email])
+  (let [email (get-in req [:query-string :email])
         user-found (db/find-user-by-email email)]
     (if user-found
       (do
@@ -73,17 +73,32 @@
        :headers {}
        :body    (str (format "no user found for %s" email))})))
 
-(defn reset-password [req new-password]
-  "handle reset password now from email"
-  (let [email (get-in req [:body :email])]
-    (db/update-password! email new-password)))
+(defn reset-password-redirect [req]
+  "handle reset password now from email,
+  redirects user to reset their password via the new password form"
+  (let [email (get-in req [:route-params :email])]
+    (redirect (str "http://localhost:3449/#/new-password?email=" email))))
+
+(defn reset-password-from-form! [req]
+  (let [email (get-in req [:body :email])
+        new-password (get-in req [:body :new-password])
+        update-success? (db/update-password! email new-password)]
+    (if (= (type update-success?) com.mongodb.WriteResult)
+      {:status  200
+       :headers {}
+       :body    (str "Password updated!")
+       }
+      {:status  500
+       :headers {}
+       :body    (str "Something went wrong with the password update.")})))
 
 (defroutes app-routes
            (GET "/yo/:name" [] greet)
            (POST "/signin" [] sign-in)
            (POST "/signup" [] sign-up)
-           (POST "/send-reset-password-email" [] send-reset-password-email)
-           ;(POST "/reset-password" [] reset-password)
+           (GET "/send-reset-password-email/:email" [] send-reset-password-email)
+           (GET "/reset-password-redirect/:email" [] reset-password-redirect)
+           (PUT "/reset-password-from-form" [] reset-password-from-form!)
            (GET "/verify-email/:email" [] verify-email)
            ;;(wrap-file "/" "resources/report")               ;; server static files from this directory
            (not-found "Resource not found"))

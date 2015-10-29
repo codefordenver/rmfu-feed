@@ -5,7 +5,7 @@
     [secretary.core :as secretary :include-macros true]
     [goog.events :as events]
     [goog.history.EventType :as EventType]
-    [ajax.core :refer [POST]])
+    [ajax.core :refer [POST GET PUT]])
   (:import goog.History))
 
 (enable-console-print!)
@@ -22,50 +22,58 @@
   (let [{:keys [email password]} profile]
     (POST "http://localhost:3000/signin"
           ;; TODO: validate these fields
-          {:params  {:email    email
-                     :password password}
-           :format  :json
-           ;; :response-format :json
-           ;; :keywords? true
-           :handler (fn [res]
-                      (do
-                        ;; (swap! form-state assoc :show-loading (not (:show-loading @form-state)))
-                        (println "res:" res)
-                        (js/alert res))
-                      )})))
+          {:params        {:email    email
+                           :password password}
+           :format        :json
+           :error-handler #(js/alert %)
+           :handler       (fn [res]
+                            (do
+                              ;; (swap! form-state assoc :show-loading (not (:show-loading @form-state)))
+                              (println "res:" res)
+                              (js/alert res))
+                            )})))
 
 (defn post-sign-up [profile]
   (let [{:keys [username password email]} profile]
     ;(swap! form-state assoc :show-loading (not (:show-loading @form-state)))
     (POST "http://localhost:3000/signup"
           ;; TODO: validate these fields
-          {:params  {:username username
-                     :password password
-                     :email    email}
-           :format  :json
-           ;; :response-format :json
-           ;; :keywords? true
-           :handler (fn [res]
-                      (do
-                        ;(swap! form-state assoc :show-loading (not (:show-loading @form-state)))
-                        (println "res:" res)
-                        (js/alert res))
-                      )})))
+          {:params        {:username username
+                           :password password
+                           :email    email}
+           :format        :json
+           :error-handler #(js/alert %)
+           :handler       (fn [res]
+                            (do
+                              ;(swap! form-state assoc :show-loading (not (:show-loading @form-state)))
+                              (println "res:" res)
+                              (js/alert res))
+                            )})))
 
-(defn post-reset-password [profile]
-  (POST "http://localhost:3000/send-reset-password-email"
-        ;; TODO: validate these fields
-        {:params  {:email (:email profile)}
-         :format  :json
-         ;; :response-format :json
-         ;; :keywords?
-         :handler (fn [res]
-                    (do
-                      ;(swap! form-state assoc :show-loading (not (:show-loading @form-state)))
-                      (println "res:" res)
-                      (js/alert res))
-                    )}))
+(defn request-password-reset [profile]
+  (GET "http://localhost:3000/send-reset-password-email"
+       ;; TODO: validate these fields
+       {:params        {:email (:email profile)}
+        :error-handler #(js/alert %)
+        :handler       (fn [res]
+                         (do
+                           (println "res:" res)
+                           (js/alert res))
+                         )}))
 
+(defn update-password [profile]
+  (PUT "http://localhost:3000/reset-password-from-form"
+       ;; TODO: validate these fields
+       {:params        {:email        (:email profile)
+                        :new-password (:password profile)}
+        :format        :json
+        :error-handler #(js/alert %)
+        :handler       (fn [res]
+                         (do
+                           ;(swap! form-state assoc :show-loading (not (:show-loading @form-state)))
+                           (println "res:" res)
+                           (js/alert res))
+                         )}))
 ;; -------------------------
 ;; Utility functions
 
@@ -82,11 +90,10 @@
 
 (defn reset-password-email [profile]
   (if-not (empty? (:email profile))
-    (post-reset-password profile)))
+    (request-password-reset profile)))
 
 ;; -------------------------
 ;; <Components/>
-
 
 (defn email-input-field [profile]
   (let [detect-key #(case (.-which %)
@@ -173,7 +180,6 @@
                                            :on-click #(secretary/dispatch! "/sign-up")
                                            } "sign-up"]]]))
 
-
 (defn sign-up-component []
   (let [profile (atom {:username ""
                        :email    ""
@@ -225,18 +231,20 @@
   (let [profile (atom {:username ""
                        :email    ""
                        :password ""})]
-    (welcome-component-wrapper
-      [:div.form-group {:style {:padding "1em"}}
-       [:p.text-center.bg-primary "New Password"]
-       [:label "password:"]
-       [passsword-input-field profile]
-       [:br]
-       [:button.btn.btn-default {:type     "button"
-                                 :on-click (fn [e]
-                                             ;; (swap! form-state assoc :signing-up true)
-                                             (reset-password-email @profile)
-                                             (.preventDefault e))
-                                 } "reset"]])))
+    (do
+      (swap! profile assoc :email (session/get :email))
+      (welcome-component-wrapper
+        [:div.form-group {:style {:padding "1em"}}
+         [:p.text-center.bg-primary "New Password"]
+         [:label "password:"]
+         [passsword-input-field profile]
+         [:br]
+         [:button.btn.btn-default {:type     "button"
+                                   :on-click (fn [e]
+                                               (if-not (empty? (:email @profile))
+                                                 (update-password @profile))
+                                               (.preventDefault e))
+                                   } "reset"]]))))
 
 (defn show-loading-component []
   [:p.ball-loader.text-center {:style {:left   180
@@ -267,7 +275,8 @@
 (secretary/defroute "/reset-password" []
                     (session/put! :current-page #'reset-password-component))
 
-(secretary/defroute "/new-password" []
+(secretary/defroute "/new-password" [query-params]
+                    (session/put! :email (:email query-params))
                     (session/put! :current-page #'new-password-component))
 
 ;; -------------------------
@@ -282,15 +291,13 @@
         (secretary/dispatch! (.-token event))))
     (.setEnabled true)))
 
-
-
 ;; -------------------------
 ;; Bootstrap app
 
 (defn init! []
   (secretary/set-config! :prefix "#")
   (hook-browser-navigation!)
-  (reagent/render-component [current-page form-state]
+  (reagent/render-component [current-page]
                             (.getElementById js/document "app")))
 
 (init!)
