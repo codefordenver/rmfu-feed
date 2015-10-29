@@ -26,8 +26,9 @@
     (when-not (nil? lookup)
       (auth/valid-password? password (:password lookup)))))
 
-(defn update-verify-email! [user]
+(defn update-verify-email!
   "update :verified? field in doc, but only if :verified? is false"
+  [user]
   (let [coll "users"
         oid (:_id user)]
     (when-not (:verified? user)
@@ -44,8 +45,9 @@
       (mc/update-by-id db coll oid {$set {:password (hash-password new-password)}})
       (catch Exception e (str "caught exception: " (.getMessage e))))))
 
-(defn add-user! [user]
+(defn add-user!
   "Adds a user to DB that is by default unverified, we expect verification via email"
+  [user]
   (let [{:keys [email password]} user
         coll "users"
         oid (ObjectId.)

@@ -1,5 +1,9 @@
 # Development Mode:
 
+## Clojure Styleguide:
+
+[https://github.com/bbatsov/clojure-style-guide](https://github.com/bbatsov/clojure-style-guide)
+
 ## REPL driven development:
 
 - `lein repl` then

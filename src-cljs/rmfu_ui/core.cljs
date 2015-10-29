@@ -15,12 +15,14 @@
 (defonce form-state (atom {:show-loading false
                            :signing-up   false}))
 
+(defonce API-END-POINT "http://localhost:3000")
+
 ;; -------------------------
 ;; HTTP Request
 
 (defn post-sign-in [profile]
   (let [{:keys [email password]} profile]
-    (POST "http://localhost:3000/signin"
+    (POST (str API-END-POINT "/signin")
           ;; TODO: validate these fields
           {:params        {:email    email
                            :password password}
@@ -36,7 +38,7 @@
 (defn post-sign-up [profile]
   (let [{:keys [username password email]} profile]
     ;(swap! form-state assoc :show-loading (not (:show-loading @form-state)))
-    (POST "http://localhost:3000/signup"
+    (POST (str API-END-POINT "/signup")
           ;; TODO: validate these fields
           {:params        {:username username
                            :password password
@@ -51,7 +53,7 @@
                             )})))
 
 (defn request-password-reset [profile]
-  (GET "http://localhost:3000/send-reset-password-email"
+  (GET (str API-END-POINT "/send-reset-password-email")
        ;; TODO: validate these fields
        {:params        {:email (:email profile)}
         :error-handler #(js/alert %)
@@ -62,7 +64,7 @@
                          )}))
 
 (defn update-password [profile]
-  (PUT "http://localhost:3000/reset-password-from-form"
+  (PUT (str API-END-POINT "/reset-password-from-form")
        ;; TODO: validate these fields
        {:params        {:email        (:email profile)
                         :new-password (:password profile)}
@@ -74,8 +76,11 @@
                            (.replaceState js/history #js {} "welcome" "/")
                            (js/alert res))
                          )}))
+
 ;; -------------------------
 ;; Utility functions
+
+;; (add-watch form-state :logger #(-> %4 clj->js js/console.log))
 
 (defn sign-in [profile]
   (let [{:keys [email password]} profile]
@@ -129,10 +134,9 @@
            :placeholder "username"
            :on-change   #(swap! profile assoc :username (-> % .-target .-value))}])
 
-;; (add-watch form-state :logger #(-> %4 clj->js js/console.log))
-
-(defn welcome-component-wrapper [element]
+(defn welcome-component-wrapper
   "Renders element passed in inside a .jumbotron"
+  [element]
   [:div.container.jumbotron
    [:div.row
     [:div.col-lg-12
@@ -186,18 +190,14 @@
                        :password ""})]
     [welcome-component-wrapper
      [:div.form-group {:style {:padding "1em"}}
-
       [:p.text-center.bg-primary "Create Account"]
-
       [:label "username:"]
       [username-input-field profile]
       [:label "email:"]
       [email-input-field profile]
       [:label "password:"]
       [passsword-input-field profile]
-
       [:br]
-
       [:button.btn.btn-default {:type     "button"
                                 :on-click #(secretary/dispatch! "/")
                                 } "sign-in"]
@@ -207,8 +207,7 @@
                                                        ;; (swap! form-state assoc :signing-up true)
                                                        (sign-up @profile)
                                                        (.preventDefault e))
-                                           } "sign-up"]]]
-    ))
+                                           } "sign-up"]]]))
 
 (defn reset-password-component []
   (let [profile (atom {:username ""
@@ -224,13 +223,13 @@
                                     :on-click (fn [e]
                                                 (reset-password-email @profile)
                                                 (.preventDefault e))
-                                    } "reset"]]]]
-    ))
+                                    } "reset"]]]]))
 
 (defn new-password-component []
   (let [profile (atom {:username ""
                        :email    ""
                        :password ""})]
+    (add-watch profile :logger #(-> %4 clj->js js/console.log))
     (do
       (swap! profile assoc :email (session/get :email))
       (welcome-component-wrapper
@@ -241,7 +240,7 @@
          [:br]
          [:button.btn.btn-default {:type     "button"
                                    :on-click (fn [e]
-                                               (if-not (empty? (:email @profile))
+                                               (if-not (empty? (:password @profile))
                                                  (update-password @profile))
                                                (.preventDefault e))
                                    } "reset"]]))))
@@ -250,11 +249,12 @@
   [:p.ball-loader.text-center {:style {:left   180
                                        :bottom 69}}])
 (defn email-verified-component []
-  [welcome-component-wrapper [:div
-                              [:h3.text-center
-                               [:u "Your email has been verified"]
-                               [:br]
-                               [:p [:a {:on-click #(secretary/dispatch! "/")} "you may now proceed to login"]]]]])
+  [welcome-component-wrapper
+   [:div
+    [:h3.text-center
+     [:u "Your email has been verified"]
+     [:br]
+     [:p [:a {:on-click #(secretary/dispatch! "/")} "you may now proceed to login"]]]]])
 
 ;; -------------------------
 ;; Routes
@@ -264,7 +264,6 @@
 
 (secretary/defroute "/" []
                     (session/put! :current-page #'sing-in-component))
-
 
 (secretary/defroute "/sign-up" []
                     (session/put! :current-page #'sign-up-component))

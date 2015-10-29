@@ -21,8 +21,9 @@
      :headers {}
      :body    (str "yo, " name)}))
 
-(defn sign-in [req]
+(defn sign-in
   "Sings a user in, only reply with 200 if :verified? true"
+  [req]
   (let [body (get-in req [:body])
         email (body :email)]
     (if (db/auth-user body)
@@ -58,9 +59,10 @@
           (db/update-verify-email! user-exists))
         (redirect "http://localhost:3449/#/email-verified"))))
 
-(defn send-reset-password-email [req]
+(defn send-reset-password-email
   "handle reset-password request from user form,
   if user found we simply send an email"
+  [req]
   (let [email (get-in req [:query-string :email])
         user-found (db/find-user-by-email email)]
     (if user-found
@@ -73,9 +75,10 @@
        :headers {}
        :body    (str (format "no user found for %s" email))})))
 
-(defn reset-password-redirect [req]
+(defn reset-password-redirect
   "handle reset password now from email,
   redirects user to reset their password via the new password form"
+  [req]
   (let [email (get-in req [:route-params :email])]
     (redirect (str "http://localhost:3449/#/new-password?email=" email))))
 
@@ -99,7 +102,7 @@
            (GET "/reset-password-redirect/:email" [] reset-password-redirect)
            (PUT "/reset-password-from-form" [] reset-password-from-form!)
            (GET "/verify-email/:email" [] verify-email)
-           ;;(wrap-file "/" "resources/report")               ;; server static files from this directory
+           (wrap-file "/" "resources/public")               ;; server static files from this directory
            (not-found "Resource not found"))
 
 (def app
