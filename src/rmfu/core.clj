@@ -86,8 +86,7 @@
     (if (= (type update-success?) com.mongodb.WriteResult)
       {:status  200
        :headers {}
-       :body    (str "Password updated!")
-       }
+       :body    (str "Password updated!")}
       {:status  500
        :headers {}
        :body    (str "Something went wrong with the password update.")})))

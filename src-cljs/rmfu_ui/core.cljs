@@ -70,8 +70,8 @@
         :error-handler #(js/alert %)
         :handler       (fn [res]
                          (do
-                           ;(swap! form-state assoc :show-loading (not (:show-loading @form-state)))
                            (println "res:" res)
+                           (.replaceState js/history #js {} "welcome" "/")
                            (js/alert res))
                          )}))
 ;; -------------------------
