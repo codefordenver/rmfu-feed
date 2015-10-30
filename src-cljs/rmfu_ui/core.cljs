@@ -229,7 +229,6 @@
   (let [profile (atom {:username ""
                        :email    ""
                        :password ""})]
-    (add-watch profile :logger #(-> %4 clj->js js/console.log))
     (do
       (swap! profile assoc :email (session/get :email))
       (welcome-component-wrapper

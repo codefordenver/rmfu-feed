@@ -27,6 +27,5 @@ pom.xml
 .lein-plugins/
 .repl
 .nrepl-port
-resources/report/*
 repos/*
 rfmu.iml

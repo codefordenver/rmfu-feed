@@ -1,6 +1,7 @@
 (ns rmfu.core
   (use [clojure.java.shell :only [sh]])
   (:require
+    [environ.core :refer [env]]
     [ring.adapter.jetty :as jetty]
     [ring.middleware.file :refer [wrap-file]]
     [ring.middleware.json :as middleware]
@@ -14,6 +15,12 @@
     [rmfu.email :as email]))
 
 ;; TODO: use transit intead of plain JSON
+
+;; enviorment variables defined in project.clj
+(if (env :dev?)
+  (do
+    (println (format "ENV DEV:" (env :dev?)))
+    (println (format "CLIENT URL:" (env :client-url)))))
 
 (defn greet [req]
   (let [name (get-in req [:route-params :name])]
@@ -57,7 +64,7 @@
         user-exists (db/find-user-by-email email)]
     (do (if-not (nil? user-exists)
           (db/update-verify-email! user-exists))
-        (redirect "http://localhost:3449/#/email-verified"))))
+        (redirect (env :client-url) "/#/email-verified"))))
 
 (defn send-reset-password-email
   "handle reset-password request from user form,
@@ -80,7 +87,7 @@
   redirects user to reset their password via the new password form"
   [req]
   (let [email (get-in req [:route-params :email])]
-    (redirect (str "http://localhost:3449/#/new-password?email=" email))))
+    (redirect (str (env :client-url) "/#/new-password?email=" email))))
 
 (defn reset-password-from-form! [req]
   (let [email (get-in req [:body :email])

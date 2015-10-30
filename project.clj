@@ -16,20 +16,25 @@
                  [com.novemberain/monger "3.0.0-rc2"]
                  [buddy "0.7.2"]
                  [clj-mandrill "0.1.0"]
-                 [secretary "1.2.3"]]
+                 [secretary "1.2.3"]
+                 [environ "1.0.1"]]
 
   :plugins [[lein-cljsbuild "1.1.0"]
-            [lein-figwheel "0.4.1"]]
+            [lein-figwheel "0.4.1"]
+            [lein-environ "1.0.1"]]
 
-  :min-lein-version "2.0.0"                                 ;; better support in heroku
+  :min-lein-version "2.5.0"                                 ;; better support in heroku
   :uberjar-name "rmfu.jar"
   :main rmfu.core
+
   ;; the dev flag for this dev profile is automatic
   ;; when running with $ lein run
-  :profiles {:dev
-             {:main rmfu.core/-dev}
-             :repl
-             {:main rmfu.core}}
+  :profiles {:dev  {:main rmfu.core/-dev
+                    :env  {:dev? true
+                           :client-url "http://localhost:3449"}}
+             :repl {:main rmfu.core}}
+
+  :hooks [leiningen.cljsbuild]
 
   :clean-targets ^{:protect false} ["resources/public/js/compiled" "target"]
 
