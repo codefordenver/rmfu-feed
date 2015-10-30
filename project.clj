@@ -29,31 +29,45 @@
 
   ;; the dev flag for this dev profile is automatic
   ;; when running with $ lein run
-  :profiles {:dev  {:main rmfu.core/-dev
-                    :env  {:dev? true
-                           :client-url "http://localhost:3449"}}
-             :repl {:main rmfu.core}}
+  :profiles {:dev     {:main            rmfu.core/-dev
+                       :env             {:dev?          true
+                                         :client-url    "http://localhost:3449"
+                                         :api-end-point "http://localhost:3000"}
+
+                       :closure-defines {"API_END_POINT" "http://localhost:3000"}
+
+                       :cljsbuild       {
+                                         :builds [{:id           "dev"
+                                                   :source-paths ["src-cljs"]
+
+                                                   :figwheel     {:on-jsload "rmfu-ui.core/on-js-reload"}
+
+                                                   :compiler     {:main                 rmfu-ui.core
+                                                                  :asset-path           "js/compiled/out"
+                                                                  :output-to            "resources/public/js/compiled/rmfu_ui.js"
+                                                                  :output-dir           "resources/public/js/compiled/out"
+                                                                  :source-map-timestamp true}}
+                                                  {:id           "min"
+                                                   :source-paths ["src-cljs"]
+                                                   :compiler     {:output-to     "resources/public/js/compiled/rmfu_ui.js"
+                                                                  :main          rmfu-ui.core
+                                                                  :optimizations :advanced
+                                                                  :pretty-print  false}}]}}
+
+             :repl    {:main rmfu.core}
+
+             :uberjar {:env         {:production true}
+                       :aot         :all
+                       :omit-source true
+                       :cljsbuild   {:jar    true
+                                     :builds {:app
+                                              {:source-paths ["src-cljs"]
+                                               :compiler
+                                                             {:optimizations :advanced
+                                                              :pretty-print  false}}}}}}
 
   :hooks [leiningen.cljsbuild]
 
   :clean-targets ^{:protect false} ["resources/public/js/compiled" "target"]
 
-  :source-paths ["src" "src-cljs"]
-
-  :cljsbuild {
-              :builds [{:id           "dev"
-                        :source-paths ["src-cljs"]
-
-                        :figwheel     {:on-jsload "rmfu-ui.core/on-js-reload"}
-
-                        :compiler     {:main                 rmfu-ui.core
-                                       :asset-path           "js/compiled/out"
-                                       :output-to            "resources/public/js/compiled/rmfu_ui.js"
-                                       :output-dir           "resources/public/js/compiled/out"
-                                       :source-map-timestamp true}}
-                       {:id           "min"
-                        :source-paths ["src-cljs"]
-                        :compiler     {:output-to     "resources/public/js/compiled/rmfu_ui.js"
-                                       :main          rmfu-ui.core
-                                       :optimizations :advanced
-                                       :pretty-print  false}}]})
+  :source-paths ["src" "src-cljs"])
