@@ -1,13 +1,14 @@
 (ns ^:figwheel-always rmfu-ui.core
   (:require
-    [reagent.core :as reagent :refer [atom]]
-    [reagent.session :as session]
-    [secretary.core :as secretary :include-macros true]
+    [ajax.core :refer [POST GET PUT]]
     [goog.events :as events]
     [goog.history.EventType :as EventType]
-    [ajax.core :refer [POST GET PUT]]
+    [reagent.core :as reagent :refer [atom]]
+    [reagent.session :as session]
+    [reagent.validation :as validation]
+    [rmfu-ui.createarticle :refer [createarticle]]
     [rmfu-ui.profile :refer [profile]]
-    [rmfu-ui.createarticle :refer [createarticle]])
+    [secretary.core :as secretary :include-macros true])
   (:import goog.History))
 
 (enable-console-print!)
@@ -51,7 +52,8 @@
                             (do
                               ;(swap! form-state assoc :show-loading (not (:show-loading @form-state)))
                               (println "res:" res)
-                              (js/alert res))
+                              (js/alert res)
+                              (secretary/dispatch! "/"))
                             )})))
 
 (defn request-password-reset [profile]
@@ -86,18 +88,27 @@
 
 (defn sign-in [profile]
   (let [{:keys [email password]} profile]
-    (swap! form-state assoc :signing-up false)
     (if-not (or (empty? email) (empty? password))
-      (post-sign-in profile))))
+      (do
+        (if (validation/is-email? email)
+          (post-sign-in profile)
+          (js/alert "Invalid Email"))
+        ))))
 
 (defn sign-up [profile]
   (let [{:keys [email username password]} profile]
     (if-not (or (empty? email) (empty? username) (empty? password))
-      (post-sign-up profile))))
+      (if (and  (validation/min-length? password 8) (validation/has-value? username) (validation/is-email? email) (validation/has-value? password))
+        (post-sign-up profile)
+        (js/alert "Invalid Credentials"))
+      )))
 
 (defn reset-password-email [profile]
   (if-not (empty? (:email profile))
-    (request-password-reset profile)))
+      (if (validation/is-email? (profile :email))
+        (request-password-reset profile)
+        (js/alert "Invalid Email")
+      )))
 
 ;; -------------------------
 ;; <Components/>
@@ -241,8 +252,9 @@
          [:br]
          [:button.btn.btn-default {:type     "button"
                                    :on-click (fn [e]
-                                               (if-not (empty? (:password @profile))
-                                                 (update-password @profile))
+                                               (if-not (or (empty? (:password @profile)) (not (validation/has-value? (:password @profile))))
+                                                 (update-password @profile)
+                                                 (js/alert "Invalid Password"))
                                                (.preventDefault e))
                                    } "reset"]]))))
 
