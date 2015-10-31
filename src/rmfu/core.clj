@@ -19,8 +19,8 @@
 ;; enviorment variables defined in project.clj
 (if (env :dev?)
   (do
-    (println (format "ENV DEV:" (env :dev?)))
-    (println (format "CLIENT URL:" (env :client-url)))))
+    (println (format "_______ ENV DEV: %s    _______" (env :dev?)))
+    (println (format "_______ CLIENT URL: %s _______" (env :client-url)))))
 
 (defn greet [req]
   (let [name (get-in req [:route-params :name])]

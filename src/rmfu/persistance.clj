@@ -6,14 +6,19 @@
             [buddy.hashers :as hasher]
             [rmfu.model :as model]
             [rmfu.email :as email]
-            [rmfu.auth :as auth])
+            [rmfu.auth :as auth]
+            [environ.core :refer [env]])
   (:import org.bson.types.ObjectId))
 
 ;; TODO: move all auth related fns to auth namespace
 
-(defonce db-config {:name "rmfu"})
+(defonce db-config {:name "rmfu"
+                    :uri  (System/getenv "MONGO_DB_URL")})
 
-(defonce conn (mg/connect))
+(defonce conn
+         (if (env :production)
+           (mg/connect-via-uri (:uri db-config))
+           (mg/connect)))
 
 (defonce db (mg/get-db conn (:name db-config)))
 
