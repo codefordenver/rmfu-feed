@@ -62,8 +62,9 @@
                        :cljsbuild   {:jar    true
                                      :builds {:app
                                               {:source-paths ["src-cljs"]
-                                               :compiler
-                                                             {:optimizations :advanced
+                                               :compiler     {:output-to     "resources/public/js/compiled/rmfu_ui.js"
+                                                              :main          rmfu-ui.core
+                                                              :optimizations :advanced
                                                               :pretty-print  false}}}}}}
 
   :hooks [leiningen.cljsbuild]

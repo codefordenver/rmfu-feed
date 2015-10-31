@@ -63,6 +63,7 @@
     <orderEntry type="library" name="Leiningen: compojure:1.4.0" level="project" />
     <orderEntry type="library" name="Leiningen: crypto-equality:1.0.0" level="project" />
     <orderEntry type="library" name="Leiningen: crypto-random:1.2.0" level="project" />
+    <orderEntry type="library" name="Leiningen: environ:1.0.1" level="project" />
     <orderEntry type="library" name="Leiningen: funcool/cats:1.0.0" level="project" />
     <orderEntry type="library" name="Leiningen: funcool/cuerdas:0.6.0" level="project" />
     <orderEntry type="library" name="Leiningen: hiccup:1.0.5" level="project" />
