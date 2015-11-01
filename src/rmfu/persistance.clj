@@ -21,7 +21,7 @@
            (reset! conn (mg/connect-via-uri uri))
            (reset! conn (mg/connect))))
 
-(defonce db (mg/get-db (if (env :production?) 
+(defonce db (mg/get-db (if (env :production?)
 (:conn @conn) @conn) (:name db-config)))
 
 (defn find-user-by-email [email]
