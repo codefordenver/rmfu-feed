@@ -12,17 +12,17 @@
 
 ;; TODO: move all auth related fns to auth namespace
 
-(defonce db-config {:name "rmfu"
-                    :uri  (System/getenv "MONGO_DB_URL")})
+(defonce db-config {:name "rmfu"})
 
-(println (str "prod: " (env :production?) " : " (:uri db-config)))
+(def conn (atom nil))
 
-(defonce conn
-         (if (env :production?)
-           (mg/connect-via-uri (:uri db-config))
-           (mg/connect)))
+(let [uri (System/getenv "MONGO_DB_URL")]
+    (if (env :production?)
+           (reset! conn (mg/connect-via-uri uri))
+           (reset! conn (mg/connect))))
 
-(defonce db (mg/get-db conn (:name db-config)))
+(defonce db (mg/get-db (if (env :production?) 
+(:conn @conn) @conn) (:name db-config)))
 
 (defn find-user-by-email [email]
   (mc/find-one-as-map db "users" {:email email}))
