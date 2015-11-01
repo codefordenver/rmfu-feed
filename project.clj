@@ -56,7 +56,7 @@
 
              :repl    {:main rmfu.core}
 
-             :uberjar {:env         {:production true}
+             :uberjar {:env         {:production? true}
                        :aot         :all
                        :omit-source true
                        :cljsbuild   {:jar    true

@@ -4,7 +4,7 @@
 ;(defonce mandrill-api-key (System/getenv "MANDRILL_API_KEY"))
 (defonce rmfu-from-email (System/getenv "RMFU_FROM_EMAIL"))
 
-(println "ping!" (mandrill/ping))                           ;; verify creds with mandrill
+(println "ping! the madrill api ........ " (mandrill/ping)) ;; verify creds with mandrill
 
 (defn send-confirmation-email [profile]
   (let [{:keys [email username]} profile]

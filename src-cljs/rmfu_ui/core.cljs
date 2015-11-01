@@ -15,7 +15,7 @@
 (defonce form-state (atom {:show-loading false
                            :signing-up   false}))
 
-(defonce API-END-POINT "http://localhost:3000")
+(declare API-END-POINT)
 
 ;; -------------------------
 ;; HTTP Request

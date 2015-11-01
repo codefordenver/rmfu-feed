@@ -15,8 +15,10 @@
 (defonce db-config {:name "rmfu"
                     :uri  (System/getenv "MONGO_DB_URL")})
 
+(println (str "prod: " (env :production?) " : " (:uri db-config)))
+
 (defonce conn
-         (if (env :production)
+         (if (env :production?)
            (mg/connect-via-uri (:uri db-config))
            (mg/connect)))
 
