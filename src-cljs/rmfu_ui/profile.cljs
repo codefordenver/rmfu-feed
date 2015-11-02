@@ -9,10 +9,10 @@
     "Tell Us About Yourself"]
    [:div.col-lg-6
     [:input.form-control.pull-left
-     {:type "firstname", :placeholder "First Name", :value ""}]]
+     {:type "text", :placeholder "First Name", :value ""}]]
    [:div.col-lg-6
     [:input.form-control.pull-right
-     {:type "lastname", :placeholder "Last Name", :value ""}]]
+     {:type "text", :placeholder "Last Name", :value ""}]]
    [:br]
    [:br]
    [:div.dropdown.col-lg-3
@@ -95,7 +95,7 @@
     [:div.col-lg-10
      {:style {:padding-right 0}}
      [:input.form-control
-      {:type "zip", :placeholder "Enter Zip Code", :value ""}]]
+      {:type "text", :placeholder "Enter Zip Code", :value ""}]]
     [:select.c-select.col-lg-2
      [:option
       "Item 1"]
@@ -118,7 +118,7 @@
     "Topics of Interest"]
    [:div.input-group
     [:input.form-control
-     {:type "topics", :placeholder "Enter Keywords or select from suggestions below", :value ""}]
+     {:type "text", :placeholder "Enter Keywords or select from suggestions below", :value ""}]
     [:span.input-group-btn
      [:button.btn.btn-default
       {:type "button", :value "add"}
