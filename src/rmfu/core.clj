@@ -13,7 +13,8 @@
     [ring.handler.dump :refer [handle-dump]]                ;; use handle-dump to inspect request
     [ring.middleware.cors :refer [wrap-cors]]
     [rmfu.persistance :as db]
-    [rmfu.email :as email]))
+    [rmfu.email :as email]
+    [rmfu.auth :as auth]))
 
 ;; TODO: use transit intead of plain JSON
 
@@ -34,7 +35,7 @@
   [req]
   (let [body (get-in req [:body])
         email (body :email)]
-    (if (db/auth-user body)
+    (if (auth/auth-user body)
       (if (:verified? (db/find-user-by-email email))
         {:status  200
          :headers {}

@@ -4,34 +4,25 @@
             [monger.conversion :refer [from-db-object]]
             [monger.operators :refer :all]
             [buddy.hashers :as hasher]
-            [rmfu.model :as model]
+    ;; [rmfu.model :as model]
             [rmfu.email :as email]
-            [rmfu.auth :as auth]
             [environ.core :refer [env]])
   (:import org.bson.types.ObjectId))
-
-;; TODO: move all auth related fns to auth namespace
 
 (defonce db-config {:name "rmfu"})
 
 (def conn (atom nil))
 
 (let [uri (System/getenv "MONGO_DB_URL")]
-    (if (env :production?)
-           (reset! conn (mg/connect-via-uri uri))
-           (reset! conn (mg/connect))))
+  (if (env :production?)
+    (reset! conn (mg/connect-via-uri uri))
+    (reset! conn (mg/connect))))
 
 (defonce db (mg/get-db (if (env :production?)
-(:conn @conn) @conn) (:name db-config)))
+                         (:conn @conn) @conn) (:name db-config)))
 
 (defn find-user-by-email [email]
   (mc/find-one-as-map db "users" {:email email}))
-
-(defn auth-user [user]
-  (let [{:keys [email password]} user
-        lookup (find-user-by-email email)]
-    (when-not (nil? lookup)
-      (auth/valid-password? password (:password lookup)))))
 
 (defn update-verify-email!
   "update :verified? field in doc, but only if :verified? is false"
