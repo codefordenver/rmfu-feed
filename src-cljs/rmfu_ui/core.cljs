@@ -15,7 +15,7 @@
 (defonce form-state (atom {:show-loading false
                            :signing-up   false}))
 
-(declare API-END-POINT)
+(defonce API-END-POINT "")
 
 ;; -------------------------
 ;; HTTP Request

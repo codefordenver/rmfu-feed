@@ -5,6 +5,7 @@
     [ring.adapter.jetty :as jetty]
     [ring.middleware.file :refer [wrap-file]]
     [ring.middleware.json :as middleware]
+    [ring.middleware.params]
     [ring.middleware.reload :refer [wrap-reload]]
     [compojure.core :refer [defroutes GET POST PUT]]
     [ring.util.response :refer [response redirect]]
@@ -69,17 +70,19 @@
   "handle reset-password request from user form,
   if user found we simply send an email"
   [req]
-  (let [email (get-in req [:query-string :email])
-        user-found (db/find-user-by-email email)]
-    (if user-found
-      (do
-        (email/send-reset-password-email user-found)
-        {:status  201
-         :headers {}
-         :body    (str (format "User found for : %s" email) ", please check your email.")})
-      {:status  404
-       :headers {}
-       :body    (str (format "no user found for %s" email))})))
+  (let [email (get-in req [:query-params "email"])
+        no-user-response {:status  404
+                          :headers {}
+                          :body    (str (format "no user found for %s" email))}]
+    (if email
+      (if-let [user-found (db/find-user-by-email email)]
+        (do
+          (email/send-reset-password-email user-found)
+          {:status  201
+           :headers {}
+           :body    (str (format "User found for : %s" email) ", please check your email.")})
+        no-user-response)
+      no-user-response)))
 
 (defn reset-password-redirect
   "handle reset password now from email,
@@ -104,7 +107,7 @@
            (GET "/yo/:name" [] greet)
            (POST "/signin" [] sign-in)
            (POST "/signup" [] sign-up)
-           (GET "/send-reset-password-email/:email" [] send-reset-password-email)
+           (GET "/send-reset-password-email" [] send-reset-password-email)
            (GET "/reset-password-redirect/:email" [] reset-password-redirect)
            (PUT "/reset-password-from-form" [] reset-password-from-form!)
            (GET "/verify-email/:email" [] verify-email)
@@ -115,7 +118,8 @@
   (-> app-routes
       (wrap-cors :access-control-allow-origin [#".+"]
                  :access-control-allow-methods [:get :put :post :delete])
-      (middleware/wrap-json-body {:keywords? true})))
+      (middleware/wrap-json-body {:keywords? true})
+      (ring.middleware.params/wrap-params)))
 
 (defn -main [port]
   (jetty/run-jetty app {:port (Integer. port)}))
