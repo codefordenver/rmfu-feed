@@ -18,13 +18,12 @@
 
 ;; TODO: use transit intead of plain JSON
 
-;; enviorment variables defined in project.clj
 (if (env :dev?)
   (do
-    (println (format "_______ ENV DEV: %s    _______" (env :dev?)))
-    (println (format "_______ CLIENT URL: %s _______" (env :client-url)))))
+    (println (format "_______ ENV DEV: %s   " (env :dev?)))
+    (println (format "_______ CLIENT URL: %s" (env :client-url)))))
 
-(defn greet [req]
+(defn yo [req]
   (let [name (get-in req [:route-params :name])]
     {:status  200
      :headers {}
@@ -105,7 +104,7 @@
        :body    (str "Something went wrong with the password update.")})))
 
 (defroutes app-routes
-           (GET "/yo/:name" [] greet)
+           (GET "/yo/:name" [] yo)
            (POST "/signin" [] sign-in)
            (POST "/signup" [] sign-up)
            (GET "/send-reset-password-email" [] send-reset-password-email)

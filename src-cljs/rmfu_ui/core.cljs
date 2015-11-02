@@ -5,7 +5,8 @@
     [secretary.core :as secretary :include-macros true]
     [goog.events :as events]
     [goog.history.EventType :as EventType]
-    [ajax.core :refer [POST GET PUT]])
+    [ajax.core :refer [POST GET PUT]]
+    [rmfu-ui.profile :refer [profile]])
   (:import goog.History))
 
 (enable-console-print!)
@@ -276,6 +277,9 @@
 (secretary/defroute "/new-password" [query-params]
                     (session/put! :email (:email query-params))
                     (session/put! :current-page #'new-password-component))
+
+(secretary/defroute "/profile" []
+                    (session/put! :current-page #'profile))
 
 ;; -------------------------
 ;; History
