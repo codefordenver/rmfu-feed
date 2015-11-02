@@ -6,7 +6,8 @@
     [goog.events :as events]
     [goog.history.EventType :as EventType]
     [ajax.core :refer [POST GET PUT]]
-    [rmfu-ui.profile :refer [profile]])
+    [rmfu-ui.profile :refer [profile]]
+    [rmfu-ui.createarticle :refer [createarticle]])
   (:import goog.History))
 
 (enable-console-print!)
@@ -281,6 +282,9 @@
 (secretary/defroute "/profile" []
                     (session/put! :current-page #'profile))
 
+(secretary/defroute "/createarticle" []
+                    (session/put! :current-page #'createarticle))
+
 ;; -------------------------
 ;; History
 ;; must be called after routes have been defined
@@ -309,4 +313,3 @@
   ;; your application
   ;; (swap! app-state update-in [:__figwheel_counter] inc)
   )
-
