@@ -60,11 +60,10 @@
        :body    (str add-user!)})))
 
 (defn verify-email [req]
-  (let [email (get-in req [:route-params :email])
-        user-exists (db/find-user-by-email email)]
-    (do (if-not (nil? user-exists)
-          (db/update-verify-email! user-exists))
-        (redirect (env :client-url) "/#/email-verified"))))
+  (let [email (get-in req [:route-params :email])]
+    (when-let [user-exists (db/find-user-by-email email)]
+      (db/update-verify-email! user-exists))
+    (redirect "/#/email-verified")))
 
 (defn send-reset-password-email
   "handle reset-password request from user form,
