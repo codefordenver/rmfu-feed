@@ -97,12 +97,9 @@
      [:input.form-control
       {:type "text", :placeholder "Enter Zip Code", :value ""}]]
     [:select.c-select.col-lg-2
-     [:option
-      "Item 1"]
-     [:option
-      "Item 2"]
-     [:option
-      "Item 3"]]
+      [:option "+1 mile"]
+      [:option "+10 miles"]
+      [:option "+50 miles"]]
     [:div.input-group-btn
      [:button.btn.btn-default
       {:name "type", :type "button", :value "add"}
