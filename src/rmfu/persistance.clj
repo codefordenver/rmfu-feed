@@ -9,7 +9,7 @@
             [environ.core :refer [env]])
   (:import org.bson.types.ObjectId))
 
-(defonce db-config {:name "rmfu"})
+(defonce db-config {:name (or (System/getenv "RMFU_DB") "rmfu")})
 
 (def conn (atom nil))
 
