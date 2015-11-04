@@ -1,0 +1,23 @@
+{
+  "name":"rmfu-feed",
+  "description":"",
+  "scripts":{},
+  "env":{
+    "MANDRILL_API_KEY":{
+      "required":true
+    },
+    "MONGO_DB_URL":{
+      "required":true
+    },
+    "RMFU_DB":{
+      "required":true
+    },
+    "RMFU_FROM_EMAIL":{
+      "required":true
+    }
+  },
+  "addons":[
+    "mongolab",
+    "papertrail"
+  ]
+}
