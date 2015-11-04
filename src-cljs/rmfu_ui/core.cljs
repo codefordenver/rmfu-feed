@@ -86,26 +86,30 @@
 
 ;; (add-watch form-state :logger #(-> %4 clj->js js/console.log))
 
+(defn- is-valid-signup-data
+  "Checks if the email, username, and password are valid for signing up a new user"
+  [{:keys [email username password]}]
+  (and (not-any? empty? [email username password])
+       (validation/min-length? password 8)
+       (validation/has-value? username)
+       (validation/is-email? email)
+       (validation/has-value? password)))
+
 (defn sign-in [profile]
   (let [{:keys [email password]} profile]
     (if-not (or (empty? email) (empty? password))
-      (do
-        (if (validation/is-email? email)
-          (post-sign-in profile)
-          (js/alert "Invalid Email"))
-        ))))
+      (if (validation/is-email? email)
+        (post-sign-in profile)
+        (js/alert "Invalid Email")))))
 
 (defn sign-up [profile]
-  (let [{:keys [email username password]} profile]
-    (if-not (or (empty? email) (empty? username) (empty? password))
-      (if (and  (validation/min-length? password 8) (validation/has-value? username) (validation/is-email? email) (validation/has-value? password))
-        (post-sign-up profile)
-        (js/alert "Invalid Credentials"))
-      )))
+  (if (is-valid-signup-data profile)
+      (post-sign-up profile)
+      (js/alert "Invalid Credentials")))
 
 (defn reset-password-email [profile]
   (if-not (empty? (:email profile))
-      (if (validation/is-email? (profile :email))
+      (if (validation/is-email? (:email profile))
         (request-password-reset profile)
         (js/alert "Invalid Email")
       )))
@@ -252,9 +256,9 @@
          [:br]
          [:button.btn.btn-default {:type     "button"
                                    :on-click (fn [e]
-                                               (if-not (or (empty? (:password @profile)) (not (validation/has-value? (:password @profile))))
-                                                 (update-password @profile)
-                                                 (js/alert "Invalid Password"))
+                                               (if (or (empty? (:password @profile)) (not (validation/has-value? (:password @profile))))
+                                                 (js/alert "Invalid Password")
+                                                 (update-password @profile))
                                                (.preventDefault e))
                                    } "reset"]]))))
 
