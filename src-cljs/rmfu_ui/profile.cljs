@@ -90,16 +90,14 @@
    [:div.col-lg-12 {:style {:height "20px"}} ]
    [:h4
     "Regions of Interest"]
-   [:div.input-group.select-group
-
-    [:div.col-lg-10
-     {:style {:padding-right 0}}
+   [:div.input-group
      [:input.form-control
-      {:type "text", :placeholder "Enter Zip Code", :value ""}]]
-    [:select.c-select.col-lg-2
+      {:type "text", :placeholder "Enter Zip Code", :value ""}]
+      [:span.input-group-addon.select-group
+    [:select.c-select.select-item
       [:option "+1 mile"]
       [:option "+10 miles"]
-      [:option "+50 miles"]]
+      [:option "+50 miles"]]]
     [:div.input-group-btn
      [:button.btn.btn-default
       {:name "type", :type "button", :value "add"}

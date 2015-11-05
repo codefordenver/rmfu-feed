@@ -25,18 +25,17 @@
    [:br]
    [:h4
     "Relevant to these Regions"]
-   [:div.input-group.select-group
-    [:div.col-lg-10
-     {:style {:padding-right "0"}}
-     [:input.form-control
-      {:type "text", :placeholder "Enter Zip Code", :value ""}]]
-    [:select.c-select.col-lg-2
-     [:option
-      "Item 1"]
-     [:option
-      "Item 2"]
-     [:option
-      "Item 3"]]
+  [:div.input-group
+    [:input.form-control
+      {:type "text", :placeholder "Enter Zip Code", :value ""}]
+      [:span.input-group-addon.select-group
+        [:select.c-select.select-item
+         [:option
+          "Item 1"]
+         [:option
+          "Item 2"]
+         [:option
+          "Item 3"]]]
     [:div.input-group-btn
      [:button.btn.btn-default
       {:name "type", :type "button", :value "add"}
