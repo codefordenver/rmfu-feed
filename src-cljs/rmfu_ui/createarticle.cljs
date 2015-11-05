@@ -31,11 +31,11 @@
       [:span.input-group-addon.select-group
         [:select.c-select.select-item
          [:option
-          "Item 1"]
+          "+1 mile"]
          [:option
-          "Item 2"]
+          "+10 miles"]
          [:option
-          "Item 3"]]]
+          "+50 miles"]]]
     [:div.input-group-btn
      [:button.btn.btn-default
       {:name "type", :type "button", :value "add"}
