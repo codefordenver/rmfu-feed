@@ -139,7 +139,7 @@
              :className   "form-control"
              :value       (:password @profile)
              ;:on-blur     #(sign-in @profile)
-             :placeholder "*********"
+             :placeholder "8 or more characters"
              :on-change   #(swap! profile assoc :password (-> % .-target .-value))
              :on-key-down detect-key}]))
 

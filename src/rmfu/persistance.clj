@@ -4,12 +4,15 @@
             [monger.conversion :refer [from-db-object]]
             [monger.operators :refer :all]
             [buddy.hashers :as hasher]
-    ;; [rmfu.model :as model]
+            ;; [rmfu.model :as model]
             [rmfu.email :as email]
-            [environ.core :refer [env]])
+            [environ.core :refer [env]]
+            [slingshot.slingshot :refer [try+]])
   (:import org.bson.types.ObjectId))
 
 (defonce db-config {:name (or (System/getenv "RMFU_DB") "rmfu")})
+
+(defonce secret (System/getenv "RMFU_SECRET"))
 
 (def conn (atom nil))
 
@@ -25,23 +28,26 @@
   (mc/find-one-as-map db "users" {:email email}))
 
 (defn update-verify-email!
-  "update :verified? field in doc, but only if :verified? is false"
+  "update :verified? field in User doc, but only if :verified? is false"
   [user]
   (let [coll "users"
         oid (:_id user)]
     (when-not (:verified? user)
-      (try
+      (try+
         (mc/update-by-id db coll oid {$set {:verified? true}})
-        (catch Exception e (str "caught exception: " (.getMessage e)))))))
+        (catch [:type :validation] e
+          (println "Error: " (:message e))))
+      nil)))
 
 (defn update-password! [email new-password]
   (let [user (find-user-by-email email)
         coll "users"
         oid (:_id user)
         hash-password #(hasher/encrypt %)]
-    (try
+    (try+
       (mc/update-by-id db coll oid {$set {:password (hash-password new-password)}})
-      (catch Exception e (str "caught exception: " (.getMessage e))))))
+      (catch [:type :validation] e
+        (println "Error: " (:message e))))))
 
 (defn add-user!
   "Adds a user to DB that is by default unverified, we expect verification via email"
