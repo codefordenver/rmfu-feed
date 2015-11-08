@@ -4,7 +4,7 @@
 [:div.container.jumbotron.largemain
  [:div.row
   [:div.col-lg-12
-   [:h1
+   [:h1.text-center
     "Article"]
    [:div.pre-scrollable.borderbox
     [:h4.col-lg-9.articleheading
