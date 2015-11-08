@@ -1,8 +1,7 @@
 (ns rmfu-ui.createarticle)
 
 (defn createarticle []
-  [:div.container.jumbotron
- {:style {:max-width "700px"}}
+  [:div.container.jumbotron.largemain
  [:div.row
   [:div.col-lg-12
    [:h1.text-center

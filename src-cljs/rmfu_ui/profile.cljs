@@ -1,8 +1,7 @@
 (ns rmfu-ui.profile)
 
 (defn profile []
-  [:div.container.jumbotron
-  {:style {:max-width "700px"}}
+  [:div.container.jumbotron.largemain
  [:div.row
   [:div.col-lg-12
    [:h3.text-center
