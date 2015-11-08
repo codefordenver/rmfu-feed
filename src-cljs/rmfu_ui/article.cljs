@@ -86,21 +86,21 @@
     [:div.pre-scrollable.height150
      [:div.col-lg-3.date
       "Oct 1, 2015"]
-     [:div.col-lg-9.comment
+     [:div.col-lg-9.bullet
       "Joe - Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididul Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."]
      [:div.col-lg-3.date
       "Oct 1, 2015"]
-     [:div.col-lg-9.comment
+     [:div.col-lg-9.bullet
       "Bob - Consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et!"]
      [:div.col-lg-3.date
       "Oct 1, 2015"]
-     [:div.col-lg-9.comment
+     [:div.col-lg-9.bullet
       "Bill - Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."]
      [:div.col-lg-3.date
       "Oct 1, 2015"]
-     [:div.col-lg-9.comment
+     [:div.col-lg-9.bullet
       "Roscoe - Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."]
      [:div.col-lg-3.date
       "Oct 1, 2015"]
-     [:div.col-lg-9.comment
+     [:div.col-lg-9.bullet
       "Tiberius - Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."]]]]]])
