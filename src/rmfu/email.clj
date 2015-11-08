@@ -7,7 +7,7 @@
 
 ;; assumes MANDRILL_API_KEY env var has been defined
 
-(let []
+#_(let []
   (try+
     (do
       (println "ping! the madrill api ........ ") ;; verify creds with mandril
@@ -19,10 +19,7 @@
   (let [{:keys [email username]} profile]
     (mandrill/send-template "RMFU Feed Email Registration"
                             {:subject "Verify your email" :from_email rmfu-from-email :from_name "RMFU"
-                             :to      [{:email email :name username}]}
-                            #_[{:name "HOST" :content (str "<a href='"
-                                                         (str (env :host-name) "verify-email/" email) "'" ">click</a>")}]
-                            )))
+                             :to      [{:email email :name username}]})))
 
 (defn send-reset-password-email [profile]
   (let [{:keys [email username]} profile]

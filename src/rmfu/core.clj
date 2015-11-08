@@ -3,13 +3,12 @@
     [environ.core :refer [env]]
     [ring.adapter.jetty :as jetty]
     [ring.middleware.file :refer [wrap-file]]
-    [ring.middleware.json :as middleware]
-    [ring.middleware.params]
+    [ring.middleware.json :as json-middleware]
+    [ring.middleware.params :as params-middleware]
     [ring.middleware.reload :refer [wrap-reload]]
     [compojure.core :refer [defroutes GET POST PUT]]
     [ring.util.response :refer [response redirect]]
-    [compojure.route :as routes]
-    [compojure.core :refer [context]]
+    [compojure.route :as route]
     [ring.handler.dump :refer [handle-dump]]                ;; use handle-dump to inspect request
     [ring.middleware.cors :refer [wrap-cors]]
     [cheshire.core :as json]
@@ -21,8 +20,6 @@
     [buddy.auth.backends.token :refer [jws-backend]]
     [ring.util.http-response :refer :all]
     [compojure.api.sweet :refer :all]))
-
-;; TODO: use transit intead of plain JSON
 
 (if (env :dev?)
   (do
@@ -39,7 +36,7 @@
     (if-let [claim (db/find-user-by-email email)]
       (if (:verified? claim)
         (if-let [token (auth/auth-user body)]
-          (ok (json/generate-string {:token token}))
+          (ok token)
           (unauthorized "Invalid email or passsword"))
         (unauthorized "User not yet verified"))
       (not-found "User not nound"))))
@@ -87,30 +84,44 @@
       (ok "Password updated!")
       (internal-server-error "Something went wrong with the password update."))))
 
-(defroutes secure-routes
-           (GET "/profile/:username" [] handle-dump))
-
 (def auth-backend (jws-backend {:secret secret}))
 
-(defroutes public-routes
-           (POST "/signin" [] sign-in)
-           (POST "/signup" [] sign-up)
-           (GET "/send-reset-password-email" [] send-reset-password-email)
-           (GET "/reset-password-redirect/:email" [] reset-password-redirect)
-           (PUT "/reset-password-from-form" [] reset-password-from-form!)
-           (GET "/verify-email/:email" [] verify-email)
-           (wrap-file "/" "resources/public")               ;; server static files from this directory
-           (routes/not-found "Resource not found"))
+(defroutes* api-routes
+            (context* "/api" []
+                      (wrap-authentication
+                        (GET* "/users/:username" {:as request}
+                              :middlewares [rmfu.auth/auth-mw]
+                              :header-params [identity :- String]
+                              :path-params [username :- String]
+                              (let [identity (get-in request [:headers "identity"])
+                                    unsigned-token (auth/unsign-token identity)]
+                                (if (and (not (nil? unsigned-token)) (= username (:username unsigned-token)))
+                                  (ok (dissoc (db/find-user-by-username (:username unsigned-token)) :password :_id))
+                                  (ok {:error "not auth"}))))
+                        auth-backend)))
+
+
+(defroutes* public-routes
+            (POST* "/signin" [] sign-in)
+            (POST "/signup" [] sign-up)
+            (GET "/send-reset-password-email" [] send-reset-password-email)
+            (GET "/reset-password-redirect/:email" [] reset-password-redirect)
+            (PUT "/reset-password-from-form" [] reset-password-from-form!)
+            (GET "/verify-email/:email" [] verify-email)
+            (wrap-file "/" "resources/public")              ;; server static files from this directory
+            (route/not-found (not-found "Resource not found")))
 
 (defroutes app-routes
-           public-routes
-           (wrap-authentication secure-routes auth-backend))
-(def app
-  (-> app-routes
-      (wrap-cors :access-control-allow-origin [#".+"]
-                 :access-control-allow-methods [:get :put :post :delete])
-      (middleware/wrap-json-body {:keywords? true})
-      (ring.middleware.params/wrap-params)))
+           api-routes
+           public-routes)
+
+(defapi app
+        (->
+          app-routes
+          (wrap-cors :access-control-allow-origin [#".+"]
+                     :access-control-allow-methods [:get :put :post :delete])
+          params-middleware/wrap-params
+          (json-middleware/wrap-json-body {:keywords? true})))
 
 (defn -main [port]
   (jetty/run-jetty app {:port (Integer. port)}))

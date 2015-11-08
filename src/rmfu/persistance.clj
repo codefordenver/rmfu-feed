@@ -4,15 +4,12 @@
             [monger.conversion :refer [from-db-object]]
             [monger.operators :refer :all]
             [buddy.hashers :as hasher]
-            ;; [rmfu.model :as model]
             [rmfu.email :as email]
             [environ.core :refer [env]]
             [slingshot.slingshot :refer [try+]])
   (:import org.bson.types.ObjectId))
 
 (defonce db-config {:name (or (System/getenv "RMFU_DB") "rmfu")})
-
-(defonce secret (System/getenv "RMFU_SECRET"))
 
 (def conn (atom nil))
 
@@ -26,6 +23,9 @@
 
 (defn find-user-by-email [email]
   (mc/find-one-as-map db "users" {:email email}))
+
+(defn find-user-by-username [username]
+  (mc/find-one-as-map db "users" {:username username}))
 
 (defn update-verify-email!
   "update :verified? field in User doc, but only if :verified? is false"
