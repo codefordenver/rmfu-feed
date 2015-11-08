@@ -6,7 +6,7 @@
   [:div.col-lg-12
    [:h1
     "Article"]
-   [:div.pre-scrollable
+   [:div.pre-scrollable.borderbox
     [:h4.col-lg-9.articleheading
      "New Legislation that will impact you!"]
     [:p.col-lg-3.date
