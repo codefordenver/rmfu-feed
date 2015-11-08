@@ -83,7 +83,7 @@
        "Fruit"]]
      [:li
       "80246 +5 Miles"]]
-    [:div.pre-scrollable.height150
+    [:div.pre-scrollable.borderbox.height150
      [:div.col-lg-3.date
       "Oct 1, 2015"]
      [:div.col-lg-9.bullet
