@@ -1,2 +1,86 @@
-/* some style */
+body {
+    background: #fff url('../images/bg.png') 0 0 repeat;
+}
 
+input {
+    font-family: monospace;
+}
+
+h1 {
+    font-family: "Adobe Arabic";
+    font-size: 4em;
+}
+
+.jumbotron {
+    max-width: 480px;
+    margin-top: 2em;
+    background: #ffffff;
+}
+
+.largemain
+{
+  max-width:700px;
+}
+
+.select-group {
+  padding: 0;
+}
+
+.select-item
+{
+  border: none;
+  padding-top: 0;
+  padding-bottom: 0;
+  height: 100%;
+}
+
+.height150
+{
+  height: 150px;
+}
+
+.articleheading
+{
+  padding-left: 0;
+  padding-right: 0;
+  text-decoration: underline;
+}
+
+.bullet
+{
+  display:list-item;
+  list-style-position: inside;
+}
+
+.date
+{
+  font-size: 1rem;
+  font-style: italic;
+  color: darkgrey;
+  padding-left: 15px;
+}
+
+.greybox
+{
+  background-color: #ddd;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.borderbox
+{
+  border: solid 1px;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+/* Allow scrollbars to always show in OS X */
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 7px;
+}
+::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0,0,0,.5);
+    box-shadow: 0 0 1px rgba(255,255,255,.5);
+}
