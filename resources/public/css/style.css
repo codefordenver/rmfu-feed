@@ -60,6 +60,11 @@ h1 {
   padding-left: 15px;
 }
 
+.dategroup > *
+{
+  display: inline;
+}
+
 .greybox
 {
   background-color: #ddd;
