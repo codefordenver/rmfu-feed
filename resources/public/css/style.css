@@ -74,6 +74,17 @@ h1 {
   border-radius: 5px;
 }
 
+.document
+{
+  background:url(../images/file_doc.png) no-repeat;
+  padding-left: 45px;
+}
+
+ul.commentlist
+{
+  padding-left: 0;
+}
+
 /* Allow scrollbars to always show in OS X */
 ::-webkit-scrollbar {
   -webkit-appearance: none;
