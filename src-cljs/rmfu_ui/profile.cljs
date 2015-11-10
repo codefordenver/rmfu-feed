@@ -1,6 +1,9 @@
-(ns rmfu-ui.profile)
+(ns rmfu-ui.profile
+  (:require [rmfu-ui.nav :refer [nav]]))
 
 (defn profile []
+ [:div
+   [nav "profile"]
   [:div.container.jumbotron.largemain
  [:div.row
   [:div.col-lg-12
@@ -197,4 +200,4 @@
    [:p.text-center
     [:button.btn
      {:name "type", :type "button", :value "continue"}
-     "Continue to your custom feed"]]]]])
+        "Continue to your custom feed"]]]]]])

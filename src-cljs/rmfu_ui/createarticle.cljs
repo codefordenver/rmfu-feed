@@ -1,6 +1,9 @@
-(ns rmfu-ui.createarticle)
+(ns rmfu-ui.createarticle
+  (:require [rmfu-ui.nav :refer [nav]]))
 
 (defn createarticle []
+  [:div
+   [nav "create"]
   [:div.container.jumbotron.largemain
  [:div.row
   [:div.col-lg-12
@@ -129,4 +132,4 @@
    [:p.text-center
     [:button.btn
      {:name "type", :type "button", :value "create_article"}
-     "Create the Article"]]]]])
+     "Create the Article"]]]]]])
