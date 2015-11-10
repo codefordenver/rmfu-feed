@@ -4,6 +4,7 @@
 (defn logout []
   "Logs the user out by deleting key form local storage"
   (.removeItem (.-localStorage js/window) "rmfu-feed-identity-token")
+  (secretary/dispatch! "/")
 )
 
 (defn nav
