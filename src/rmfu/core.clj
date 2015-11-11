@@ -108,7 +108,6 @@
             (GET "/reset-password-redirect/:email" [] reset-password-redirect)
             (PUT "/reset-password-from-form" [] reset-password-from-form!)
             (GET "/verify-email/:email" [] verify-email)
-            (wrap-file "/" "resources/public")              ;; server static files from this directory
             (route/not-found (not-found "Resource not found")))
 
 (defroutes app-routes
@@ -121,7 +120,8 @@
           (wrap-cors :access-control-allow-origin [#".+"]
                      :access-control-allow-methods [:get :put :post :delete])
           params-middleware/wrap-params
-          (json-middleware/wrap-json-body {:keywords? true})))
+          (json-middleware/wrap-json-body {:keywords? true})
+          (wrap-file "resources/public")))              ;; server static files from this directory
 
 (defn -main [port]
   (jetty/run-jetty app {:port (Integer. port)}))
