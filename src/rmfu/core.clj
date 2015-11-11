@@ -59,7 +59,7 @@
   "handle reset-password request from user form,
   if user found we simply send an email"
   [req]
-  (let [email (get-in req [:query-params "email"])
+  (let [email (get-in req [:body :email])
         no-user-response (not-found (format "no user found for %s" email))]
     (if email
       (if-let [user-found (db/find-user-by-email email)]
@@ -104,7 +104,7 @@
 (defroutes* public-routes
             (POST* "/signin" [] sign-in)
             (POST "/signup" [] sign-up)
-            (GET "/send-reset-password-email" [] send-reset-password-email)
+            (POST "/send-reset-password-email" [] send-reset-password-email)
             (GET "/reset-password-redirect/:email" [] reset-password-redirect)
             (PUT "/reset-password-from-form" [] reset-password-from-form!)
             (GET "/verify-email/:email" [] verify-email)

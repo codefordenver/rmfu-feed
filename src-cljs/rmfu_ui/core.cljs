@@ -26,7 +26,6 @@
 (defn post-sign-in [profile]
   (let [{:keys [email password]} profile]
     (POST (str API-END-POINT "/signin")
-          ;; TODO: validate these fields
           {:params        {:email    email
                            :password password}
            :format        :json
@@ -42,7 +41,6 @@
   (let [{:keys [username password email]} profile]
     ;(swap! form-state assoc :show-loading (not (:show-loading @form-state)))
     (POST (str API-END-POINT "/signup")
-          ;; TODO: validate these fields
           {:params        {:username username
                            :password password
                            :email    email}
@@ -57,8 +55,7 @@
                             )})))
 
 (defn request-password-reset [profile]
-  (GET (str API-END-POINT "/send-reset-password-email")
-       ;; TODO: validate these fields
+  (POST (str API-END-POINT "/send-reset-password-email")
        {:params        {:email (:email profile)}
         :error-handler #(js/alert %)
         :handler       (fn [res]
@@ -69,7 +66,6 @@
 
 (defn update-password [profile]
   (PUT (str API-END-POINT "/reset-password-from-form")
-       ;; TODO: validate these fields
        {:params        {:email        (:email profile)
                         :new-password (:password profile)}
         :format        :json
