@@ -7,7 +7,10 @@
     [reagent.session :as session]
     [reagent.validation :as validation]
     [rmfu-ui.createarticle :refer [createarticle]]
+    [rmfu-ui.article :refer [article]]
     [rmfu-ui.profile :refer [profile]]
+    [rmfu-ui.customfeed :refer [customfeed]]
+    [secretary.core :as secretary :include-macros true]
     [secretary.core :as secretary :include-macros true]
     [rmfu-ui.welcome :refer [welcome-component-wrapper]])
   (:import goog.History))
@@ -275,6 +278,12 @@
 
 (secretary/defroute "/create" []
                     (session/put! :current-page #'createarticle))
+
+(secretary/defroute "/article" []
+                    (session/put! :current-page #'article))
+
+(secretary/defroute "/customfeed" []
+                    (session/put! :current-page #'customfeed))
 
 ;; -------------------------
 ;; History
