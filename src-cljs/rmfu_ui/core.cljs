@@ -7,8 +7,11 @@
     [reagent.session :as session]
     [reagent.validation :as validation]
     [rmfu-ui.createarticle :refer [createarticle]]
+    [rmfu-ui.article :refer [article]]
     [rmfu-ui.profile :refer [profile]]
-    [secretary.core :as secretary :include-macros true])
+    [rmfu-ui.customfeed :refer [customfeed]]
+    [secretary.core :as secretary :include-macros true]
+    [rmfu-ui.welcome :refer [welcome-component-wrapper]])
   (:import goog.History))
 
 (enable-console-print!)
@@ -31,11 +34,10 @@
            :format        :json
            :error-handler #(js/alert %)
            :handler       (fn [res]
-                            (do
-                              ;; (swap! form-state assoc :show-loading (not (:show-loading @form-state)))
-                              (println "res:" res)
-                              (js/alert res))
-                            )})))
+                            ;; (swap! form-state assoc :show-loading (not (:show-loading @form-state)))
+                            (js/alert res)
+                            (.setItem js/localStorage "rmfu-feed-identity-token" res)
+                            (secretary/dispatch! "/create"))})))
 
 (defn post-sign-up [profile]
   (let [{:keys [username password email]} profile]
@@ -56,13 +58,13 @@
 
 (defn request-password-reset [profile]
   (POST (str API-END-POINT "/send-reset-password-email")
-       {:params        {:email (:email profile)}
-        :error-handler #(js/alert %)
-        :handler       (fn [res]
-                         (do
-                           (println "res:" res)
-                           (js/alert res))
-                         )}))
+        {:params        {:email (:email profile)}
+         :error-handler #(js/alert %)
+         :handler       (fn [res]
+                          (do
+                            (println "res:" res)
+                            (js/alert res))
+                          )}))
 
 (defn update-password [profile]
   (PUT (str API-END-POINT "/reset-password-from-form")
@@ -100,15 +102,14 @@
 
 (defn sign-up [profile]
   (if (is-valid-signup-data profile)
-      (post-sign-up profile)
-      (js/alert "Invalid Credentials")))
+    (post-sign-up profile)
+    (js/alert "Invalid Credentials")))
 
 (defn reset-password-email [profile]
   (if-not (empty? (:email profile))
-      (if (validation/is-email? (:email profile))
-        (request-password-reset profile)
-        (js/alert "Invalid Email")
-      )))
+    (if (validation/is-email? (:email profile))
+      (request-password-reset profile)
+      (js/alert "Invalid Email"))))
 
 ;; -------------------------
 ;; <Components/>
@@ -147,27 +148,7 @@
            :placeholder "username"
            :on-change   #(swap! profile assoc :username (-> % .-target .-value))}])
 
-(defn welcome-component-wrapper
-  "Renders element passed in inside a .jumbotron"
-  [element]
-  [:div.container.jumbotron
-   [:div.row
-    [:div.col-lg-12
-     [:p.text-center "welcome to"]
-     [:h1.text-center
-      [:a {:on-click #(secretary/dispatch! "/")
-           :style    {:color     "dimgray"
-                      :font-size "1.15em"}} "FEED"]]
-     [:hr]
-     [:h4.text-center [:small "☴"]]
-     [:h4.text-center
-      [:small [:em "by "]]
-      [:a {:href "http://www.rmfu.org/" :target "blank"}
-       [:small [:strong "Rocky Mountain Farmers Union"]]]]
-     [:p.text-center "and " [:a {:href "http://www.codefordenver.org/" :target "blank"}
-                             [:strong "Code For Denver"]]] element]]])
-
-(defn sing-in-component []
+(defn sign-in-component []
   (let [profile (atom {:username ""
                        :email    ""
                        :password ""})]
@@ -187,11 +168,11 @@
                              :on-click #(secretary/dispatch! "/reset-password")}
          "forgot password?"]]]
       [:br]
-      [:button.btn.btn-default {:type     "button"
-                                :on-click (fn [e]
-                                            (sign-in @profile)
-                                            (.preventDefault e))
-                                } "sign-in"]
+      [:button.btn.btn-primary.active {:type     "button"
+                                       :on-click (fn [e]
+                                                   (sign-in @profile)
+                                                   (.preventDefault e))
+                                       } "sign-in"]
 
       [:button.btn.btn-default.pull-right {:type     "button"
                                            :on-click #(secretary/dispatch! "/sign-up")
@@ -215,12 +196,12 @@
                                 :on-click #(secretary/dispatch! "/")
                                 } "sign-in"]
 
-      [:button.btn.btn-default.pull-right {:type     "button"
-                                           :on-click (fn [e]
-                                                       ;; (swap! form-state assoc :signing-up true)
-                                                       (sign-up @profile)
-                                                       (.preventDefault e))
-                                           } "sign-up"]]]))
+      [:button.btn.pull-right.btn-primary.active {:type     "button"
+                                                  :on-click (fn [e]
+                                                              ;; (swap! form-state assoc :signing-up true)
+                                                              (sign-up @profile)
+                                                              (.preventDefault e))
+                                                  } "sign-up"]]]))
 
 (defn reset-password-component []
   (let [profile (atom {:username ""
@@ -276,7 +257,7 @@
   [:div [(session/get :current-page)]])
 
 (secretary/defroute "/" []
-                    (session/put! :current-page #'sing-in-component))
+                    (session/put! :current-page #'sign-in-component))
 
 (secretary/defroute "/sign-up" []
                     (session/put! :current-page #'sign-up-component))
@@ -294,8 +275,14 @@
 (secretary/defroute "/profile" []
                     (session/put! :current-page #'profile))
 
-(secretary/defroute "/createarticle" []
+(secretary/defroute "/create" []
                     (session/put! :current-page #'createarticle))
+
+(secretary/defroute "/article" []
+                    (session/put! :current-page #'article))
+
+(secretary/defroute "/customfeed" []
+                    (session/put! :current-page #'customfeed))
 
 ;; -------------------------
 ;; History
