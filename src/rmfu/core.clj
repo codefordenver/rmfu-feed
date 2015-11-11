@@ -1,64 +1,53 @@
 (ns rmfu.core
-  (use [clojure.java.shell :only [sh]])
   (:require
     [environ.core :refer [env]]
     [ring.adapter.jetty :as jetty]
     [ring.middleware.file :refer [wrap-file]]
-    [ring.middleware.json :as middleware]
-    [ring.middleware.params]
+    [ring.middleware.json :as json-middleware]
+    [ring.middleware.params :as params-middleware]
     [ring.middleware.reload :refer [wrap-reload]]
     [compojure.core :refer [defroutes GET POST PUT]]
     [ring.util.response :refer [response redirect]]
-    [compojure.route :refer [not-found]]
+    [compojure.route :as route]
     [ring.handler.dump :refer [handle-dump]]                ;; use handle-dump to inspect request
     [ring.middleware.cors :refer [wrap-cors]]
+    [cheshire.core :as json]
     [rmfu.persistance :as db]
     [rmfu.email :as email]
-    [rmfu.auth :as auth]))
-
-;; TODO: use transit intead of plain JSON
+    [rmfu.auth :as auth]
+    [buddy.auth :refer [authenticated?]]
+    [buddy.auth.middleware :refer [wrap-authentication]]
+    [buddy.auth.backends.token :refer [jws-backend]]
+    [ring.util.http-response :refer :all]
+    [compojure.api.sweet :refer :all]))
 
 (if (env :dev?)
   (do
     (println (format "_______ ENV DEV: %s   " (env :dev?)))
     (println (format "_______ CLIENT URL: %s" (env :client-url)))))
 
-(defn yo [req]
-  (let [name (get-in req [:route-params :name])]
-    {:status  200
-     :headers {}
-     :body    (str "yo, " name)}))
+(def secret (System/getenv "RMFU_SECRET"))
 
 (defn sign-in
   "Sings a user in, only reply with 200 if :verified? true"
   [req]
   (let [body (get-in req [:body])
-        email (body :email)]
-    (if (auth/auth-user body)
-      (if (:verified? (db/find-user-by-email email))
-        {:status  200
-         :headers {}
-         :body    (str "verified and valid password")}
-        ;; TODO: :else ask user to go verify
-        {:status  201
-         :headers {}
-         :body    (str "user not verified")}
-        )
-      {:status  401
-       :headers {}
-       :body    (str "Not Found")})))
+        email (:email body)]
+    (if-let [claim (db/find-user-by-email email)]
+      (if (:verified? claim)
+        (if-let [token (auth/auth-user body)]
+          (ok token)
+          (unauthorized "Invalid email or passsword"))
+        (unauthorized "User not yet verified"))
+      (not-found "User not nound"))))
 
 (defn sign-up [req]
   (let [body (get-in req [:body])
         add-user! (db/add-user! body)]
     (println "attempting to post with" body)
     (if-not (or (empty? add-user!) (nil? add-user!))
-      {:status  201
-       :headers {}
-       :body    (str body)}
-      {:status  409
-       :headers {}
-       :body    (str add-user!)})))
+      (created (dissoc :password body))
+      (conflict (str add-user!)))))
 
 (defn verify-email [req]
   (let [email (get-in req [:route-params :email])]
@@ -70,17 +59,13 @@
   "handle reset-password request from user form,
   if user found we simply send an email"
   [req]
-  (let [email (get-in req [:query-params "email"])
-        no-user-response {:status  404
-                          :headers {}
-                          :body    (str (format "no user found for %s" email))}]
+  (let [email (get-in req [:body :email])
+        no-user-response (not-found (format "no user found for %s" email))]
     (if email
       (if-let [user-found (db/find-user-by-email email)]
         (do
           (email/send-reset-password-email user-found)
-          {:status  201
-           :headers {}
-           :body    (str (format "User found for : %s" email) ", please check your email.")})
+          (accepted (str (format "User found for : %s" email) ", please check your email.")))
         no-user-response)
       no-user-response)))
 
@@ -96,30 +81,47 @@
         new-password (get-in req [:body :new-password])
         update-success? (db/update-password! email new-password)]
     (if (= (type update-success?) com.mongodb.WriteResult)
-      {:status  200
-       :headers {}
-       :body    (str "Password updated!")}
-      {:status  500
-       :headers {}
-       :body    (str "Something went wrong with the password update.")})))
+      (ok "Password updated!")
+      (internal-server-error "Something went wrong with the password update."))))
+
+(def auth-backend (jws-backend {:secret secret}))
+
+(defroutes* api-routes
+            (context* "/api" []
+                      (wrap-authentication
+                        (GET* "/users/:username" {:as request}
+                              :middlewares [rmfu.auth/auth-mw]
+                              :header-params [identity :- String]
+                              :path-params [username :- String]
+                              (let [identity (get-in request [:headers "identity"])
+                                    unsigned-token (auth/unsign-token identity)]
+                                (if (and (not (nil? unsigned-token)) (= username (:username unsigned-token)))
+                                  (ok (dissoc (db/find-user-by-username (:username unsigned-token)) :password :_id))
+                                  (ok {:error "not auth"}))))
+                        auth-backend)))
+
+
+(defroutes* public-routes
+            (POST* "/signin" [] sign-in)
+            (POST "/signup" [] sign-up)
+            (POST "/send-reset-password-email" [] send-reset-password-email)
+            (GET "/reset-password-redirect/:email" [] reset-password-redirect)
+            (PUT "/reset-password-from-form" [] reset-password-from-form!)
+            (GET "/verify-email/:email" [] verify-email)
+            (wrap-file "/" "resources/public")              ;; server static files from this directory
+            (route/not-found (not-found "Resource not found")))
 
 (defroutes app-routes
-           (GET "/yo/:name" [] yo)
-           (POST "/signin" [] sign-in)
-           (POST "/signup" [] sign-up)
-           (GET "/send-reset-password-email" [] send-reset-password-email)
-           (GET "/reset-password-redirect/:email" [] reset-password-redirect)
-           (PUT "/reset-password-from-form" [] reset-password-from-form!)
-           (GET "/verify-email/:email" [] verify-email)
-           (wrap-file "/" "resources/public")               ;; server static files from this directory
-           (not-found "Resource not found"))
+           api-routes
+           public-routes)
 
-(def app
-  (-> app-routes
-      (wrap-cors :access-control-allow-origin [#".+"]
-                 :access-control-allow-methods [:get :put :post :delete])
-      (middleware/wrap-json-body {:keywords? true})
-      (ring.middleware.params/wrap-params)))
+(defapi app
+        (->
+          app-routes
+          (wrap-cors :access-control-allow-origin [#".+"]
+                     :access-control-allow-methods [:get :put :post :delete])
+          params-middleware/wrap-params
+          (json-middleware/wrap-json-body {:keywords? true})))
 
 (defn -main [port]
   (jetty/run-jetty app {:port (Integer. port)}))

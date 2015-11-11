@@ -9,6 +9,8 @@
                  [reagent "0.5.0"]
                  [reagent-utils "0.1.5"]
                  [ring "1.4.0"]
+                 [metosin/ring-http-response "0.6.5"]
+                 [metosin/compojure-api "0.23.1"]
                  [compojure "1.4.0"]
                  [cljs-ajax "0.5.0"]
                  [ring-cors "0.1.7"]
@@ -17,7 +19,9 @@
                  [buddy "0.7.2"]
                  [clj-mandrill "0.1.0"]
                  [secretary "1.2.3"]
-                 [environ "1.0.1"]]
+                 [cheshire "5.5.0"]
+                 [environ "1.0.1"]
+                 [slingshot "0.12.2"]]
 
   :plugins [[lein-cljsbuild "1.1.0"]
             [lein-figwheel "0.4.1"]
@@ -31,6 +35,7 @@
   ;; when running with $ lein run
   :profiles {:dev     {:main            rmfu.core/-dev
                        :env             {:dev?          true
+                                         :host-name     "https://rmfu-feed.herokuapp.com/" ;; include the dash at the end
                                          :client-url    "http://localhost:3449"
                                          :api-end-point "http://localhost:3000"}
 

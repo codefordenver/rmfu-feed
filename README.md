@@ -15,12 +15,14 @@ runs on default port
 
 ## App runtime configurations
 
-0. define the following enviorment vars: 
+0. define the following environment vars: 
 
 ```
 MANDRILL_API_KEY="API_KEY"
 RMFU_FROM_EMAIL="someone@mail.org"
+RMFU_SECRET="XYZ"
 ```
+(you can get these from Code For Denver volunteers)
 
 ### Run the server with:
 

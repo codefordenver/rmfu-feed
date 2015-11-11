@@ -11,7 +11,6 @@
     [rmfu-ui.profile :refer [profile]]
     [rmfu-ui.customfeed :refer [customfeed]]
     [secretary.core :as secretary :include-macros true]
-    [secretary.core :as secretary :include-macros true]
     [rmfu-ui.welcome :refer [welcome-component-wrapper]])
   (:import goog.History))
 
@@ -58,14 +57,14 @@
                             )})))
 
 (defn request-password-reset [profile]
-  (GET (str API-END-POINT "/send-reset-password-email")
-       {:params        {:email (:email profile)}
-        :error-handler #(js/alert %)
-        :handler       (fn [res]
-                         (do
-                           (println "res:" res)
-                           (js/alert res))
-                         )}))
+  (POST (str API-END-POINT "/send-reset-password-email")
+        {:params        {:email (:email profile)}
+         :error-handler #(js/alert %)
+         :handler       (fn [res]
+                          (do
+                            (println "res:" res)
+                            (js/alert res))
+                          )}))
 
 (defn update-password [profile]
   (PUT (str API-END-POINT "/reset-password-from-form")
@@ -137,7 +136,7 @@
              :className   "form-control"
              :value       (:password @profile)
              ;:on-blur     #(sign-in @profile)
-             :placeholder "*********"
+             :placeholder "8 or more characters"
              :on-change   #(swap! profile assoc :password (-> % .-target .-value))
              :on-key-down detect-key}]))
 

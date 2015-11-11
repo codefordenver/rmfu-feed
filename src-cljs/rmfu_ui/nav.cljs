@@ -4,14 +4,13 @@
 (defn logout []
   "Logs the user out by deleting key form local storage"
   (.removeItem (.-localStorage js/window) "rmfu-feed-identity-token")
-  (secretary/dispatch! "/")
-)
+  (secretary/dispatch! "/"))
 
 (defn nav
   "Renders basic nav with an .active link"
   [active]
   [:nav {:className "navbar navbar-light bg-faded"}
-   [:a.navbar-brand "FEED"]
+   [:a.navbar-brand {:href "/#/customfeed"} "FEED"]
    [:ul.nav.navbar-nav
     (for [anchor ["about" "create" "profile"]
           :let [title (clojure.string/capitalize anchor)
