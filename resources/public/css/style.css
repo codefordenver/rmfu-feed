@@ -61,11 +61,6 @@ h1 {
     font-size: 1rem;
     font-style: italic;
     color: darkgrey;
-    padding-left: 15px;
-}
-
-.dategroup > * {
-    display: inline;
 }
 
 .displayinline {
