@@ -46,7 +46,7 @@
         add-user! (db/add-user! body)]
     (println "attempting to post with" body)
     (if-not (or (empty? add-user!) (nil? add-user!))
-      (created (dissoc :password body))
+      (created (dissoc body :password))
       (conflict (str add-user!)))))
 
 (defn verify-email [req]
