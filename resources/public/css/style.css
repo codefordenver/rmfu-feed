@@ -42,6 +42,16 @@ h1 {
     text-decoration: underline;
 }
 
+.greyheading {
+  text-decoration: none;
+  font-size: 1.2rem;
+  color: darkgrey;
+}
+
+.greytext {
+  color: darkgrey;
+}
+
 .bullet {
     display: list-item;
     list-style-position: inside;
@@ -58,6 +68,10 @@ h1 {
     display: inline;
 }
 
+.displayinline {
+  display: inline;
+}
+
 .greybox {
     background-color: #ddd;
     padding: 10px;
@@ -65,7 +79,13 @@ h1 {
 }
 
 .borderbox {
-    border: solid 1px;
+    border: solid 1px #eee;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.borderboxblack {
+    border: solid 1px black;
     padding: 10px;
     border-radius: 5px;
 }
