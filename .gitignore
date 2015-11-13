@@ -29,4 +29,9 @@ pom.xml
 .nrepl-port
 repos/*
 rfmu.iml
-rmfu.iml
+
+# Log Files
+*.log
+
+# Vagrant
+.vagrant
