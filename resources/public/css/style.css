@@ -94,6 +94,41 @@ ul.commentlist {
     padding-left: 0;
 }
 
+.articlelisting
+{
+  margin-bottom: 10px;
+}
+
+.articlelisting p
+{
+  margin-bottom: 0;
+}
+
+p.articlelink
+{
+  font-size: .9rem;
+}
+
+p.articlelink a
+{
+  color: darkgrey;
+}
+
+.user
+{
+  font-size: .8rem;
+}
+
+.user small
+{
+  color: grey;
+}
+
+.articletable
+{
+  font-size: .8rem;
+}
+
 /* Allow scrollbars to always show in OS X */
 ::-webkit-scrollbar {
     -webkit-appearance: none;
