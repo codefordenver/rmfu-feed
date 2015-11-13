@@ -42,7 +42,7 @@ The following steps will help get Feed running on the development machine.
 1. `vagrant ssh` to login into the virtual machine.
 2. `cd` into `/vagrant`, where the project is located.
 3. To start the server run `lein run 3000`.
-4. In your browser on your development machine browse to [http://feed.rmfu.org:3000].
+4. In your browser on your development machine browse to [http://feed.rmfu.dev:3000].
 
 ## UI Development
 
@@ -50,7 +50,7 @@ UI Development can be made easier by using [Figwheel](https://github.com/bhauman
 Replace steps 3 and 4 from the previous section with the following steps:
 
 1. Start the figwheel server with `lein figwheel`.
-2. In the browser navigate to [http://feed.rmfu.org:3449].
+2. In the browser navigate to [http://feed.rmfu.dev:3449].
 3. Open the javascript console and execute `(js/alert "Am I connected?")` to 
 test your browser connected repl.
 
@@ -59,6 +59,6 @@ test your browser connected repl.
 The following steps will help end your Vagrant session, spin down the virtual 
 machine and free up resources on your development machine.
 
-1. `vagrant exit` to exit the virtual machine.
+1. Run `exit` to exit the virtual machine.
 2. `vagrant halt` to halt the machine, freeing up resources on your 
 development machine.
