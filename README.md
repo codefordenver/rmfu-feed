@@ -9,9 +9,11 @@ Rocky Mountain Farmer's Union.
 
 Feed requires the following environment variables to be set to run properly.
 
-`MANDRILL_API_KEY=<api key here>`
-`RMFU_FROM_EMAIL=<example@mail.com>`
-`RMFU_SECRET=<some secret>`
+````
+MANDRILL_API_KEY=<api key here>
+RMFU_FROM_EMAIL=<example@mail.com>
+RMFU_SECRET=<some secret>
+````
 
 ## Installation
 
