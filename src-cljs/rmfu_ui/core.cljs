@@ -10,6 +10,7 @@
     [rmfu-ui.article :refer [article]]
     [rmfu-ui.profile :refer [profile]]
     [rmfu-ui.customfeed :refer [customfeed]]
+    [rmfu-ui.feed :refer [feed]]
     [secretary.core :as secretary :include-macros true]
     [rmfu-ui.welcome :refer [welcome-component-wrapper]])
   (:import goog.History))
@@ -283,6 +284,9 @@
 
 (secretary/defroute "/customfeed" []
                     (session/put! :current-page #'customfeed))
+
+(secretary/defroute "/feed" []
+                    (session/put! :current-page #'feed))
 
 ;; -------------------------
 ;; History
