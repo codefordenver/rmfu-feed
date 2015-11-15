@@ -35,25 +35,20 @@
            :format        :json
            :error-handler #(js/alert %)
            :handler       (fn [res]
-                            ;; (swap! form-state assoc :show-loading (not (:show-loading @form-state)))
-                            (js/alert res)
                             (.setItem js/localStorage "rmfu-feed-identity-token" res)
                             (secretary/dispatch! "/create"))})))
 
 (defn post-sign-up [profile]
   (let [{:keys [username password email]} profile]
-    ;(swap! form-state assoc :show-loading (not (:show-loading @form-state)))
     (POST (str API-END-POINT "/signup")
           {:params        {:username username
                            :password password
                            :email    email}
            :format        :json
            :error-handler #(js/alert %)
-           :handler       (fn [res]
+           :handler       (fn [_]
                             (do
-                              ;(swap! form-state assoc :show-loading (not (:show-loading @form-state)))
-                              (println "res:" res)
-                              (js/alert res)
+                              (js/alert "User created, please check your email to verify your account")
                               (secretary/dispatch! "/"))
                             )})))
 
@@ -136,7 +131,6 @@
     [:input {:type        "password"
              :className   "form-control"
              :value       (:password @profile)
-             ;:on-blur     #(sign-in @profile)
              :placeholder "8 or more characters"
              :on-change   #(swap! profile assoc :password (-> % .-target .-value))
              :on-key-down detect-key}]))
@@ -145,7 +139,6 @@
   [:input {:type        "text"
            :className   "form-control"
            :value       (@profile :username)
-           ;:on-blur     #(sign-in @profile)
            :placeholder "username"
            :on-change   #(swap! profile assoc :username (-> % .-target .-value))}])
 
@@ -198,10 +191,7 @@
                                 } "sign-in"]
 
       [:button.btn.pull-right.btn-primary.active {:type     "button"
-                                                  :on-click (fn [e]
-                                                              ;; (swap! form-state assoc :signing-up true)
-                                                              (sign-up @profile)
-                                                              (.preventDefault e))
+                                                  :on-click #(sign-up @profile)
                                                   } "sign-up"]]]))
 
 (defn reset-password-component []
