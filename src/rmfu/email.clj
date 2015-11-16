@@ -7,14 +7,6 @@
 
 ;; assumes MANDRILL_API_KEY env var has been defined
 
-#_(let []
-  (try+
-    (do
-      (println "ping! the madrill api ........ ") ;; verify creds with mandril
-      (mandrill/ping))
-    (catch [:type :validation] e
-      (println "Error: " (:message e)))))
-
 (defn send-confirmation-email [profile]
   (let [{:keys [email username]} profile]
     (mandrill/send-template "RMFU Feed Email Registration"

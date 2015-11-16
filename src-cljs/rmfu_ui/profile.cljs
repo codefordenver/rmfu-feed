@@ -1,203 +1,104 @@
 (ns rmfu-ui.profile
-  (:require [rmfu-ui.nav :refer [nav]]))
+  (:require [rmfu-ui.nav :refer [nav]]
+            [reagent.core :as reagent :refer [atom]]
+            [ajax.core :refer [PUT GET]]
+            [cljsjs.chosen]
+            [cljsjs.jquery]
+            [secretary.core :as secretary :include-macros true]))
+
+(defn input-field-helper [state param props]
+  [:input.form-control
+   (merge props
+          {:on-change #(swap! state assoc param (-> % .-target .-value))
+           :value     (param @state)})])
 
 (defn profile []
-  [:div
-   [nav "profile"]
-   [:div.container.jumbotron.largemain
-    [:div.row
-     [:div.col-lg-12
-      [:h3.text-center
-       "Tell Us About Yourself"]
-      [:div.col-lg-6
-       [:input.form-control.pull-left
-        {:type "text", :placeholder "First Name", :value ""}]]
-      [:div.col-lg-6
-       [:input.form-control.pull-right
-        {:type "text", :placeholder "Last Name", :value ""}]]
-      [:br]
-      [:br]
-      [:div.dropdown.col-lg-3
-       [:button#dropdownMenu1.btn.btn-secondary.dropdown-toggle
-        {:type "button", :data-toggle "dropdown", :aria-haspopup "true", :aria-expanded "false"}
-        "\n            Demographic\n          "]
-       [:div.dropdown-menu
-        [:a.dropdown-item
-         {:href "#"}
-         "Action"]
-        [:a.dropdown-item
-         {:href "#"}
-         "Another action"]
-        [:a.dropdown-item
-         {:href "#"}
-         "Something else here"]
-        [:div.dropdown-divider]
-        [:a.dropdown-item
-         {:href "#"}
-         "Separated link"]]]
-      [:div.dropdown.col-lg-3
-       [:button#dropdownMenu1.btn.btn-secondary.dropdown-toggle
-        {:type "button", :data-toggle "dropdown", :aria-haspopup "true", :aria-expanded "false"}
-        "\n            Demographic\n          "]
-       [:div.dropdown-menu
-        [:a.dropdown-item
-         {:href "#"}
-         "Action"]
-        [:a.dropdown-item
-         {:href "#"}
-         "Another action"]
-        [:a.dropdown-item
-         {:href "#"}
-         "Something else here"]
-        [:div.dropdown-divider]
-        [:a.dropdown-item
-         {:href "#"}
-         "Separated link"]]]
-      [:div.dropdown.col-lg-3
-       [:button#dropdownMenu1.btn.btn-secondary.dropdown-toggle
-        {:type "button", :data-toggle "dropdown", :aria-haspopup "true", :aria-expanded "false"}
-        "\n            Demographic\n          "]
-       [:div.dropdown-menu
-        [:a.dropdown-item
-         {:href "#"}
-         "Action"]
-        [:a.dropdown-item
-         {:href "#"}
-         "Another action"]
-        [:a.dropdown-item
-         {:href "#"}
-         "Something else here"]
-        [:div.dropdown-divider]
-        [:a.dropdown-item
-         {:href "#"}
-         "Separated link"]]]
-      [:div.dropdown.col-lg-3
-       [:button#dropdownMenu1.btn.btn-secondary.dropdown-toggle
-        {:type "button", :data-toggle "dropdown", :aria-haspopup "true", :aria-expanded "false"}
-        "\n            Demographic\n          "]
-       [:div.dropdown-menu
-        [:a.dropdown-item
-         {:href "#"}
-         "Action"]
-        [:a.dropdown-item
-         {:href "#"}
-         "Another action"]
-        [:a.dropdown-item
-         {:href "#"}
-         "Something else here"]
-        [:div.dropdown-divider]
-        [:a.dropdown-item
-         {:href "#"}
-         "Separated link"]]]
-      [:div.col-lg-12 {:style {:height "20px"}}]
-      [:h4
-       "Regions of Interest"]
-      [:div.input-group
-       [:input.form-control
-        {:type "text", :placeholder "Enter Zip Code", :value ""}]
-       [:span.input-group-addon.select-group
-        [:select.c-select.select-item
-         [:option "+1 mile"]
-         [:option "+10 miles"]
-         [:option "+50 miles"]]]
-       [:div.input-group-btn
-        [:button.btn.btn-default
-         {:name "type", :type "button", :value "add"}
-         "Add"]]]
-      [:ul.list-inline
-       [:li
-        "80246 +1 Miles"]
-       [:li
-        "80246 +10 Miles"]
-       [:li
-        "80123 +50 Miles"]]
-      [:h4
-       "Topics of Interest"]
-      [:div.input-group
-       [:input.form-control
-        {:type "text", :placeholder "Enter Keywords or select from suggestions below", :value ""}]
-       [:span.input-group-btn
-        [:button.btn.btn-default
-         {:type "button", :value "add"}
-         "Add"]]]
-      [:ul.list-inline
-       [:li
-        [:a
-         {:href "#"}
-         "Dairy"]]
-       [:li
-        [:a
-         {:href "#"}
-         "Organic"]]
-       [:li
-        [:a
-         {:href "#"}
-         "GMO"]]
-       [:li
-        [:a
-         {:href "#"}
-         "Fertilizer"]]
-       [:li
-        [:a
-         {:href "#"}
-         "Equipment"]]
-       [:li
-        [:a
-         {:href "#"}
-         "Poultry"]]
-       [:li
-        [:a
-         {:href "#"}
-         "Sustainable"]]
-       [:li
-        [:a
-         {:href "#"}
-         "Green"]]
-       [:li
-        [:a
-         {:href "#"}
-         "Pests"]]
-       [:li
-        [:a
-         {:href "#"}
-         "Tobacco"]]
-       [:li
-        [:a
-         {:href "#"}
-         "Fuel"]]
-       [:li
-        [:a
-         {:href "#"}
-         "Seeds"]]
-       [:li
-        [:a
-         {:href "#"}
-         "Wool"]]
-       [:li
-        [:a
-         {:href "#"}
-         "Solar"]]
-       [:li
-        [:a
-         {:href "#"}
-         "Wind"]]
-       [:li
-        [:a
-         {:href "#"}
-         "Legislation"]]
-       [:li
-        [:a
-         {:href "#"}
-         "Vegetables"]]
-       [:li
-        [:a
-         {:href "#"}
-         "Fruit"]]
-       [:li
-        [:a
-         {:href "#"}
-         "Polls"]]]
-      [:p.text-center
-       [:button.btn
-        {:name "type", :type "button", :value "continue"}
-        "Continue to your custom feed"]]]]]])
+  (let [app-state (atom {:first     "" :last ""
+                         :zipcode   80203 :email ""
+                         :interests []})
+
+        identity-token (.getItem (.-localStorage js/window) "rmfu-feed-identity-token")
+
+        fetch-user-profile (fn [] (GET "/api/users"
+                                       {:headers         {:identity identity-token}
+                                        :error-handler   #(secretary/dispatch! "/")
+                                        :response-format :json
+                                        :keywords?       true
+                                        :handler         (fn [res]
+                                                           (reset! app-state res)
+                                                           (-> (js/$ ".interest")
+                                                               (.val (apply array (:interests res)))
+                                                               (.trigger "chosen:updated")))}))]
+
+    (reagent/create-class
+      {:component-will-mount #(fetch-user-profile)
+       :component-did-mount  (fn []
+                               (-> (js/$ ".interest")
+                                   (.chosen #js {:width "250px"})
+                                   (.on "change"
+                                        (fn [_ params]
+                                          (let [selected (aget params "selected")
+                                                deselected (aget params "deselected")]
+                                            (cond
+                                              selected
+                                              (swap! app-state update-in [:interests] (fnil conj []) selected)
+                                              deselected
+                                              (swap! app-state update-in [:interests] #(remove #{deselected} %))))))))
+       :reagent-render       (fn []
+                               [:div
+                                [nav "profile"]
+                                [:div.container.jumbotron
+                                 {:style {:max-width "700px"}}
+                                 [:div.row
+                                  [:div.col-lg-12
+                                   [:h3.text-center "Tell Us About Yourself"]
+                                   [:div.col-lg-6.col-md-6
+                                    [input-field-helper app-state :first
+                                     {:id "FirstName" :placeholder "First Name" :type "text"}]]
+                                   [:div.col-lg-6.col-md-6
+                                    [input-field-helper app-state :last
+                                     {:id "LastName" :placeholder "Last Name" :type "text"}]]
+
+                                   [:br]
+
+                                   [:div.col-lg-12 {:style {:height "20px"}}]
+
+                                   [:h4.text-center "Region of Interest"]
+
+                                   [:div.col-lg-6.col-md-6
+                                    [:div.input-group.select-group
+                                     [:div.col-lg-10
+                                      [input-field-helper app-state :zipcode
+                                       {:placeholder "Enter Zip Code" :type "number"}]]]]
+
+
+                                   [:br]
+                                   [:br]
+
+                                   [:h4 "Topics of Interest"]
+
+                                   [:select.interest.chosen-container.chosen-container-multi
+                                    {:data-placeholder "Choose an interest..."
+                                     :tab-index        "3"
+                                     :multiple         true}
+                                    [:option {:value "fruit/vegetable"} "Fruit / Vegetable"]
+                                    [:option {:value "ranch/meat"} "Ranch / Meat"]
+                                    [:option {:value "commodity"} "commodity"]
+                                    [:option {:value "small-grain"} "Small Grain"]
+                                    [:option {:value "water/soil"} "Water Soil"]
+                                    [:option {:value "conservation"} "Conservation"]
+                                    [:option {:value "farm-technology"} "Farm Technology"]
+                                    [:option {:value "energy"} "Energy"]]
+
+                                   [:p.text-center
+                                    [:button.btn.btn-primary.active
+                                     {:name     "type" :type "button" :value "continue"
+                                      :on-click (fn [_]
+                                                  (PUT "/update-user-profile"
+                                                       {:params          {:profile @app-state}
+                                                        :format          :json
+                                                        :error-handler   #(js/alert "Profile successfully saved.")
+                                                        :response-format :json
+                                                        :keywords?       true
+                                                        :handler         #(js/alert %)}))}
+                                     "Save and Continue to Custom Feed"]]]]]])})))

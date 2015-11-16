@@ -86,18 +86,26 @@
 
 (def auth-backend (jws-backend {:secret secret}))
 
+(defn update-user-profile [req]
+  (let [profile (get-in req [:body :profile])
+        claim (db/find-user-by-email (:email profile))
+        db-op (db/update-user-profile! claim profile)]
+    (if claim
+      (if db-op (ok "user updated!")
+                (internal-server-error "could not update user profile"))
+      (unauthorized "not authorized to update user profile"))))
+
 (defroutes* api-routes
             (context* "/api" []
                       (wrap-authentication
-                        (GET* "/users/:username" {:as request}
+                        (GET* "/users" {:as request}
                               :middlewares [rmfu.auth/auth-mw]
                               :header-params [identity :- String]
-                              :path-params [username :- String]
                               (let [identity (get-in request [:headers "identity"])
                                     unsigned-token (auth/unsign-token identity)]
-                                (if (and (not (nil? unsigned-token)) (= username (:username unsigned-token)))
+                                (if (and (not (nil? unsigned-token)))
                                   (ok (dissoc (db/find-user-by-username (:username unsigned-token)) :password :_id))
-                                  (ok {:error "not auth"}))))
+                                  (unauthorized {:error "not auth"}))))
                         auth-backend)))
 
 
@@ -107,7 +115,9 @@
             (POST "/send-reset-password-email" [] send-reset-password-email)
             (GET "/reset-password-redirect/:email" [] reset-password-redirect)
             (PUT "/reset-password-from-form" [] reset-password-from-form!)
+            (PUT "/update-user-profile" [] update-user-profile)
             (GET "/verify-email/:email" [] verify-email)
+            (route/resources "/assets")           ;; serve /assets for chosen lib jar
             (route/not-found (not-found "Resource not found")))
 
 (defroutes app-routes

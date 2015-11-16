@@ -3,6 +3,7 @@
             [monger.collection :as mc]
             [monger.conversion :refer [from-db-object]]
             [monger.operators :refer :all]
+            [monger.result :refer [acknowledged?]]
             [buddy.hashers :as hasher]
             [rmfu.email :as email]
             [environ.core :refer [env]]
@@ -48,6 +49,14 @@
       (mc/update-by-id db coll oid {$set {:password (hash-password new-password)}})
       (catch [:type :validation] e
         (println "Error: " (:message e))))))
+
+(defn update-user-profile!
+  "Updates user doc with profile map, returns true if db operation is successful"
+  [user profile]
+  (let [coll "users"
+        oid (:_id user)]
+    (acknowledged?
+      (mc/update-by-id db coll oid {$set profile}))))
 
 (defn add-user!
   "Adds a user to DB that is by default unverified, we expect verification via email"
