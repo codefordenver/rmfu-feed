@@ -1,60 +1,73 @@
+# Feed
+
 [![Stories in Ready](https://badge.waffle.io/codefordenver/rmfu-feed.png?label=ready&title=Ready)](https://waffle.io/codefordenver/rmfu-feed)
-# RMFU
 
-This repo contains both the server and the client 
-code for Rocky Mountain Farmer Union project.
+Feed is a community engagement platform developed by Code for Denver for the 
+Rocky Mountain Farmer's Union.
 
-## setup
+## Configuration
 
-0. [Install leiningen](https://github.com/technomancy/leiningen)
+Feed requires the following environment variables to be set to run properly.
 
-1. Install mongodb: `$ brew install mongo`
+````
+MANDRILL_API_KEY=<api key here>
+RMFU_FROM_EMAIL=<example@mail.com>
+RMFU_SECRET=<some secret>
+````
+During development, `RMFU_SECRET` and `RMFU_FROM_EMAIL` are arbitrary and can 
+be whatever you like. `MANDRILL_API_KEY` on the other hand requires a valid 
+Mandrill API Token, to get this token contact one of Code For Denver's 
+volunteers.
 
-2. Run mongodb deamon: `$ mongod` 
-runs on default port
+## Installation
 
-## App runtime configurations
+Feed uses virtual machines to isolate development environments from a 
+developers host machine. The following steps will help get Feed installed 
+on a development machine.
 
-0. define the following environment vars: 
+1. Install [VirtualBox](https://www.virtualbox.org).
+2. Install [Vagrant](https://www.vagrantup.com).
+3. Run `vagrant plugin install vagrant-hostmanager` to install the [Vagrant Hostmanager Plugin](https://github.com/smdahlen/vagrant-hostmanager).
+4. `git clone` this repository to your machine.
+5. `cd` into the repository.
+6. Then `vagrant up`.
 
-```
-MANDRILL_API_KEY="API_KEY"
-RMFU_FROM_EMAIL="someone@mail.org"
-RMFU_SECRET="XYZ"
-```
-(you can get these from Code For Denver volunteers)
+Running `vagrant up` sets a domain record in the `/etc/hosts` file (which will 
+will require your password, this can be made [passwordless](https://github.com/smdahlen/vagrant-hostmanager#passwordless-sudo)), downloads an Ubuntu image to your host machine and 
+provisions it with [Clojure](http://clojure.org/) and 
+[Leiningen](http://leiningen.org), and [MongoDB](https://www.mongodb.org).
+Running `vagrant up` for the first time might take a couple minutes. If 
+`vagrant up` errors out, run `vagrant status` to view the status of your
+Vagrant machine, then use `vagrant up` or `vagrant provision` as needed to
+complete the provisioning.
 
-### Run the server with:
+## Running the Application
 
-    lein run 3000
+The following steps will help get Feed running on the development machine.
 
-There is no need to reload the server during development,
-leinegen will reload your code automatically unless 
-you add / remove a library.
+1. `vagrant ssh` to login into the virtual machine.
+2. `cd` into `/vagrant`, where the project is located.
+3. To start the server run `lein run 3000`.
+4. In your browser on your development machine browse to http://feed.rmfu.dev:3000.
 
-# RMFU-UI
+## UI Development
 
+UI Development can be made simpler by only using [Figwheel](https://github.com/bhauman/lein-figwheel). 
+The previous section will start the application and auto-reload static 
+resources using Figwheel. This section is useful if you want to do only UI 
+development without running the backend, this will cause requests to 404.
+Replace steps 3 and 4 from the previous section with the following steps:
 
-### Run interactive UI development environment with:
+1. Start the figwheel server with `lein figwheel`.
+2. In the browser navigate to http://feed.rmfu.dev:3449.
+3. In the Figwheel REPL in the terminal execute `(js/alert "Am I connected?")` 
+to test your browser connected repl.
 
-    lein figwheel
+## Ending Vagrant Development Session
 
-and open your browser at [localhost:3449](http://localhost:3449/).
-This will auto compile and send all changes to the browser without the
-need to reload. After the compilation process is complete, you will
-get a Browser Connected REPL. An easy way to try it is:
+The following steps will help end your Vagrant session, spin down the virtual 
+machine and free up resources on your development machine.
 
-    (js/alert "Am I connected?")
-
-and you should see an alert in the browser window.
-
-To clean all compiled files:
-
-    lein clean
-
-To create a production build run:
-
-    lein cljsbuild once min
-
-And open your browser in `resources/public/index.html`. You will not
-get live reloading, nor a REPL. 
+1. Run `exit` to exit the virtual machine.
+2. `vagrant halt` to halt the machine, freeing up resources on your 
+development machine.
