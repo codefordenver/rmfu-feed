@@ -114,3 +114,20 @@
         oid (:_id claim)]
     (acknowledged?
       (mc/update-by-id db coll oid {$set {:blocked? state}}))))
+
+(defn add-article!
+  "Adds a new article to the database.
+  Warning: This method is not idempotent currently."
+  [article author]
+  (let [{:keys [title content]} article
+        article-oid (ObjectId.)
+        article-doc {:_id article-oid
+                     :title title
+                     :content content
+                     :created (java.util.Date.)}
+        author-oid  (:_id author)]
+    ; NOTE: Since MongoDB doesn't have transactions this ordering
+    ; assumes that it is okay to have articles without authors
+    (mc/insert db "articles" article-doc)
+    (mc/update-by-id db "users" author-oid {$push {"articles" article-oid}})
+    article-doc))

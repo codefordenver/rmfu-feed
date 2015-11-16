@@ -11,7 +11,6 @@
     [compojure.route :as route]
     [ring.handler.dump :refer [handle-dump]]                ;; use handle-dump to inspect request
     [ring.middleware.cors :refer [wrap-cors]]
-    [cheshire.core :as json]
     [rmfu.persistance :as db]
     [rmfu.email :as email]
     [rmfu.auth :as auth]
@@ -133,6 +132,19 @@
                                 (if (and unsigned-token (:is-admin? unsigned-token) (db/block-user email state))
                                   (ok (if state "blocked" "unblocked"))
                                   (unauthorized {:error "not authorized to block users"}))))
+                        auth-backend)
+
+                      (wrap-authentication
+                        (POST* "/articles" {:as request}
+                               :middlewares [rmfu.auth/auth-mw]
+                               :header-params [identity :- String]
+                               (let [identity (get-in request [:headers "identity"])
+                                     unsigned-token (auth/unsign-token identity)]
+                                 (if (not (nil? unsigned-token))
+                                   (let [user (db/find-user-by-username (:username unsigned-token))
+                                         persisted-article (db/add-article! (:body request) user)]
+                                     (created (str "/articles/" (:_id persisted-article))))
+                                   (unauthorized {:error "not auth"}))))
                         auth-backend)))
 
 
