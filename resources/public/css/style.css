@@ -42,6 +42,16 @@ h1 {
     text-decoration: underline;
 }
 
+.greyheading {
+  text-decoration: none;
+  font-size: 1.2rem;
+  color: darkgrey;
+}
+
+.greytext {
+  color: darkgrey;
+}
+
 .bullet {
     display: list-item;
     list-style-position: inside;
@@ -51,11 +61,10 @@ h1 {
     font-size: 1rem;
     font-style: italic;
     color: darkgrey;
-    padding-left: 15px;
 }
 
-.dategroup > * {
-    display: inline;
+.displayinline {
+  display: inline;
 }
 
 .greybox {
@@ -65,7 +74,13 @@ h1 {
 }
 
 .borderbox {
-    border: solid 1px;
+    border: solid 1px #eee;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.borderboxblack {
+    border: solid 1px black;
     padding: 10px;
     border-radius: 5px;
 }
@@ -77,6 +92,41 @@ h1 {
 
 ul.commentlist {
     padding-left: 0;
+}
+
+.articlelisting
+{
+  margin-bottom: 10px;
+}
+
+.articlelisting p
+{
+  margin-bottom: 0;
+}
+
+p.articlelink
+{
+  font-size: .9rem;
+}
+
+p.articlelink a
+{
+  color: darkgrey;
+}
+
+.user
+{
+  font-size: .8rem;
+}
+
+.user small
+{
+  color: grey;
+}
+
+.articletable
+{
+  font-size: .8rem;
 }
 
 /* Allow scrollbars to always show in OS X */

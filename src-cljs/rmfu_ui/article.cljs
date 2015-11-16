@@ -7,14 +7,11 @@
    [:div.container.jumbotron.largemain
     [:div.row
      [:div.col-lg-12
-      [:h1.text-center
-       "Article"]
+      [:h1.text-center "Article Title"]
       [:div.pre-scrollable.borderbox
-       [:div.dategroup
-        [:h4.articleheading
-         "New Legislation that will impact you!"]
-        [:p.date
-         "October 1, 2015"]]
+
+        [:h4.greyheading "Category"]
+        [:p.greytext.displayinline "username"] [:p.date.displayinline.pull-right "October 1, 2015"]
        [:p "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute\n              irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n              "
         [:br]
         [:br]
@@ -42,51 +39,9 @@
         "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure\n              dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n            "]]
       [:br]
       [:div.greybox
-       [:ul.list-inline
-        [:li
-         [:button.btn.btn-default
-          {:type "button", :value "add"}
-          "Collapse"]]
-        [:li
-         [:button.btn.btn-default
-          {:type "button", :value "add"}
-          "Topics"]]
-        [:li
-         [:button.btn.btn-default
-          {:type "button", :value "add"}
-          "Comments"]]
-        [:li
-         [:button.btn.btn-default
-          {:type "button", :value "add"}
-          "Share"]]
-        [:li
-         [:button.btn.btn-default
-          {:type "button", :value "add"}
-          "Archive"]]]
-       [:ul.list-inline
-        [:li
-         [:a
-          {:href "#"}
-          "Fertilizer"]]
-        [:li
-         [:a
-          {:href "#"}
-          "Legislation"]]
-        [:li
-         [:a
-          {:href "#"}
-          "Vegetables"]]
-        [:li
-         [:a
-          {:href "#"}
-          "Grain"]]
-        [:li
-         [:a
-          {:href "#"}
-          "Fruit"]]
-        [:li
-         "80246 +5 Miles"]]
-       [:div.pre-scrollable.borderbox.height150
+      [:h4.greyheading.text-center "Comments"]
+      [:div
+       [:div.pre-scrollable.borderboxblack.height150
         [:div.col-lg-3.date
          "Oct 1, 2015"]
         [:div.col-lg-9.bullet
@@ -106,4 +61,4 @@
         [:div.col-lg-3.date
          "Oct 1, 2015"]
         [:div.col-lg-9.bullet
-         "Tiberius - Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."]]]]]]])
+         "Tiberius - Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."]]]]]]]])
