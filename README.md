@@ -14,6 +14,10 @@ MANDRILL_API_KEY=<api key here>
 RMFU_FROM_EMAIL=<example@mail.com>
 RMFU_SECRET=<some secret>
 ````
+During development, `RMFU_SECRET` and `RMFU_FROM_EMAIL` are arbitrary and can 
+be whatever you like. `MANDRILL_API_KEY` on the other hand requires a valid 
+Mandrill API Token, to get this token contact one of Code For Denver's 
+volunteers.
 
 ## Installation
 

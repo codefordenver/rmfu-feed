@@ -78,6 +78,7 @@ Vagrant.configure(2) do |config|
     echo Setting Environment Variables
     echo 'export MANDRILL_API_KEY=#{ENV['MANDRILL_API_KEY']}' >> /etc/profile.d/vagrant.sh
     echo 'export RMFU_FROM_EMAIL=#{ENV['RMFU_FROM_EMAIL']}' >> /etc/profile.d/vagrant.sh
+    echo 'export RMFU_SECRET=#{ENV['RMFU_SECRET']}' >> /etc/profile.d/vagrant.sh
   SHELL
 
   config.vm.provision "shell", path: "scripts/base.sh"
