@@ -33,7 +33,7 @@ on a development machine.
 6. Then `vagrant up`.
 
 Running `vagrant up` sets a domain record in the `/etc/hosts` file (which will 
-will require your password, this can be made [passwordless](https://github.com/smdahlen/vagrant-hostmanager#passwordless-sudo)),downloads an Ubuntu image to your host machine and 
+will require your password, this can be made [passwordless](https://github.com/smdahlen/vagrant-hostmanager#passwordless-sudo)), downloads an Ubuntu image to your host machine and 
 provisions it with [Clojure](http://clojure.org/) and 
 [Leiningen](http://leiningen.org), and [MongoDB](https://www.mongodb.org).
 Running `vagrant up` for the first time might take a couple minutes. If 
@@ -52,13 +52,16 @@ The following steps will help get Feed running on the development machine.
 
 ## UI Development
 
-UI Development can be made easier by using [Figwheel](https://github.com/bhauman/lein-figwheel). 
+UI Development can be made simpler by only using [Figwheel](https://github.com/bhauman/lein-figwheel). 
+The previous section will start the application and auto-reload static 
+resources using Figwheel. This section is useful if you want to do only UI 
+development without running the backend, this will cause requests to 404.
 Replace steps 3 and 4 from the previous section with the following steps:
 
 1. Start the figwheel server with `lein figwheel`.
 2. In the browser navigate to http://feed.rmfu.dev:3449.
-3. Open the javascript console and execute `(js/alert "Am I connected?")` to 
-test your browser connected repl.
+3. In the Figwheel REPL in the terminal execute `(js/alert "Am I connected?")` 
+to test your browser connected repl.
 
 ## Ending Vagrant Development Session
 
