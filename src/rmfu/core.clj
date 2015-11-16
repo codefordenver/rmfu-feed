@@ -106,6 +106,18 @@
                                 (if (and (not (nil? unsigned-token)))
                                   (ok (dissoc (db/find-user-by-username (:username unsigned-token)) :password :_id))
                                   (unauthorized {:error "not auth"}))))
+                        auth-backend)
+                      (wrap-authentication
+                        (POST* "/articles" {:as request}
+                               :middlewares [rmfu.auth/auth-mw]
+                               :header-params [identity :- String]
+                               (let [identity (get-in request [:headers "identity"])
+                                     unsigned-token (auth/unsign-token identity)]
+                                 (if (not (nil? unsigned-token))
+                                   (let [user (db/find-user-by-username (:username unsigned-token))
+                                         persisted-article (db/add-article! (:body request) user)]
+                                     (created (str "/articles/" (:_id persisted-article))))
+                                   (unauthorized {:error "not auth"}))))
                         auth-backend)))
 
 

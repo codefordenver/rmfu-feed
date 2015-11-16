@@ -24,7 +24,7 @@
         lookup (db/find-user-by-email email)]
     (when-not (nil? lookup)
       (if (valid-password? password (:password lookup))
-        (sign-token (dissoc lookup :password :_id))
+        (sign-token (dissoc lookup :password :_id :articles))
         nil))))
 
 (defn unsign-token [doc]
