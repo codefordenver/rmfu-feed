@@ -74,9 +74,17 @@
                                                        :verified? false})))
       (format "User already exist with %s" email))))
 
-(let [admin (find-user-by-username "admin")]
-  "create admin account if not already present in database"
-  (if-not admin
-    (mc/insert-and-return db "users" {:username "admin"
-                                      :email (System/getenv "RMFU_FROM_EMAIL")
-                                      :verified? true})))
+(defn init-admin-account!
+  "create admin account if not already present in database,
+  send the reset-password email to set admin password"
+  []
+  (let [admin (find-user-by-username "admin")
+        profile {:username "admin"
+                 :email (System/getenv "RMFU_FROM_EMAIL")
+                 :verified? true
+                 :is-admin? true}]
+    (if-not admin
+      (do (mc/insert-and-return db "users" profile)
+          (email/send-reset-password-email profile)))))
+
+(init-admin-account!)
