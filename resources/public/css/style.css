@@ -6,11 +6,6 @@ input {
     font-family: monospace;
 }
 
-h1 {
-    font-family: "Adobe Arabic";
-    font-size: 4em;
-}
-
 .jumbotron {
     max-width: 480px;
     margin-top: 2em;
@@ -94,38 +89,31 @@ ul.commentlist {
     padding-left: 0;
 }
 
-.articlelisting
-{
+.articlelisting {
   margin-bottom: 10px;
 }
 
-.articlelisting p
-{
+.articlelisting p {
   margin-bottom: 0;
 }
 
-p.articlelink
-{
+p.articlelink {
   font-size: .9rem;
 }
 
-p.articlelink a
-{
+p.articlelink a {
   color: darkgrey;
 }
 
-.user
-{
+.user {
   font-size: .8rem;
 }
 
-.user small
-{
+.user small {
   color: grey;
 }
 
-.articletable
-{
+.articletable {
   font-size: .8rem;
 }
 
@@ -139,4 +127,16 @@ p.articlelink a
     border-radius: 4px;
     background-color: rgba(0, 0, 0, .5);
     box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+}
+
+.big-text{
+    display: block;
+    width: 16rem;
+    height: 16rem;
+    font-size: 6.5rem;
+    line-height: 7rem;
+    color: #fff;
+    text-align: center;
+    cursor: default;
+    background-color: tomato;
 }

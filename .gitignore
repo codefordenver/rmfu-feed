@@ -28,8 +28,7 @@ pom.xml
 .repl
 .nrepl-port
 repos/*
-rfmu.iml
-
+rmfu.iml
 # Log Files
 *.log
 
