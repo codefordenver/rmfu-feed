@@ -22,14 +22,12 @@
 (defonce form-state (atom {:show-loading false
                            :signing-up   false}))
 
-(defonce API-END-POINT "")
-
 ;; -------------------------
 ;; HTTP Request
 
 (defn post-sign-in [profile]
   (let [{:keys [email password]} profile]
-    (POST (str API-END-POINT "/signin")
+    (POST "/signin"
           {:params        {:email    email
                            :password password}
            :format        :json
@@ -40,7 +38,7 @@
 
 (defn post-sign-up [profile]
   (let [{:keys [username password email]} profile]
-    (POST (str API-END-POINT "/signup")
+    (POST "/signup"
           {:params        {:username username
                            :password password
                            :email    email}
@@ -53,7 +51,7 @@
                             )})))
 
 (defn request-password-reset [profile]
-  (POST (str API-END-POINT "/send-reset-password-email")
+  (POST "/send-reset-password-email"
         {:params        {:email (:email profile)}
          :error-handler #(js/alert %)
          :handler       (fn [res]
@@ -63,7 +61,7 @@
                           )}))
 
 (defn update-password [profile]
-  (PUT (str API-END-POINT "/reset-password-from-form")
+  (PUT "/reset-password-from-form"
        {:params        {:email        (:email profile)
                         :new-password (:password profile)}
         :format        :json
@@ -152,11 +150,12 @@
                                  (GET "/api/users"
                                       {:headers         {:identity identity-token}
                                        :error-handler   (fn [res]
-                                                          (js/alert res)
-                                                          #_(secretary/dispatch! "/"))
+                                                          #_(secretary/dispatch! "/")
+                                                          (session/clear!))
                                        :response-format :json
                                        :keywords?       true
                                        :handler         (fn [res]
+                                                          (session/put! :profile res)
                                                           (secretary/dispatch! "/feed"))})))
        :reagent-render (fn []
                          [welcome-component-wrapper
