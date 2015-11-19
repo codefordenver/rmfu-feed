@@ -294,7 +294,7 @@
 ;; History
 ;; must be called after routes have been defined
 
-(defonce hook-browser-navigation!
+(defn hook-browser-navigation! []
   (doto (History.)
     (events/listen
       EventType/NAVIGATE

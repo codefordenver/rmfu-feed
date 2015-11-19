@@ -49,10 +49,8 @@
   (let [user (find-user-by-email email)
         coll "users"
         oid (:_id user)]
-    (try+
-      (mc/update-by-id db coll oid {$set {:password (hash-password new-password)}})
-      (catch [:type :validation] e
-        (println "Error: " (:message e))))))
+    (acknowledged?
+      (mc/update-by-id db coll oid {$set {:password (hash-password new-password)}}))))
 
 (defn update-user-profile!
   "Updates user doc with profile map, returns true if db operation is successful"
