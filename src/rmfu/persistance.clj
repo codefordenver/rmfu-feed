@@ -22,6 +22,11 @@
 (defonce db (mg/get-db (if (env :production?)
                          (:conn @conn) @conn) (:name db-config)))
 
+(defn hash-password
+  "MD5-encrypt and return password"
+  [p]
+  (hasher/encrypt p))
+
 (defn find-user-by-email [email]
   (mc/find-one-as-map db "users" {:email email}))
 
@@ -43,8 +48,7 @@
 (defn update-password! [email new-password]
   (let [user (find-user-by-email email)
         coll "users"
-        oid (:_id user)
-        hash-password #(hasher/encrypt %)]
+        oid (:_id user)]
     (try+
       (mc/update-by-id db coll oid {$set {:password (hash-password new-password)}})
       (catch [:type :validation] e
@@ -64,11 +68,17 @@
   (let [{:keys [email password]} user
         coll "users"
         oid (ObjectId.)
-        user-doc (merge user {:_id oid})
-        hash-password #(hasher/encrypt %)]
+        user-doc (merge user {:_id oid})]
     (if (nil? (find-user-by-email email))
       (do
         (email/send-confirmation-email user)
         (mc/insert-and-return db coll (merge user-doc {:password  (hash-password password)
                                                        :verified? false})))
       (format "User already exist with %s" email))))
+
+(let [admin (find-user-by-username "admin")]
+  "create admin account if not already present in database"
+  (if-not admin
+    (mc/insert-and-return db "users" {:username "admin"
+                                      :email (System/getenv "RMFU_FROM_EMAIL")
+                                      :verified? true})))

@@ -10,7 +10,7 @@
   "Renders basic nav with an .active link"
   [active]
   [:nav {:className "navbar navbar-light bg-faded"}
-   [:a.navbar-brand {:href "/#/customfeed"} "FEED"]
+   [:a.navbar-brand {:href "/#/feed"} "FEED"]
    [:ul.nav.navbar-nav
     (for [anchor ["about" "create" "profile"]
           :let [title (clojure.string/capitalize anchor)

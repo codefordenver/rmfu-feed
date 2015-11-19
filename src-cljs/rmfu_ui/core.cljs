@@ -36,7 +36,7 @@
            :error-handler #(js/alert %)
            :handler       (fn [res]
                             (.setItem js/localStorage "rmfu-feed-identity-token" res)
-                            (secretary/dispatch! "/create"))})))
+                            (secretary/dispatch! "/feed"))})))
 
 (defn post-sign-up [profile]
   (let [{:keys [username password email]} profile]
@@ -146,31 +146,43 @@
   (let [profile (atom {:username ""
                        :email    ""
                        :password ""})]
-    [welcome-component-wrapper
-     [:div.form-group {:style {:padding "1em"}}
-      [:p.text-center.bg-primary "Sign in"]
-      [:label "email:"]
-      [email-input-field profile]
-      [:label "password:"]
-      [passsword-input-field profile]
-      [:br]
-      [:div.checkbox
-       [:label
-        [:input {:type "checkbox"}] "remember me?"]
-       [:p.pull-right
-        [:button.btn.btn-sm {:type     "button"
-                             :on-click #(secretary/dispatch! "/reset-password")}
-         "forgot password?"]]]
-      [:br]
-      [:button.btn.btn-primary.active {:type     "button"
-                                       :on-click (fn [e]
-                                                   (sign-in @profile)
-                                                   (.preventDefault e))
-                                       } "sign-in"]
+    (reagent/create-class
+      {:component-will-mount (fn []
+                               (if-let [identity-token (.getItem (.-localStorage js/window) "rmfu-feed-identity-token")]
+                                 (GET "/api/users"
+                                      {:headers         {:identity identity-token}
+                                       :error-handler   (fn [res]
+                                                          (js/alert res)
+                                                          #_(secretary/dispatch! "/"))
+                                       :response-format :json
+                                       :keywords?       true
+                                       :handler         (fn [res]
+                                                          (secretary/dispatch! "/feed"))})))
+       :reagent-render (fn []
+                         [welcome-component-wrapper
+                          [:div.form-group {:style {:padding "1em"}}
+                           [:p.text-center.bg-primary "Sign in"]
+                           [:label "email:"]
+                           [email-input-field profile]
+                           [:label "password:"]
+                           [passsword-input-field profile]
+                           [:br]
+                           [:div.checkbox
+                            [:label
+                             [:input {:type "checkbox"}] "remember me?"]
+                            [:p.pull-right
+                             [:button.btn.btn-sm {:type     "button"
+                                                  :on-click #(secretary/dispatch! "/reset-password")}
+                              "forgot password?"]]]
+                           [:br]
+                           [:button.btn.btn-primary.active {:type     "button"
+                                                            :on-click (fn [e]
+                                                                        (sign-in @profile)
+                                                                        (.preventDefault e))
+                                                            } "sign-in"]
 
-      [:button.btn.btn-default.pull-right {:type     "button"
-                                           :on-click #(secretary/dispatch! "/sign-up")
-                                           } "sign-up"]]]))
+                           [:button.btn.btn-default.pull-right {:type     "button"
+                                                                :on-click #(secretary/dispatch! "/sign-up")} "sign-up"]]])})))
 
 (defn sign-up-component []
   (let [profile (atom {:username ""
@@ -282,7 +294,7 @@
 ;; History
 ;; must be called after routes have been defined
 
-(defn hook-browser-navigation! []
+(defonce hook-browser-navigation!
   (doto (History.)
     (events/listen
       EventType/NAVIGATE

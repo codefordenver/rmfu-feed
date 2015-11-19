@@ -3,13 +3,13 @@
 
 (defn feed []
   [:div
-   [nav]
+   [nav "feed"]
    [:div.container.jumbotron.largemain
     [:div.row
      [:div.col-lg-12
-      [:h1.displayinline "Feeds "]
+      [:h1.displayinline "Feed"]
       " "
-      [:h4.displayinline.greytext " {{Inspiring tagline goes here}}"]
+      [:h4.displayinline.greytext.pull-right [:a {:href "/#/customfeed"} "Customize"]]
       [:hr]
       [:h4 "Articles"]
       [:div.articlelisting
