@@ -1,6 +1,6 @@
 (ns rmfu-ui.profile
   (:require [rmfu-ui.nav :refer [nav]]
-            [reagent.core :as reagent :refer [atom]]
+            [reagent.core :as reagent]
             [ajax.core :refer [PUT GET]]
             [cljsjs.chosen]
             [cljsjs.jquery]
@@ -12,26 +12,25 @@
           {:on-change #(swap! state assoc param (-> % .-target .-value))
            :value     (param @state)})])
 
+(defn fetch-user-profile [state]
+  (let [identity-token (.getItem (.-localStorage js/window) "rmfu-feed-identity-token")]
+    (GET "/api/users"
+         {:headers         {:identity identity-token}
+          :error-handler   #(js/alert %)
+          :response-format :json
+          :keywords?       true
+          :handler         (fn [res]
+                             (reset! state res)
+                             (-> (js/$ ".interest")
+                                 (.val (apply array (:interests res)))
+                                 (.trigger "chosen:updated")))})))
+
 (defn profile []
-  (let [app-state (atom {:first     "" :last ""
+  (let [app-state (reagent/atom {:first     "" :last ""
                          :zipcode   80203 :email ""
-                         :interests []})
-
-        identity-token (.getItem (.-localStorage js/window) "rmfu-feed-identity-token")
-
-        fetch-user-profile (fn [] (GET "/api/users"
-                                       {:headers         {:identity identity-token}
-                                        :error-handler   #(secretary/dispatch! "/")
-                                        :response-format :json
-                                        :keywords?       true
-                                        :handler         (fn [res]
-                                                           (reset! app-state res)
-                                                           (-> (js/$ ".interest")
-                                                               (.val (apply array (:interests res)))
-                                                               (.trigger "chosen:updated")))}))]
-
+                         :interests []})]
     (reagent/create-class
-      {:component-will-mount #(fetch-user-profile)
+      {:component-will-mount #(fetch-user-profile app-state)
        :component-did-mount  (fn []
                                (-> (js/$ ".interest")
                                    (.chosen #js {:width "250px"})
@@ -70,7 +69,6 @@
                                      [:div.col-lg-10
                                       [input-field-helper app-state :zipcode
                                        {:placeholder "Enter Zip Code" :type "number"}]]]]
-
 
                                    [:br]
                                    [:br]

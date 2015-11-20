@@ -80,7 +80,7 @@
   (let [email (get-in req [:body :email])
         new-password (get-in req [:body :new-password])
         update-success? (db/update-password! email new-password)]
-    (if (= (type update-success?) com.mongodb.WriteResult)
+    (if update-success?
       (ok "Password updated!")
       (internal-server-error "Something went wrong with the password update."))))
 

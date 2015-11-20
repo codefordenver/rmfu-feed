@@ -22,6 +22,11 @@
 (defonce db (mg/get-db (if (env :production?)
                          (:conn @conn) @conn) (:name db-config)))
 
+(defn hash-password
+  "MD5-encrypt and return password"
+  [p]
+  (hasher/encrypt p))
+
 (defn find-user-by-email [email]
   (mc/find-one-as-map db "users" {:email email}))
 
@@ -43,12 +48,9 @@
 (defn update-password! [email new-password]
   (let [user (find-user-by-email email)
         coll "users"
-        oid (:_id user)
-        hash-password #(hasher/encrypt %)]
-    (try+
-      (mc/update-by-id db coll oid {$set {:password (hash-password new-password)}})
-      (catch [:type :validation] e
-        (println "Error: " (:message e))))))
+        oid (:_id user)]
+    (acknowledged?
+      (mc/update-by-id db coll oid {$set {:password (hash-password new-password)}}))))
 
 (defn update-user-profile!
   "Updates user doc with profile map, returns true if db operation is successful"
@@ -64,11 +66,25 @@
   (let [{:keys [email password]} user
         coll "users"
         oid (ObjectId.)
-        user-doc (merge user {:_id oid})
-        hash-password #(hasher/encrypt %)]
+        user-doc (merge user {:_id oid})]
     (if (nil? (find-user-by-email email))
       (do
         (email/send-confirmation-email user)
         (mc/insert-and-return db coll (merge user-doc {:password  (hash-password password)
                                                        :verified? false})))
       (format "User already exist with %s" email))))
+
+(defn init-admin-account!
+  "create admin account if not already present in database,
+  send the reset-password email to set admin password"
+  []
+  (let [admin (find-user-by-username "admin")
+        profile {:username "admin"
+                 :email (System/getenv "RMFU_FROM_EMAIL")
+                 :verified? true
+                 :is-admin? true}]
+    (if-not admin
+      (do (mc/insert-and-return db "users" profile)
+          (email/send-reset-password-email profile)))))
+
+(init-admin-account!)
