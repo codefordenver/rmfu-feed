@@ -258,6 +258,9 @@
 (defn current-page []
   [:div [(session/get :current-page)]])
 
+(defn four-o-four [msg]
+  [:div.container.jumbotron.big-text [:u (or msg "404")]])
+
 (secretary/defroute "/" []
                     (session/put! :current-page #'sign-in-component))
 
@@ -288,6 +291,9 @@
 
 (secretary/defroute "/feed" []
                     (session/put! :current-page #'feed))
+
+(secretary/defroute "*" []
+                    (session/put! :current-page #'four-o-four))
 
 ;; -------------------------
 ;; History

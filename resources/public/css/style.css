@@ -140,3 +140,15 @@ p.articlelink a
     background-color: rgba(0, 0, 0, .5);
     box-shadow: 0 0 1px rgba(255, 255, 255, .5);
 }
+
+.big-text{
+    display: block;
+    width: 16rem;
+    height: 16rem;
+    font-size: 6.5rem;
+    line-height: 7rem;
+    color: #fff;
+    text-align: center;
+    cursor: default;
+    background-color: tomato;
+}
