@@ -11,6 +11,7 @@
     [rmfu-ui.profile :refer [profile]]
     [rmfu-ui.customfeed :refer [customfeed]]
     [rmfu-ui.feed :refer [feed]]
+    [rmfu-ui.admin :refer [admin]]
     [secretary.core :as secretary :include-macros true]
     [rmfu-ui.welcome :refer [welcome-component-wrapper]])
   (:import goog.History))
@@ -291,6 +292,9 @@
 
 (secretary/defroute "/feed" []
                     (session/put! :current-page #'feed))
+
+(secretary/defroute "/admin" []
+                    (session/put! :current-page #'admin))
 
 (secretary/defroute "*" []
                     (session/put! :current-page #'four-o-four))
