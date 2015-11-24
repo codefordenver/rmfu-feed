@@ -113,9 +113,9 @@
                                :header-params [identity :- String]
                                (let [identity (get-in request [:headers "identity"])
                                      unsigned-token (auth/unsign-token identity)]
-                                 (if (not (nil? unsigned-token))
+                                 (if unsigned-token
                                    (let [user (db/find-user-by-username (:username unsigned-token))
-                                         persisted-article (db/add-article! (:body request) user)]
+                                         persisted-article (db/add-article! (:body request) (:email user))]
                                      (created (str "/articles/" (:_id persisted-article))))
                                    (unauthorized {:error "not auth"}))))
                         auth-backend)))
@@ -129,7 +129,7 @@
             (PUT "/reset-password-from-form" [] reset-password-from-form!)
             (PUT "/update-user-profile" [] update-user-profile)
             (GET "/verify-email/:email" [] verify-email)
-            (route/resources "/assets")           ;; serve /assets for chosen lib jar
+            (route/resources "/assets")                     ;; serve /assets for chosen lib jar
             (route/not-found (not-found "Resource not found")))
 
 (defroutes app-routes
@@ -143,7 +143,7 @@
                      :access-control-allow-methods [:get :put :post :delete])
           params-middleware/wrap-params
           (json-middleware/wrap-json-body {:keywords? true})
-          (wrap-file "resources/public")))              ;; server static files from this directory
+          (wrap-file "resources/public")))                  ;; server static files from this directory
 
 (defn -main [port]
   (jetty/run-jetty app {:port (Integer. port)}))
