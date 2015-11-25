@@ -4,7 +4,7 @@
 (defn article []
   [:div
    [nav]
-   [:div.container.jumbotron.largemain
+   [:div.container.jumbotron.large-main
     [:div.row
      [:div.col-lg-12
       [:h1.text-center "Article Title"]
