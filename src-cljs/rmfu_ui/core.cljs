@@ -11,6 +11,8 @@
     [rmfu-ui.profile :refer [profile]]
     [rmfu-ui.customfeed :refer [customfeed]]
     [rmfu-ui.feed :refer [feed]]
+    [rmfu-ui.admin :refer [admin]]
+    [rmfu-ui.nav :refer [nav]]
     [secretary.core :as secretary :include-macros true]
     [rmfu-ui.welcome :refer [welcome-component-wrapper]])
   (:import goog.History))
@@ -22,25 +24,23 @@
 (defonce form-state (atom {:show-loading false
                            :signing-up   false}))
 
-(defonce API-END-POINT "")
-
 ;; -------------------------
 ;; HTTP Request
 
 (defn post-sign-in [profile]
   (let [{:keys [email password]} profile]
-    (POST (str API-END-POINT "/signin")
+    (POST "/signin"
           {:params        {:email    email
                            :password password}
            :format        :json
            :error-handler #(js/alert %)
            :handler       (fn [res]
                             (.setItem js/localStorage "rmfu-feed-identity-token" res)
-                            (secretary/dispatch! "/create"))})))
+                            (secretary/dispatch! "/feed"))})))
 
 (defn post-sign-up [profile]
   (let [{:keys [username password email]} profile]
-    (POST (str API-END-POINT "/signup")
+    (POST "/signup"
           {:params        {:username username
                            :password password
                            :email    email}
@@ -53,7 +53,7 @@
                             )})))
 
 (defn request-password-reset [profile]
-  (POST (str API-END-POINT "/send-reset-password-email")
+  (POST "/send-reset-password-email"
         {:params        {:email (:email profile)}
          :error-handler #(js/alert %)
          :handler       (fn [res]
@@ -63,7 +63,7 @@
                           )}))
 
 (defn update-password [profile]
-  (PUT (str API-END-POINT "/reset-password-from-form")
+  (PUT "/reset-password-from-form"
        {:params        {:email        (:email profile)
                         :new-password (:password profile)}
         :format        :json
@@ -146,31 +146,41 @@
   (let [profile (atom {:username ""
                        :email    ""
                        :password ""})]
-    [welcome-component-wrapper
-     [:div.form-group {:style {:padding "1em"}}
-      [:p.text-center.bg-primary "Sign in"]
-      [:label "email:"]
-      [email-input-field profile]
-      [:label "password:"]
-      [passsword-input-field profile]
-      [:br]
-      [:div.checkbox
-       [:label
-        [:input {:type "checkbox"}] "remember me?"]
-       [:p.pull-right
-        [:button.btn.btn-sm {:type     "button"
-                             :on-click #(secretary/dispatch! "/reset-password")}
-         "forgot password?"]]]
-      [:br]
-      [:button.btn.btn-primary.active {:type     "button"
-                                       :on-click (fn [e]
-                                                   (sign-in @profile)
-                                                   (.preventDefault e))
-                                       } "sign-in"]
+    (reagent/create-class
+      {:component-will-mount (fn []
+                               (if-let [identity-token (.getItem (.-localStorage js/window) "rmfu-feed-identity-token")]
+                                 (GET "/api/user"
+                                      {:headers         {:identity identity-token}
+                                       :error-handler   #(session/clear!)
+                                       :response-format :json
+                                       :keywords?       true
+                                       :handler         (fn [res]
+                                                          (session/put! :profile res)
+                                                          (secretary/dispatch! "/feed"))})))
+       :reagent-render       (fn []
+                               [welcome-component-wrapper
+                                [:div.form-group {:style {:padding "1em"}}
+                                 [:p.text-center.bg-primary "Sign in"]
+                                 [:label "email:"]
+                                 [email-input-field profile]
+                                 [:label "password:"]
+                                 [passsword-input-field profile]
+                                 [:br]
+                                 [:div.checkbox
+                                  [:label
+                                   [:input {:type "checkbox"}] "remember me?"]
+                                  [:p.pull-right
+                                   [:button.btn.btn-sm
+                                    {:type     "button"
+                                     :on-click #(secretary/dispatch! "/reset-password")} "forgot password?"]]]
+                                 [:br]
+                                 [:button.btn.btn-primary.active
+                                  {:type     "button"
+                                   :on-click #(sign-in @profile)} "sign-in"]
 
-      [:button.btn.btn-default.pull-right {:type     "button"
-                                           :on-click #(secretary/dispatch! "/sign-up")
-                                           } "sign-up"]]]))
+                                 [:button.btn.btn-default.pull-right
+                                  {:type     "button"
+                                   :on-click #(secretary/dispatch! "/sign-up")} "sign-up"]]])})))
 
 (defn sign-up-component []
   (let [profile (atom {:username ""
@@ -247,6 +257,11 @@
 (defn current-page []
   [:div [(session/get :current-page)]])
 
+(defn four-o-four [msg]
+  [:div
+   [nav]
+   [:div.container.jumbotron.big-text [:u (or msg 404)]]])
+
 (secretary/defroute "/" []
                     (session/put! :current-page #'sign-in-component))
 
@@ -277,6 +292,12 @@
 
 (secretary/defroute "/feed" []
                     (session/put! :current-page #'feed))
+
+(secretary/defroute "/admin" []
+                    (session/put! :current-page #'admin))
+
+(secretary/defroute "*" []
+                    (session/put! :current-page #'four-o-four))
 
 ;; -------------------------
 ;; History

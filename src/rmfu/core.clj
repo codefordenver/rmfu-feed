@@ -36,7 +36,9 @@
     (if-let [claim (db/find-user-by-email email)]
       (if (:verified? claim)
         (if-let [token (auth/auth-user body)]
-          (ok token)
+          (if-not (:blocked? claim)
+            (ok token)
+            (unauthorized "User has been blocked by RMFU staff"))
           (unauthorized "Invalid email or passsword"))
         (unauthorized "User not yet verified"))
       (not-found "User not nound"))))
@@ -44,10 +46,9 @@
 (defn sign-up [req]
   (let [body (get-in req [:body])
         add-user! (db/add-user! body)]
-    (println "attempting to post with" body)
-    (if-not (or (empty? add-user!) (nil? add-user!))
-      (created (dissoc body :password))
-      (conflict (str add-user!)))))
+    (if add-user!
+      (created (dissoc body :password :_id))
+      (conflict (str (format "User already exist for %s" (:email body)))))))
 
 (defn verify-email [req]
   (let [email (get-in req [:route-params :email])]
@@ -80,7 +81,7 @@
   (let [email (get-in req [:body :email])
         new-password (get-in req [:body :new-password])
         update-success? (db/update-password! email new-password)]
-    (if (= (type update-success?) com.mongodb.WriteResult)
+    (if update-success?
       (ok "Password updated!")
       (internal-server-error "Something went wrong with the password update."))))
 
@@ -97,15 +98,41 @@
 
 (defroutes* api-routes
             (context* "/api" []
+
+                      (wrap-authentication
+                        (GET* "/user" {:as request}
+                              :middlewares [rmfu.auth/auth-mw]
+                              :header-params [identity :- String]
+                              (let [identity (get-in request [:headers "identity"])
+                                    unsigned-token (auth/unsign-token identity)]
+                                (if unsigned-token
+                                  (ok (dissoc (db/find-user-by-username (:username unsigned-token)) :password :_id))
+                                  (unauthorized {:error "not auth"}))))
+                        auth-backend)
+
+                      ;; ADMIN ONLY ROUTES
                       (wrap-authentication
                         (GET* "/users" {:as request}
                               :middlewares [rmfu.auth/auth-mw]
                               :header-params [identity :- String]
                               (let [identity (get-in request [:headers "identity"])
                                     unsigned-token (auth/unsign-token identity)]
-                                (if (and (not (nil? unsigned-token)))
-                                  (ok (dissoc (db/find-user-by-username (:username unsigned-token)) :password :_id))
-                                  (unauthorized {:error "not auth"}))))
+                                (if (and unsigned-token (:is-admin? unsigned-token))
+                                  (ok (map #(dissoc % :_id :password :interests) (db/find-all-users)))
+                                  (unauthorized {:error "not authorized to retrieve a list of all users"}))))
+                        auth-backend)
+
+                      (wrap-authentication
+                        (PUT* "/block-user" {:as request}
+                              :middlewares [rmfu.auth/auth-mw]
+                              :header-params [identity :- String]
+                              (let [identity (get-in request [:headers "identity"])
+                                    unsigned-token (auth/unsign-token identity)
+                                    email (get-in request [:body :email])
+                                    state (get-in request [:body :blocked?])]
+                                (if (and unsigned-token (:is-admin? unsigned-token) (db/block-user email state))
+                                  (ok (if state "blocked" "unblocked"))
+                                  (unauthorized {:error "not authorized to block users"}))))
                         auth-backend)))
 
 

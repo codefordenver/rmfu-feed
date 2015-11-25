@@ -23,7 +23,8 @@
                  [environ "1.0.1"]
                  [slingshot "0.12.2"]
                  [cljsjs/chosen "1.4.2-1"]
-                 [cljsjs/jquery "2.1.4-0"]]
+                 [cljsjs/jquery "2.1.4-0"]
+                 [cljsjs/fixed-data-table "0.4.6-0"]]
 
   :plugins [[lein-cljsbuild "1.1.0"]
             [lein-figwheel "0.4.1"]
