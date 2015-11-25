@@ -4,7 +4,7 @@
 (defn feed []
   [:div
    [nav "feed"]
-   [:div.container.jumbotron.largemain
+   [:div.container.jumbotron.large-main
     [:div.row
      [:div.col-lg-12
       [:h1.displayinline "Feed"]
@@ -131,6 +131,4 @@
           [:td "Info"]
           [:td "Article Name"]
           [:td [:span.label.label-default "Label"]]
-          [:td "Month day, year"]]]]]]]]
-
- ])
+          [:td "Month day, year"]]]]]]]]])

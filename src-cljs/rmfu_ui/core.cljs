@@ -151,7 +151,7 @@
                                (if-let [identity-token (.getItem (.-localStorage js/window) "rmfu-feed-identity-token")]
                                  (GET "/api/user"
                                       {:headers         {:identity identity-token}
-                                       :error-handler   #(session/clear!)
+                                       :error-handler   #(js/alert %)
                                        :response-format :json
                                        :keywords?       true
                                        :handler         (fn [res]

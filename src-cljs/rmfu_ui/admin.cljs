@@ -1,5 +1,6 @@
 (ns rmfu-ui.admin
   (:require [rmfu-ui.nav :refer [nav]]
+            [rmfu-ui.alert :refer [alert]]
             [reagent.core :as reagent]
             [secretary.core :as secretary]
             [ajax.core :refer [PUT GET]]
@@ -7,7 +8,7 @@
 
 (declare cell-and-checkbox)
 
-(def Table (reagent/adapt-react-class js/FixedDataTable.Table))
+(def Table  (reagent/adapt-react-class js/FixedDataTable.Table))
 (def Column (reagent/adapt-react-class js/FixedDataTable.Column))
 
 (defn index-of                                              ;; no cljs support for .indexOx
@@ -21,7 +22,12 @@
         :else
         (recur (inc i))))))
 
-(def app-state (reagent/atom {:users []}))
+(def app-state (reagent/atom {:users []
+                              :alert {:display false
+                                      :message nil
+                                      :title   nil}}))
+(defn alert-update-display-fn []
+  (swap! app-state update-in [:alert :display] not))
 
 (def identity-token (.getItem (.-localStorage js/window) "rmfu-feed-identity-token"))
 
@@ -30,7 +36,9 @@
        {:params        {:email email :blocked? state}
         :format        :json
         :headers       {:identity identity-token}
-        :handler       #(js/alert (str "User with email: " email " successfully " %))
+        :handler       (fn [res]
+                         (swap! app-state assoc-in [:alert :message] (str "User with email: " email " successfully " res))
+                         (alert-update-display-fn))
         :error-handler #(js/alert %)}))
 
 (defn getter [k row] (get row k))
@@ -68,7 +76,7 @@
                              table (mapv #(into [] (vals %)) users)]
                          [:div.table
                           [nav]
-                          [:div.container.jumbotron.largemain
+                          [:div.container.jumbotron.large-main
                            [:div.row
                             [:div.col-lg-12
                              [:h1.text-center "admin tools"]
@@ -83,4 +91,5 @@
                               [Column {:label "email" :dataKey 5 :cellDataGetter getter :width 100 :align "center"}]
                               [Column {:label "username" :dataKey 6 :cellDataGetter getter :width 100 :align "center"}]
                               [Column {:label "blocked?" :dataKey 0 :align "center" :cellDataGetter blocked-getter
-                                       :width 100 :cellRenderer reagent/as-element}]]]]]]))}))
+                                       :width 100 :cellRenderer reagent/as-element}]]]
+                            [alert :info app-state alert-update-display-fn]]]]))}))

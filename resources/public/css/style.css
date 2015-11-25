@@ -12,7 +12,7 @@ input {
     background: #ffffff;
 }
 
-.largemain {
+.large-main {
     max-width: 700px;
 }
 
@@ -139,4 +139,85 @@ p.articlelink a {
     text-align: center;
     cursor: default;
     background-color: tomato;
+}
+
+/* BEGINS 18F Alert component CSS
+   with minor edits. */
+
+.usa-alert {
+    background-color: #f1f1f1;
+    background-position: 1rem 2rem;
+    background-repeat: no-repeat;
+    background-size: 2rem;
+    margin-top: 0.5em;
+    padding: 1.5em;
+}
+@media screen and (min-width: 600px) {
+    .usa-alert {
+        background-size: 4.2rem;
+        background-position: 1rem 1rem;
+    }
+}
+.usa-alert ul {
+    margin-bottom: 0;
+    margin-top: 1em;
+}
+
+.usa-alert-icon {
+    display: table-cell;
+    padding-right: 1rem;
+}
+
+.usa-alert-body {
+    display: table-cell;
+    padding-left: 2.5rem;
+    vertical-align: top;
+}
+@media screen and (min-width: 600px) {
+    .usa-alert-body {
+        padding-left: 6rem;
+    }
+}
+
+.usa-alert-heading {
+    margin-bottom: .3rem;
+    margin-top: 0; }
+@media screen and (min-width: 600px) {
+    .usa-alert-heading {
+        margin-top: .3rem;
+    }
+}
+
+.usa-alert-text {
+    font-family: "Source Sans Pro", "Helvetica", "Arial", sans-serif;
+    margin-bottom: 0;
+    margin-top: 0;
+}
+
+.usa-alert-success {
+    background-color: #e7f4e4;
+    background-image: url("../images/alerts/success.png");
+    /*background-image: url("../images/alerts/success.svg"); */
+}
+
+.usa-alert-warning {
+    background-color: #fff1d2;
+    background-image: url("../images/alerts/warning.png");
+    /*background-image: url("../images/alerts/warning.svg"); */
+}
+
+.usa-alert-error {
+    background-color: #f9dede;
+    background-image: url("../images/alerts/error.png");
+    /*background-image: url("../images/alerts/error.svg"); */
+}
+
+.usa-alert-info {
+    background-color: #e1f3f8;
+    background-image: url("../images/alerts/info.png");
+    /*background-image: url("../images/alerts/info.svg"); */
+}
+
+.usa-alert-no_icon {
+    background-image: none;
 }
