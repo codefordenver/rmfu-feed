@@ -118,12 +118,12 @@
 (defn add-article!
   "Adds a new article to the database.
   Warning: This method is not idempotent currently."
-  [article author_id]
+  [article author-email]
   (let [{:keys [title content]} article
         article-oid (ObjectId.)
-        article-doc {:author_id author_id
-                     :_id       article-oid
-                     :title     title
-                     :content   content
-                     :created   (java.util.Date.)}]
+        article-doc {:author-email author-email
+                     :_id          article-oid
+                     :title        title
+                     :content      content
+                     :created      (java.util.Date.)}]
     (acknowledged? (mc/insert db "articles" article-doc))))

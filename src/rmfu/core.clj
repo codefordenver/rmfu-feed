@@ -109,7 +109,22 @@
                                   (unauthorized {:error "not auth"}))))
                         auth-backend)
 
+                      (wrap-authentication
+                        (POST* "/articles" {:as request}
+                               :middlewares [rmfu.auth/auth-mw]
+                               :header-params [identity :- String]
+                               (let [identity (get-in request [:headers "identity"])
+                                     unsigned-token (auth/unsign-token identity)]
+                                 (if unsigned-token
+                                   (let [user (db/find-user-by-username (:username unsigned-token))
+                                         persisted-article (db/add-article! (:body request) (:email user))]
+                                     (created (str "/articles/" (:_id persisted-article))))
+                                   (unauthorized {:error "not auth"}))))
+                        auth-backend)
+
                       ;; ADMIN ONLY ROUTES
+                      ;; -----------------
+
                       (wrap-authentication
                         (GET* "/users" {:as request}
                               :middlewares [rmfu.auth/auth-mw]
@@ -132,19 +147,6 @@
                                 (if (and unsigned-token (:is-admin? unsigned-token) (db/block-user email state))
                                   (ok (if state "blocked" "unblocked"))
                                   (unauthorized {:error "not authorized to block users"}))))
-                        auth-backend)
-
-                      (wrap-authentication
-                        (POST* "/articles" {:as request}
-                               :middlewares [rmfu.auth/auth-mw]
-                               :header-params [identity :- String]
-                               (let [identity (get-in request [:headers "identity"])
-                                     unsigned-token (auth/unsign-token identity)]
-                                 (if unsigned-token
-                                   (let [user (db/find-user-by-username (:username unsigned-token))
-                                         persisted-article (db/add-article! (:body request) (:email user))]
-                                     (created (str "/articles/" (:_id persisted-article))))
-                                   (unauthorized {:error "not auth"}))))
                         auth-backend)))
 
 
