@@ -1,7 +1,6 @@
 (ns rmfu.email
   (:require [clj-mandrill.core :as mandrill]
-            [environ.core :refer [env]]
-            [slingshot.slingshot :refer [try+]]))
+            [environ.core :refer [env]]))
 
 (defonce rmfu-from-email (System/getenv "RMFU_FROM_EMAIL"))
 

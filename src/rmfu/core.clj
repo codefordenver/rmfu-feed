@@ -38,9 +38,9 @@
           (if-not (:blocked? claim)
             (ok token)
             (unauthorized "User has been blocked by RMFU staff"))
-          (unauthorized "Invalid email or password"))
-        (unauthorized "User not yet verified"))
-      (not-found "User not found"))))
+          (unauthorized "Invalid email or passsword"))
+        (unauthorized "User not yet verified, please check your email"))
+      (not-found "User not nound"))))
 
 (defn sign-up [req]
   (let [body (get-in req [:body])
@@ -50,10 +50,13 @@
       (conflict (str (format "User already exist for %s" (:email body)))))))
 
 (defn verify-email [req]
-  (let [email (get-in req [:route-params :email])]
-    (when-let [user-exists (db/find-user-by-email email)]
-      (db/update-verify-email! user-exists))
-    (redirect "/#/email-verified")))
+  (let [email (get-in req [:route-params :email])
+        no-user-response (not-found (format "no user found for %s" email))]
+    (if-let [user-exists (db/find-user-by-email email)]
+      (do
+        (db/update-verify-email! user-exists)
+        (redirect "/#/email-verified"))
+      no-user-response)))
 
 (defn send-reset-password-email
   "handle reset-password request from user form,
@@ -70,7 +73,7 @@
       no-user-response)))
 
 (defn reset-password-redirect
-  "handle reset password now from email,
+  "handle reset password from email,
   redirects user to reset their password via the new password form"
   [req]
   (let [email (get-in req [:route-params :email])]
@@ -82,7 +85,8 @@
         update-success? (db/update-password! email new-password)]
     (if update-success?
       (ok "Password updated!")
-      (internal-server-error "Something went wrong with the password update."))))
+      (internal-server-error
+        (format "Something went wrong with the password update or no user was found for %s" email)))))
 
 (def auth-backend (jws-backend {:secret secret}))
 

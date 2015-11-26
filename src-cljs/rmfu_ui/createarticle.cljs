@@ -21,8 +21,7 @@
   "The page for creating a new article."
   []
   [:div
-   [nav "create"]
-   [:div.container.jumbotron.largemain
+   [:div.container.jumbotron.large-main
     [:div.row
      [:div.col-lg-12
       [:h1.text-center "Create Article"]

@@ -1,9 +1,7 @@
-(ns rmfu-ui.feed
-  (:require [rmfu-ui.nav :refer [nav]]))
+(ns rmfu-ui.feed)
 
 (defn feed []
   [:div
-   [nav "feed"]
    [:div.container.jumbotron.large-main
     [:div.row
      [:div.col-lg-12

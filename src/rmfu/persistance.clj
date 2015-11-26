@@ -6,8 +6,7 @@
             [monger.result :refer [acknowledged?]]
             [buddy.hashers :as hasher]
             [rmfu.email :as email]
-            [environ.core :refer [env]]
-            [slingshot.slingshot :refer [try+]])
+            [environ.core :refer [env]])
   (:import org.bson.types.ObjectId))
 
 (defonce db-config {:name (or (System/getenv "RMFU_DB") "rmfu")})
@@ -41,18 +40,16 @@
   (let [coll "users"
         oid (:_id user)]
     (when-not (:verified? user)
-      (try+
-        (mc/update-by-id db coll oid {$set {:verified? true}})
-        (catch [:type :validation] e
-          (println "Error: " (:message e))))
+      (acknowledged?
+        (mc/update-by-id db coll oid {$set {:verified? true}}))
       nil)))
 
 (defn update-password! [email new-password]
-  (let [user (find-user-by-email email)
-        coll "users"
-        oid (:_id user)]
-    (acknowledged?
-      (mc/update-by-id db coll oid {$set {:password (hash-password new-password)}}))))
+  (if-let [user (find-user-by-email email)]
+    (let [oid (:_id user)
+          coll "users"]
+      (acknowledged?
+        (mc/update-by-id db coll oid {$set {:password (hash-password new-password)}})))))
 
 (defn update-user-profile!
   "Updates user doc with profile map, returns true if db operation is successful"

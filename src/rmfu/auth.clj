@@ -16,7 +16,7 @@
   (hasher/check provided saved))
 
 (defn sign-token [doc]
-  (let [claim {:exp (time/plus (time/now) (time/hours 1))}]
+  (let [claim {:exp (time/plus (time/now) (time/days 3))}]
     (jws/sign (merge claim doc) secret)))
 
 (defn auth-user [user]

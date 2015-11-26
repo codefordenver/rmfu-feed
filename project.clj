@@ -19,7 +19,6 @@
                  [buddy "0.7.2"]
                  [clj-mandrill "0.1.0"]
                  [secretary "1.2.3"]
-                 [cheshire "5.5.0"]
                  [environ "1.0.1"]
                  [slingshot "0.12.2"]
                  [cljsjs/chosen "1.4.2-1"]
