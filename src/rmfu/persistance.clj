@@ -7,6 +7,7 @@
             [buddy.hashers :as hasher]
             [rmfu.email :as email]
             [environ.core :refer [env]]
+            [rmfu.validation :as validate]
             [slingshot.slingshot :refer [try+]])
   (:import org.bson.types.ObjectId))
 
@@ -120,10 +121,12 @@
   Warning: This method is not idempotent currently."
   [article author-email]
   (let [{:keys [title content]} article
+        is-article-valid? (validate/article article)
         article-oid (ObjectId.)
         article-doc {:author-email author-email
                      :_id          article-oid
                      :title        title
                      :content      content
                      :created      (java.util.Date.)}]
-    (acknowledged? (mc/insert db "articles" article-doc))))
+    (when is-article-valid?
+      (acknowledged? (mc/insert db "articles" article-doc)))))
