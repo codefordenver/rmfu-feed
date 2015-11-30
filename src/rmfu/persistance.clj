@@ -127,3 +127,6 @@
                      :content      content
                      :created      (java.util.Date.)}]
     (acknowledged? (mc/insert db "articles" article-doc))))
+
+(defn find-article-by-id [article-id]
+  )
