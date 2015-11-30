@@ -25,7 +25,9 @@
                  [cljsjs/chosen "1.4.2-1"]
                  [cljsjs/jquery "2.1.4-0"]
                  [cljsjs/fixed-data-table "0.4.6-0"]
-                 [timothypratley/reanimated "0.1.4"]]
+                 [timothypratley/reanimated "0.1.4"]
+                 [metosin/schema-tools "0.7.0"]
+                 [prismatic/schema "1.0.3"]]
 
   :plugins [[lein-cljsbuild "1.1.0"]
             [lein-figwheel "0.4.1"]
@@ -80,4 +82,4 @@
 
   :clean-targets ^{:protect false} ["resources/public/js/compiled" "target"]
 
-  :source-paths ["src" "src-cljs"])
+  :source-paths ["src" "src-cljs" "src-cljc"])
