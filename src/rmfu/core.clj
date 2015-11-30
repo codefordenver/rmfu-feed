@@ -28,7 +28,7 @@
 (def secret (System/getenv "RMFU_SECRET"))
 
 (defn sign-in
-  "Sings a user in, only reply with 200 if :verified? true"
+  "Signs a user in, only reply with 200 if :verified? true"
   [req]
   (let [body (get-in req [:body])
         email (:email body)]
@@ -38,9 +38,9 @@
           (if-not (:blocked? claim)
             (ok token)
             (unauthorized "User has been blocked by RMFU staff"))
-          (unauthorized "Invalid email or passsword"))
+          (unauthorized "Invalid email or password"))
         (unauthorized "User not yet verified"))
-      (not-found "User not nound"))))
+      (not-found "User not found"))))
 
 (defn sign-up [req]
   (let [body (get-in req [:body])
@@ -84,24 +84,6 @@
       (ok "Password updated!")
       (internal-server-error "Something went wrong with the password update."))))
 
-(defn get-article [req]
-  (let [id (get-in req [:route-params :id])]
-  (ok {:title (str "Article: " id " title!")
-       :subtitle "Test: New Legislation"
-       :date "November 16, 2015"
-       :article-text "TEST: Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                            
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. 
-                            
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. 
-                            
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. 
-                            
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. 
-                            
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-      })))
-
 (def auth-backend (jws-backend {:secret secret}))
 
 (defn update-user-profile [req]
@@ -140,6 +122,20 @@
                                    (unauthorized {:error "not auth"}))))
                         auth-backend)
 
+                      (wrap-authentication
+                        (GET* "/articles/:id" {:as request}
+                              :path-params [id :- String]
+                              :middlewares [rmfu.auth/auth-mw]
+                              :header-params [identity :- String]
+                              (let [identity (get-in request [:headers "identity"])
+                                    unsigned-token (auth/unsign-token identity)]
+                                (if unsigned-token
+                                  (if-let [article (db/find-article-by-id id)]
+                                    (ok article)
+                                    (not-found (str "No article found with id: " id)))
+                                  (unauthorized {:error "not auth"}))))
+                        auth-backend)
+
                       ;; ADMIN ONLY ROUTES
                       ;; -----------------
 
@@ -176,7 +172,6 @@
             (PUT "/reset-password-from-form" [] reset-password-from-form!)
             (PUT "/update-user-profile" [] update-user-profile)
             (GET "/verify-email/:email" [] verify-email)
-            (GET "/article/:id" [] get-article)
             (route/resources "/assets")                     ;; serve /assets for chosen lib jar
             (route/not-found (not-found "Resource not found")))
 

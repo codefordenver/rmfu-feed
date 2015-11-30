@@ -14,6 +14,8 @@
 
 (def conn (atom nil))
 
+(def articles-coll "articles")
+
 (let [uri (System/getenv "MONGO_DB_URL")]
   (if (env :production?)
     (reset! conn (mg/connect-via-uri uri))
@@ -126,7 +128,11 @@
                      :title        title
                      :content      content
                      :created      (java.util.Date.)}]
-    (acknowledged? (mc/insert db "articles" article-doc))))
+    (mc/insert-and-return db articles-coll article-doc)))
 
 (defn find-article-by-id [article-id]
-  )
+  (try
+    (dissoc
+      (mc/find-map-by-id db articles-coll (ObjectId. article-id))
+      :_id)
+    (catch IllegalArgumentException e nil)))

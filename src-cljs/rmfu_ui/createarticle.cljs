@@ -1,5 +1,6 @@
 (ns rmfu-ui.createarticle
   (:require [rmfu-ui.nav :refer [nav]]
+            [rmfu-ui.utils :refer [get-identity-token]]
             [reagent.core :as reagent]
             [ajax.core :refer [POST]]))
 
@@ -15,9 +16,6 @@
 (defn get-event-value
   [e]
   (-> e .-target .-value))
-
-(def get-identity-token
-  (.getItem (.-localStorage js/window) "rmfu-feed-identity-token"))
 
 (defn createarticle
   "The page for creating a new article."
@@ -158,7 +156,7 @@
          :value    "create_article"
          :on-click (fn []
                      (POST "/api/articles"
-                           {:headers       {:identity get-identity-token}
+                           {:headers       {:identity (get-identity-token)}
                             :format        :json
                             :params        @new-article-state
                             :error-handler #(js/alert %)
