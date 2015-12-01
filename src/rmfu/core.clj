@@ -28,7 +28,7 @@
 (def secret (System/getenv "RMFU_SECRET"))
 
 (defn sign-in
-  "Sings a user in, only reply with 200 if :verified? true"
+  "Signs a user in, only reply with 200 if :verified? true"
   [req]
   (let [body (get-in req [:body])
         email (:email body)]
@@ -38,9 +38,9 @@
           (if-not (:blocked? claim)
             (ok token)
             (unauthorized "User has been blocked by RMFU staff"))
-          (unauthorized "Invalid email or passsword"))
+          (unauthorized "Invalid email or password"))
         (unauthorized "User not yet verified"))
-      (not-found "User not nound"))))
+      (not-found "User not found"))))
 
 (defn sign-up [req]
   (let [body (get-in req [:body])
@@ -122,6 +122,20 @@
                                    (unauthorized {:error "not auth"}))))
                         auth-backend)
 
+                      (wrap-authentication
+                        (GET* "/articles/:id" {:as request}
+                              :path-params [id :- String]
+                              :middlewares [rmfu.auth/auth-mw]
+                              :header-params [identity :- String]
+                              (let [identity (get-in request [:headers "identity"])
+                                    unsigned-token (auth/unsign-token identity)]
+                                (if unsigned-token
+                                  (if-let [article (db/find-article-by-id id)]
+                                    (ok article)
+                                    (not-found (str "No article found with id: " id)))
+                                  (unauthorized {:error "not auth"}))))
+                        auth-backend)
+
                       ;; ADMIN ONLY ROUTES
                       ;; -----------------
 
@@ -172,6 +186,7 @@
                      :access-control-allow-methods [:get :put :post :delete])
           params-middleware/wrap-params
           (json-middleware/wrap-json-body {:keywords? true})
+          (json-middleware/wrap-json-response)
           (wrap-file "resources/public")))                  ;; server static files from this directory
 
 (defn -main [port]
