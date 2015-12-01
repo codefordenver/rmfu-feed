@@ -38,9 +38,7 @@
                             (do
                             (if (session/get :rmbr-token)
                                 (.setItem js/localStorage "rmfu-feed-identity-token" res))
-                            (secretary/dispatch! "/feed"))
-
-                            )})))
+                            (secretary/dispatch! "/feed")))})))
 
 (defn post-sign-up [profile]
   (let [{:keys [username password email]} profile]
