@@ -35,8 +35,12 @@
            :format        :json
            :error-handler #(js/alert %)
            :handler       (fn [res]
-                            (.setItem js/localStorage "rmfu-feed-identity-token" res)
-                            (secretary/dispatch! "/feed"))})))
+                            (do
+                            (if (session/get :rmbr-token)
+                                (.setItem js/localStorage "rmfu-feed-identity-token" res))
+                            (secretary/dispatch! "/feed"))
+
+                            )})))
 
 (defn post-sign-up [profile]
   (let [{:keys [username password email]} profile]
@@ -168,7 +172,8 @@
                                  [:br]
                                  [:div.checkbox
                                   [:label
-                                   [:input {:type "checkbox"}] "remember me?"]
+                                   [:input {:type "checkbox"
+                                            :on-click (fn [e] (session/put! :rmbr-token (.-checked (.-target e))))}] "remember me?"]
                                   [:p.pull-right
                                    [:button.btn.btn-sm
                                     {:type     "button"
