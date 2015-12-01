@@ -14,6 +14,8 @@
 
 (def conn (atom nil))
 
+(def articles-coll "articles")
+
 (let [uri (System/getenv "MONGO_DB_URL")]
   (if (env :production?)
     (reset! conn (mg/connect-via-uri uri))
@@ -114,3 +116,23 @@
         oid (:_id claim)]
     (acknowledged?
       (mc/update-by-id db coll oid {$set {:blocked? state}}))))
+
+(defn add-article!
+  "Adds a new article to the database.
+  Warning: This method is not idempotent currently."
+  [article author-email]
+  (let [{:keys [title content]} article
+        article-oid (ObjectId.)
+        article-doc {:author-email author-email
+                     :_id          article-oid
+                     :title        title
+                     :content      content
+                     :created      (java.util.Date.)}]
+    (mc/insert-and-return db articles-coll article-doc)))
+
+(defn find-article-by-id [article-id]
+  (try
+    (dissoc
+      (mc/find-map-by-id db articles-coll (ObjectId. article-id))
+      :_id)
+    (catch IllegalArgumentException e nil)))

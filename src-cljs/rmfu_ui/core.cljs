@@ -285,7 +285,8 @@
 (secretary/defroute "/create" []
                     (session/put! :current-page #'createarticle))
 
-(secretary/defroute "/article" []
+(secretary/defroute "/articles/:id" [id]
+                    (session/put! :article-id id)
                     (session/put! :current-page #'article))
 
 (secretary/defroute "/customfeed" []
