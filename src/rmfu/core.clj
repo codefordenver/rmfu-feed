@@ -20,10 +20,20 @@
     [ring.util.http-response :refer :all]
     [compojure.api.sweet :refer :all]))
 
+(defn check-env
+  "Checks if an environment variable exists"
+  [env-var]
+  (if (nil? (System/getenv env-var))
+    (str env-var " is missing.")
+    (str env-var ": " (System/getenv env-var))))
+
 (if (env :dev?)
   (do
     (println (format "_______ ENV DEV: %s   " (env :dev?)))
-    (println (format "_______ CLIENT URL: %s" (env :client-url)))))
+    (println (format "_______ CLIENT URL: %s" (env :client-url)))
+    (println (check-env "RMFU_SECRET"))
+    (println (check-env "RMFU_FROM_EMAIL"))
+    (println (check-env "MANDRILL_API_KEY"))))
 
 (def secret (System/getenv "RMFU_SECRET"))
 
@@ -194,7 +204,8 @@
           (wrap-file "resources/public")))                  ;; server static files from this directory
 
 (defn -main [port]
-  (jetty/run-jetty app {:port (Integer. port)}))
+    (jetty/run-jetty app {:port (Integer. port)}))
 
 (defn -dev [port]
+
   (jetty/run-jetty (wrap-reload #'app) {:port (Integer. port)}))
