@@ -30,9 +30,9 @@
   (do
     (println (format "_______ ENV DEV: %s   " (env :dev?)))
     (println (format "_______ CLIENT URL: %s" (env :client-url)))
-    (println (check-env "RMFU_SECRET"))
-    (println (check-env "RMFU_FROM_EMAIL"))
-    (println (check-env "MANDRILL_API_KEY"))))
+    (check-env "RMFU_SECRET")
+    (check-env "RMFU_FROM_EMAIL")
+    (check-env "MANDRILL_API_KEY")))
 
 (def secret (System/getenv "RMFU_SECRET"))
 
