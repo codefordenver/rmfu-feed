@@ -23,9 +23,8 @@
 (defn check-env
   "Checks if an environment variable exists"
   [env-var]
-  (if (nil? (System/getenv env-var))
-    (str env-var " is missing.")
-    (str env-var ": " (System/getenv env-var))))
+  (when (nil? (System/getenv env-var))
+    (throw (Exception. (str env-var " is missing.")))))
 
 (if (env :dev?)
   (do
