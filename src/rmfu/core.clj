@@ -20,10 +20,19 @@
     [ring.util.http-response :refer :all]
     [compojure.api.sweet :refer :all]))
 
+(defn check-env
+  "Checks if an environment variable exists"
+  [env-var]
+  (when (nil? (System/getenv env-var))
+    (throw (Exception. (str env-var " is missing.")))))
+
 (if (env :dev?)
   (do
     (println (format "_______ ENV DEV: %s   " (env :dev?)))
-    (println (format "_______ CLIENT URL: %s" (env :client-url)))))
+    (println (format "_______ CLIENT URL: %s" (env :client-url)))
+    (check-env "RMFU_SECRET")
+    (check-env "RMFU_FROM_EMAIL")
+    (check-env "MANDRILL_API_KEY")))
 
 (def secret (System/getenv "RMFU_SECRET"))
 
