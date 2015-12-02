@@ -30,6 +30,7 @@
 (defn request-password-reset [profile]
   (POST "/send-reset-password-email"
         {:params        {:email (:email profile)}
+         :format        :json
          :error-handler #(js/alert %)
          :handler       (fn [res]
                           (do
