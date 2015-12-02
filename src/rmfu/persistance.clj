@@ -136,3 +136,9 @@
       (mc/find-map-by-id db articles-coll (ObjectId. article-id))
       :_id)
     (catch IllegalArgumentException e nil)))
+
+(defn get-articles
+  "Gets the articles from the db."
+  []
+  (map #(assoc % :_id (str (:_id %)))
+       (mc/find-maps db articles-coll)))
