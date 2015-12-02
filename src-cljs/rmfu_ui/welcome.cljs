@@ -13,7 +13,7 @@
            :style    {:color     "dimgray"
                       :font-size "1.15em"}} "FEED"]]
      [:hr]
-     [:h4.text-center [:small "☴"]]
+     [:h4.text-center [:small "☀"]]
      [:h4.text-center
       [:small [:em "by "]]
       [:a {:href "http://www.rmfu.org/" :target "blank"}

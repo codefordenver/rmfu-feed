@@ -18,8 +18,6 @@
     (reagent/create-class
       {:component-will-mount #(fetch-article (session/get :article-id))
        :reagent-render  (fn []
-                          [:div
-                           [nav]
                            [:div.container.jumbotron.large-main
                             [:div.row
                              [:div.col-lg-12
@@ -51,5 +49,5 @@
                               [:div.col-lg-3.date
                                "Oct 1, 2015"]
                               [:div.col-lg-9.bullet
-                               "Tiberius - Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."]]]]]])
+                               "Tiberius - Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."]]]]])
                            })))

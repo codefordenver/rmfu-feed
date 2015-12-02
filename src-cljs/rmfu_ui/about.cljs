@@ -1,9 +1,7 @@
-(ns rmfu-ui.about
-  (:require [rmfu-ui.nav :refer [nav]]))
+(ns rmfu-ui.about)
 
 (defn about []
   [:div
-   [nav]
    [:div.container.jumbotron.large-main
     [:div.row
      [:div.col-lg-12
