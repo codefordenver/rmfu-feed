@@ -203,8 +203,7 @@
           (wrap-file "resources/public")))                  ;; server static files from this directory
 
 (defn -main [port]
-    (jetty/run-jetty app {:port (Integer. port)}))
+  (jetty/run-jetty app {:port (Integer. port)}))
 
 (defn -dev [port]
-
   (jetty/run-jetty (wrap-reload #'app) {:port (Integer. port)}))
