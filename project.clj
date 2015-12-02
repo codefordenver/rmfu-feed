@@ -26,7 +26,8 @@
                  [cljsjs/fixed-data-table "0.4.6-0"]
                  [timothypratley/reanimated "0.1.4"]
                  [metosin/schema-tools "0.7.0"]
-                 [prismatic/schema "1.0.3"]]
+                 [prismatic/schema "1.0.3"]
+                 [com.cemerick/url "0.1.1"]]
 
   :plugins [[lein-cljsbuild "1.1.0"]
             [lein-figwheel "0.4.1"]

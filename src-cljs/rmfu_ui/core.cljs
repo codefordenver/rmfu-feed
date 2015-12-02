@@ -172,6 +172,7 @@
 
 (secretary/defroute "/new-password" [query-params]
                     (session/put! :email (:email query-params))
+                    (session/put! :token (:token query-params))
                     (session/put! :current-page #'new-password-component))
 
 (secretary/defroute "*" []

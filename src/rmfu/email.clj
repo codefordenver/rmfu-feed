@@ -12,9 +12,9 @@
                             {:subject "Verify your email" :from_email rmfu-from-email :from_name "RMFU"
                              :to      [{:email email :name username}]})))
 
-(defn send-reset-password-email [profile]
+(defn send-reset-password-email [profile token]
   (let [{:keys [email username]} profile]
     (mandrill/send-template "RMFU Feed Reset Password"
                             {:subject "Reset your password " :from_email rmfu-from-email :from_name "RMFU"
-                             :to      [{:email email :name username}]})))
-
+                             :to      [{:email email :name username}]
+                             :global_merge_vars [{:name "NAME" :content username} {:name "TOKEN" :content token}]})))

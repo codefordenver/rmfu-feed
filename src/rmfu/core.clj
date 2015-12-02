@@ -18,7 +18,8 @@
     [buddy.auth.middleware :refer [wrap-authentication]]
     [buddy.auth.backends.token :refer [jws-backend]]
     [ring.util.http-response :refer :all]
-    [compojure.api.sweet :refer :all]))
+    [compojure.api.sweet :refer :all]
+    [cemerick.url :refer [url-encode]]))
 
 (defn check-env
   "Checks if an environment variable exists"
@@ -76,8 +77,10 @@
     (if email
       (if-let [user-found (db/find-user-by-email email)]
         (do
-          (email/send-reset-password-email user-found)
-          (accepted (str (format "User found for : %s" email) ", please check your email.")))
+          (let [token (rmfu.auth/sign-token email {:duration 1})
+            encoded-token (url-encode token)]
+          (email/send-reset-password-email user-found encoded-token)
+          (accepted (str (format "User found for : %s" email) ", please check your email."))))
         no-user-response)
       no-user-response)))
 
@@ -85,8 +88,12 @@
   "handle reset password from email,
   redirects user to reset their password via the new password form"
   [req]
-  (let [email (get-in req [:route-params :email])]
-    (redirect (str (env :client-url) "/#/new-password?email=" email))))
+  (let [email (get-in req [:route-params :email])
+        valid-token (rmfu.auth/unsign-token (get-in req [:params :token]))
+        matches-email (= (:email valid-token) email)]
+    (if matches-email
+      (redirect (str (env :client-url) "/#/new-password?email=" email))
+      (unauthorized "Invalid password reset token"))))
 
 (defn reset-password-from-form! [req]
   (let [email (get-in req [:body :email])
