@@ -17,4 +17,5 @@
     (mandrill/send-template "RMFU Feed Reset Password"
                             {:subject "Reset your password " :from_email rmfu-from-email :from_name "RMFU"
                              :to      [{:email email :name username}]
-                             :global_merge_vars [{:name "NAME" :content username} {:name "TOKEN" :content token}]})))
+                             :global_merge_vars [{:name "NAME" :content username} {:name "TOKEN" :content token}
+                                                 {:name "HOST" :content (env :host-name)}]})))

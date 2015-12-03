@@ -28,10 +28,7 @@
                  :response-format :json
                  :keywords?       true
                  :handler         (fn [res]
-                                    (session/put! :profile res))})
-           (do
-             (session/clear!)
-             (secretary/dispatch! "/"))))
+                                    (session/put! :profile res))})))
        :reagent-render
        (fn []
          [:nav {:className "navbar navbar-light bg-faded"}

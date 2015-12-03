@@ -30,7 +30,7 @@
 (if (env :dev?)
   (do
     (println (format "_______ ENV DEV: %s   " (env :dev?)))
-    (println (format "_______ CLIENT URL: %s" (env :client-url)))
+    (println (format "_______ CLIENT/SERVER URL: %s" (env :host-name)))
     (check-env "RMFU_SECRET")
     (check-env "RMFU_FROM_EMAIL")
     (check-env "MANDRILL_API_KEY")))
@@ -76,11 +76,10 @@
         no-user-response (not-found (format "no user found for %s" email))]
     (if email
       (if-let [user-found (db/find-user-by-email email)]
-        (do
-          (let [token (rmfu.auth/sign-token email {:duration 1})
-            encoded-token (url-encode token)]
+        (let [token (rmfu.auth/sign-token {:email email :secret (System/getenv "RMFU_SECRET")} {:duration 1})
+              encoded-token (url-encode token)]
           (email/send-reset-password-email user-found encoded-token)
-          (accepted (str (format "User found for : %s" email) ", please check your email."))))
+          (accepted (str (format "User found for : %s" email) ", please check your email.")))
         no-user-response)
       no-user-response)))
 
@@ -88,21 +87,31 @@
   "handle reset password from email,
   redirects user to reset their password via the new password form"
   [req]
-  (let [email (get-in req [:route-params :email])
-        valid-token (rmfu.auth/unsign-token (get-in req [:params :token]))
-        matches-email (= (:email valid-token) email)]
-    (if matches-email
-      (redirect (str (env :client-url) "/#/new-password?email=" email))
+  (let [email (get-in req [:params :email])
+        token (get-in req [:params :token])
+        unsigned-token (rmfu.auth/unsign-token token)
+        valid-claim? (and (= (:email unsigned-token) email)
+                          (= (:secret unsigned-token) (System/getenv "RMFU_SECRET")))]
+    (if valid-claim?
+      (redirect (str (env :host-name) "/#/new-password?token=" (url-encode token)))
       (unauthorized "Invalid password reset token"))))
 
 (defn reset-password-from-form! [req]
-  (let [email (get-in req [:body :email])
-        new-password (get-in req [:body :new-password])
-        update-success? (db/update-password! email new-password)]
-    (if update-success?
-      (ok "Password updated!")
-      (internal-server-error
-        (format "Something went wrong with the password update or no user was found for %s" email)))))
+  (let [unauthorized-response (unauthorized "Invalid password reset request")
+        token (get-in req [:body :token])
+        new-password (get-in req [:body :new-password])]
+    (if (and token new-password)
+      (let [unsigned-token (rmfu.auth/unsign-token token)
+            email (:email unsigned-token)
+            valid-claim? (= (:secret unsigned-token) (System/getenv "RMFU_SECRET"))]
+        (if valid-claim?
+          (if (db/update-password! email new-password)
+            (ok "Password updated!")
+            (internal-server-error
+              (format "Something went wrong with the password update or
+          no user was found for %s" email)))
+          unauthorized-response))
+      unauthorized-response)))
 
 (def auth-backend (jws-backend {:secret secret}))
 
@@ -188,7 +197,7 @@
             (POST* "/signin" [] sign-in)
             (POST "/signup" [] sign-up)
             (POST "/send-reset-password-email" [] send-reset-password-email)
-            (GET "/reset-password-redirect/:email" [] reset-password-redirect)
+            (GET "/reset-password-redirect" [] reset-password-redirect)
             (PUT "/reset-password-from-form" [] reset-password-from-form!)
             (PUT "/update-user-profile" [] update-user-profile)
             (GET "/verify-email/:email" [] verify-email)
