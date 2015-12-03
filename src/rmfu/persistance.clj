@@ -6,7 +6,8 @@
             [monger.result :refer [acknowledged?]]
             [buddy.hashers :as hasher]
             [rmfu.email :as email]
-            [environ.core :refer [env]])
+            [environ.core :refer [env]]
+            [rmfu.validation :as validate])
   (:import org.bson.types.ObjectId))
 
 (defonce db-config {:name (or (System/getenv "RMFU_DB") "rmfu")})
@@ -119,13 +120,15 @@
   Warning: This method is not idempotent currently."
   [article author-email]
   (let [{:keys [title content]} article
+        is-article-valid? (validate/article article)
         article-oid (ObjectId.)
         article-doc {:author-email author-email
                      :_id          article-oid
                      :title        title
                      :content      content
                      :created      (java.util.Date.)}]
-    (mc/insert-and-return db articles-coll article-doc)))
+    (when is-article-valid?
+      (mc/insert-and-return db articles-coll article-doc))))
 
 (defn find-article-by-id [article-id]
   (try
