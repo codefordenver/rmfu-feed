@@ -26,7 +26,8 @@
                  [cljsjs/fixed-data-table "0.4.6-0"]
                  [timothypratley/reanimated "0.1.4"]
                  [metosin/schema-tools "0.7.0"]
-                 [prismatic/schema "1.0.3"]]
+                 [prismatic/schema "1.0.3"]
+                 [com.cemerick/url "0.1.1"]]
 
   :plugins [[lein-cljsbuild "1.1.0"]
             [lein-figwheel "0.4.1"]
@@ -40,9 +41,8 @@
   ;; when running with $ lein run
   :profiles {:dev     {:main            rmfu.core/-dev
                        :env             {:dev?          true
-                                         :host-name     "https://rmfu-feed.herokuapp.com/" ;; include the dash at the end
-                                         :client-url    "http://localhost:3449"
-                                         :api-end-point "http://localhost:3000"}
+                                         :host-name     "http://localhost:3000/"} ;; do include the dash at the end
+
 
                        :closure-defines {"API_END_POINT" "http://localhost:3000"}
 
@@ -66,7 +66,8 @@
 
              :repl    {:main rmfu.core}
 
-             :uberjar {:env         {:production? true}
+             :uberjar {:env         {:production? true
+                                     :host-name   "https://rmfu-feed.herokuapp.com/"}
                        :aot         :all
                        :omit-source true
                        :cljsbuild   {:jar    true

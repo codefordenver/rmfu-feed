@@ -1,6 +1,6 @@
 (ns ^:figwheel-always rmfu-ui.core
   (:require
-    [ajax.core :refer [POST GET PUT]]
+    [ajax.core :refer [POST GET]]
     [goog.events :as events]
     [goog.history.EventType :as EventType]
     [reagent.core :as reagent]
@@ -12,6 +12,7 @@
     [rmfu-ui.nav :refer [nav]]
     [rmfu-ui.sign-in :refer [sign-in]]
     [rmfu-ui.sign-up :refer [sign-up]]
+    [rmfu-ui.new-password :refer [new-password-component]]
     [rmfu-ui.customfeed :refer [customfeed]]
     [rmfu-ui.feed :refer [feed]]
     [rmfu-ui.admin :refer [admin]]
@@ -38,18 +39,6 @@
                             (js/alert res))
                           )}))
 
-(defn update-password [profile]
-  (PUT "/reset-password-from-form"
-       {:params        {:email        (:email profile)
-                        :new-password (:password profile)}
-        :format        :json
-        :error-handler #(js/alert %)
-        :handler       (fn [res]
-                         (do
-                           (println "res:" res)
-                           (.replaceState js/history #js {} "welcome" "/")
-                           (js/alert res)))}))
-
 ;; -------------------------
 ;; Utility functions
 
@@ -71,13 +60,6 @@
            :placeholder "me@mail.net"
            :on-change   #(swap! profile assoc :email (-> % .-target .-value))}])
 
-(defn password-input-field [profile]
-  [:input {:type        "password"
-           :className   "form-control"
-           :value       (:password @profile)
-           :placeholder "8 or more characters"
-           :on-change   #(swap! profile assoc :password (-> % .-target .-value))}])
-
 (defn reset-password-component []
   (let [profile (reagent/atom {:username ""
                                :email    ""
@@ -93,26 +75,6 @@
                                                 (reset-password-email @profile)
                                                 (.preventDefault e))
                                     } "reset"]]]]))
-
-(defn new-password-component []
-  (let [profile (reagent/atom {:username ""
-                               :email    ""
-                               :password ""})]
-    (do
-      (swap! profile assoc :email (session/get :email))
-      (welcome-component-wrapper
-        [:div.form-group {:style {:padding "1em"}}
-         [:p.text-center.bg-primary "New Password"]
-         [:label "password:"]
-         [password-input-field profile]
-         [:br]
-         [:button.btn.btn-default {:type "button"
-                                   :on-click
-                                         (fn [e]
-                                           (if (or (empty? (:password @profile)) (not (validation/has-value? (:password @profile))))
-                                             (js/alert "Invalid Password")
-                                             (update-password @profile))
-                                           (.preventDefault e))} "reset"]]))))
 
 (defn email-verified-component []
   [welcome-component-wrapper
@@ -162,7 +124,7 @@
                     (session/put! :current-page #'admin))
 
 (secretary/defroute "/about" []
-		    (session/put! :current-page #'about))
+                    (session/put! :current-page #'about))
 
 (secretary/defroute "/email-verified" []
                     (session/put! :current-page #'email-verified-component))
@@ -171,7 +133,7 @@
                     (session/put! :current-page #'reset-password-component))
 
 (secretary/defroute "/new-password" [query-params]
-                    (session/put! :email (:email query-params))
+                    (session/put! :token (:token query-params))
                     (session/put! :current-page #'new-password-component))
 
 (secretary/defroute "*" []

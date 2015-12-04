@@ -35,7 +35,7 @@
    [:div.container.jumbotron.large-main
     [:div.row
      [:div.col-lg-12
-      [alert :error app-state]
+      [alert :error app-state 2500]
       [:h1.text-center "Create Article"]
       [:h4 "Title of Article"]
       [:input.form-control

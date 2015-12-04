@@ -92,4 +92,4 @@
                               [Column {:label "username" :dataKey 2 :cellDataGetter getter :width 100 :align "center"}]
                               [Column {:label "blocked?" :dataKey 1 :align "center" :cellDataGetter blocked-getter
                                        :width 100 :cellRenderer reagent/as-element}]]]
-                            [alert :info app-state]]]]))}))
+                            [alert :info app-state 2500]]]]))}))
