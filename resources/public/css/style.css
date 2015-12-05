@@ -44,7 +44,7 @@ input {
 .greyheading {
   text-decoration: none;
   font-size: 1.2rem;
-  color: darkgrey;
+  color: #777;
 }
 
 .greytext {
@@ -82,6 +82,10 @@ input {
     border: solid 1px black;
     padding: 10px;
     border-radius: 5px;
+}
+
+.whitebackground {
+  background-color: white;
 }
 
 .document {
