@@ -165,6 +165,17 @@
                                   (unauthorized {:error "not auth"}))))
                         auth-backend)
 
+                      (wrap-authentication
+                        (GET* "/articles" {:as request}
+                              :middlewares [rmfu.auth/auth-mw]
+                              :header-params [identity :- String]
+                              (let [identity (get-in request [:headers "identity"])
+                                    unsigned-token (auth/unsign-token identity)]
+                                (if unsigned-token
+                                  (db/get-articles)
+                                  (unauthorized {:error "not auth"}))))
+                        auth-backend)
+
                       ;; ADMIN ONLY ROUTES
                       ;; -----------------
 

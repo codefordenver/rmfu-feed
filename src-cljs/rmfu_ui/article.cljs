@@ -1,6 +1,5 @@
 (ns rmfu-ui.article
-  (:require [rmfu-ui.nav :refer [nav]]
-            [rmfu-ui.utils :refer [get-identity-token]]
+  (:require [rmfu-ui.utils :refer [get-identity-token]]
             [reagent.core :as reagent]
             [reagent.session :as session]
             [ajax.core :refer [PUT GET]]))
