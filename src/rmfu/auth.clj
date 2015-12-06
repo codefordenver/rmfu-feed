@@ -1,6 +1,5 @@
 (ns rmfu.auth
   (:require [buddy.hashers :as hasher]
-            [rmfu.persistance :as db]
             [buddy.sign.jws :as jws]
             [buddy.auth :refer [authenticated?]]
             [ring.util.http-response :refer [unauthorized]]
@@ -19,12 +18,11 @@
   (let [claim {:exp (time/plus (time/now) (time/days (or (:duration opts) 3)))}]
     (jws/sign (merge claim doc) secret)))
 
-(defn auth-user [user]
-  (let [{:keys [email password]} user
-        lookup (db/find-user-by-email email)]
-    (when-not (nil? lookup)
-      (if (valid-password? password (:password lookup))
-        (sign-token (dissoc lookup :password :_id))
+(defn auth-user [user claim]
+  (let [{:keys [password]} user]
+    (when-not (nil? claim)
+      (if (valid-password? password (:password claim))
+        (sign-token (dissoc claim :password :_id))
         nil))))
 
 (defn unsign-token [doc]

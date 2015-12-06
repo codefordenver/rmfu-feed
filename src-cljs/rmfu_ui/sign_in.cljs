@@ -72,35 +72,36 @@
              :on-key-down detect-key}]))
 
 (defn sign-in []
-  (reagent/create-class
-    {:component-will-mount
-     (fn []
-       (when (identity-token)
-         (secretary/dispatch! "/feed")))
-     :reagent-render
-     (fn []
-       [:div
-        [welcome-component-wrapper
-         [:div.form-group {:style {:padding "1em"}}
-          [alert :warning app-state 5000]
-          [:p.text-center.bg-primary "Sign in"]
-          [:label "email:"]
-          [email-input-field]
-          [:label "password:"]
-          [passsword-input-field]
-          [:br]
-          [:div.checkbox
-           [:label
-            [:input {:type "checkbox"}] "remember me?"]
-           [:p.pull-right
-            [:button.btn.btn-sm
+  (let []
+    (reagent/create-class
+      {:component-will-mount
+       (fn []
+         (when (identity-token)
+           (secretary/dispatch! "/feed")))
+       :reagent-render
+       (fn []
+         [:div
+          [welcome-component-wrapper
+           [:div.form-group {:style {:padding "1em"}}
+            [alert :warning app-state 5000]
+            [:p.text-center.bg-primary "Sign in"]
+            [:label "email:"]
+            [email-input-field]
+            [:label "password:"]
+            [passsword-input-field]
+            [:br]
+            [:div.checkbox
+             [:label
+              [:input {:type "checkbox"}] "remember me?"]
+             [:p.pull-right
+              [:button.btn.btn-sm
+               {:type     "button"
+                :on-click #(secretary/dispatch! "/reset-password")} "forgot password?"]]]
+            [:br]
+            [:button.btn.btn-primary.active
              {:type     "button"
-              :on-click #(secretary/dispatch! "/reset-password")} "forgot password?"]]]
-          [:br]
-          [:button.btn.btn-primary.active
-           {:type     "button"
-            :on-click #(sign-in-handler)} "sign-in"]
+              :on-click #(sign-in-handler)} "sign-in"]
 
-          [:button.btn.btn-default.pull-right
-           {:type     "button"
-            :on-click #(secretary/dispatch! "/sign-up")} "sign-up"]]]])}))
+            [:button.btn.btn-default.pull-right
+             {:type     "button"
+              :on-click #(secretary/dispatch! "/sign-up")} "sign-up"]]]])})))
