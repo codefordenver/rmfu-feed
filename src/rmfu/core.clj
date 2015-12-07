@@ -44,7 +44,7 @@
         email (:email body)]
     (if-let [claim (db/find-user-by-email email)]
       (if (:verified? claim)
-        (if-let [token (auth/auth-user body)]
+        (if-let [token (auth/auth-user body claim)]
           (if-not (:blocked? claim)
             (ok token)
             (unauthorized "User has been blocked by RMFU staff"))
@@ -173,6 +173,20 @@
                                     unsigned-token (auth/unsign-token identity)]
                                 (if unsigned-token
                                   (db/get-articles)
+                                  (unauthorized {:error "not auth"}))))
+                        auth-backend)
+
+                      (wrap-authentication
+                        (DELETE* "/articles/:id" {:as request}
+                              :path-params [id :- String]
+                              :middlewares [rmfu.auth/auth-mw]
+                              :header-params [identity :- String]
+                              (let [identity (get-in request [:headers "identity"])
+                                    unsigned-token (auth/unsign-token identity)]
+                                (if unsigned-token
+                                  (if (db/delete-article-by-id id)
+                                    (ok (format "Article %s successfully deleted" id))
+                                    (not-found (format "Unable to delete article %s" id)))
                                   (unauthorized {:error "not auth"}))))
                         auth-backend)
 

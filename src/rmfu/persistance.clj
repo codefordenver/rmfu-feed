@@ -7,7 +7,9 @@
             [buddy.hashers :as hasher]
             [rmfu.email :as email]
             [environ.core :refer [env]]
-            [rmfu.validation :as validate])
+            [rmfu.validation :as validate]
+            [rmfu.auth :refer [sign-token]]
+            [cemerick.url :refer [url-encode]])
   (:import org.bson.types.ObjectId))
 
 (defonce db-config {:name (or (System/getenv "RMFU_DB") "rmfu")})
@@ -96,8 +98,10 @@
                  :zipcode   80216
                  :blocked?  false}]
     (if-not admin
-      (do (mc/insert-and-return db "users" profile)
-          (email/send-reset-password-email profile)))))
+      (let [token (sign-token profile)
+            url-safe-token (url-encode token)]
+           (mc/insert-and-return db "users" profile)
+           (email/send-reset-password-email profile url-safe-token)))))
 
 (init-admin-account!)
 
@@ -142,3 +146,9 @@
   []
   (map #(assoc % :_id (str (:_id %)))
        (mc/find-maps db articles-coll)))
+
+(defn delete-article-by-id [id]
+  (let [claim (mc/find-map-by-id db articles-coll (ObjectId. id))]
+       (if-let [oid (:_id claim)]
+         (acknowledged?
+           (mc/remove-by-id db articles-coll oid)))))
