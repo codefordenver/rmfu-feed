@@ -28,7 +28,7 @@
                                   [:h1.text-center (:title @article-state)]
                                   [:div.pre-scrollable.borderbox
                                    [:p (:content @article-state)]]
-                                  [:p.greytext.displayinline (:author-email @article-state)] [:p.date.displayinline.pull-right (:created @article-state)]
+                                  [:p.greytext.displayinline (:author @article-state)] [:p.date.displayinline.pull-right (:created @article-state)]
                                   [:br]
                                   [:h4.greyheading "Category"]]
                                  [:h4.greyheading.text-center "Comments"]
