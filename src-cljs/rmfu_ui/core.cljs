@@ -92,8 +92,12 @@
    [nav]
    [(session/get :current-page)]])
 
-(defn four-o-four [msg]
-  [:div.container.jumbotron.big-text [:u (or msg 404)]])
+(defn four-o-four []
+  [:div.container.jumbotron.big-text
+   [:p "oops!"]
+   [:p.big-text-subtitle [:u (or (session/get! :error-msg)
+                                 "that page doesn’t exist...")]]
+   [:p.big-text-subtitle [:a {:href "/"} [:b "Return to homepage ?"]]]])
 
 (secretary/defroute "/" []
                     (session/put! :current-page #'sign-in))
@@ -135,6 +139,9 @@
 (secretary/defroute "/new-password" [query-params]
                     (session/put! :token (:token query-params))
                     (session/put! :current-page #'new-password-component))
+
+(secretary/defroute "/oops" []
+                    (session/put! :current-page #'four-o-four))
 
 (secretary/defroute "*" []
                     (session/put! :current-page #'four-o-four))

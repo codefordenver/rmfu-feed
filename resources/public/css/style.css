@@ -139,14 +139,25 @@ p.articlelink a {
 
 .big-text{
     display: block;
-    width: 16rem;
-    height: 16rem;
-    font-size: 6.5rem;
-    line-height: 7rem;
+    width: 20rem;
+    height: 20rem;
+    font-size: 6.0rem;
     color: #fff;
     text-align: center;
     cursor: default;
     background-color: tomato;
+}
+
+.big-text > p {
+    margin-bottom: 0rem;
+}
+
+.big-text-subtitle {
+    font-size: 1.15rem;
+}
+
+.big-text-subtitle > a {
+    color: white;
 }
 
 /* BEGINS 18F Alert component CSS

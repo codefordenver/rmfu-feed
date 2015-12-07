@@ -161,7 +161,7 @@
                                 (if unsigned-token
                                   (if-let [article (db/find-article-by-id id)]
                                     (ok article)
-                                    (not-found (str "No article found with id: " id)))
+                                    (not-found {:error (str "No article found with id: " id)}))
                                   (unauthorized {:error "not auth"}))))
                         auth-backend)
 
