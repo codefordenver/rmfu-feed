@@ -1,4 +1,5 @@
-(ns rmfu-ui.utils)
+(ns rmfu-ui.utils
+  (:require [secretary.core :as secretary]))
 
 (defn get-identity-token []
   (.getItem (.-localStorage js/window) "rmfu-feed-identity-token"))
@@ -13,3 +14,12 @@
         (= item (get v i)) i,
         :else
         (recur (inc i))))))
+
+(defn navigate-to
+  "Updates the html route via the history.pushState api"
+  [url]
+  (.assign js/location (str js/window.location.protocol
+                         "//"
+                         js/window.location.host
+                         "#"
+                         url)))

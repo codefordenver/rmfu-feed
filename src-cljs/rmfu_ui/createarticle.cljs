@@ -4,6 +4,7 @@
             [rmfu.validation :as validate]
             [rmfu-ui.alert :refer [alert]]
             [reagent.core :as reagent]
+            [rmfu-ui.utils :as utils]
             [ajax.core :refer [POST]]))
 
 (def ^{:private true} initial-article-state
@@ -44,10 +45,6 @@
         :value       (:title @new-article-state)
         :on-change   #(swap! new-article-state assoc :title (get-event-value %))}]
       [:br]
-      ; [:h4
-      ;  "Link to Article (optional):"]
-      ; [:input.form-control
-      ;  {:type "text", :placeholder "http://www.milksafe.com/hormones.html", :value ""}]
 
       [:h4 "Description of Article (optional):"]
       [:textarea.form-control
@@ -55,111 +52,6 @@
         :value     (:content @new-article-state)
         :on-change #(swap! new-article-state assoc :content (get-event-value %))}]
 
-      ; Keeping this stuff here for now
-      ; Not sure if we are going to include this funcitonality or not
-
-      ; [:h4 "Relevant to these Regions"]
-      ; [:div.input-group
-      ;  [:input.form-control
-      ;   {:type "text", :placeholder "Enter Zip Code", :value ""}]
-      ;  [:span.input-group-addon.select-group
-      ;   [:select.c-select.select-item
-      ;    [:option
-      ;     "+1 mile"]
-      ;    [:option
-      ;     "+10 miles"]
-      ;    [:option
-      ;     "+50 miles"]]]
-      ;  [:div.input-group-btn
-      ;   [:button.btn.btn-default
-      ;    {:name "type", :type "button", :value "add"}
-      ;    "Add"]]]
-      ; [:br]
-      ; [:h4 "Relevant to these Topics"]
-      ; [:div.input-group
-      ;   [:input.form-control
-      ;     {:type "topics", :placeholder "Enter Keywords or select from suggestions below", :value ""}]
-      ;   [:span.input-group-btn
-      ;     [:button.btn.btn-default
-      ;       {:type "button", :value "add"}
-      ;       "Add"]]]
-      ; [:ul.list-inline
-      ;   [:li
-      ;     [:a
-      ;       {:href "#"}
-      ;       "Dairy"]]
-      ;   [:li
-      ;     [:a
-      ;       {:href "#"}
-      ;       "Organic"]]
-      ;   [:li
-      ;     [:a
-      ;       {:href "#"}
-      ;       "GMO"]]
-      ;   [:li
-      ;     [:a
-      ;       {:href "#"}
-      ;       "Fertilizer"]]
-      ;   [:li
-      ;     [:a
-      ;       {:href "#"}
-      ;       "Equipment"]]
-      ;   [:li
-      ;     [:a
-      ;       {:href "#"}
-      ;       "Poultry"]]
-      ;   [:li
-      ;     [:a
-      ;       {:href "#"}
-      ;       "Sustainable"]]
-      ;   [:li
-      ;     [:a
-      ;       {:href "#"}
-      ;       "Green"]]
-      ;   [:li
-      ;     [:a
-      ;       {:href "#"}
-      ;       "Pests"]]
-      ;   [:li
-      ;     [:a
-      ;       {:href "#"}
-      ;       "Tobacco"]]
-      ;   [:li
-      ;     [:a
-      ;       {:href "#"}
-      ;       "Fuel"]]
-      ;   [:li
-      ;     [:a
-      ;       {:href "#"}
-      ;       "Seeds"]]
-      ;   [:li
-      ;     [:a
-      ;       {:href "#"}
-      ;       "Wool"]]
-      ;   [:li
-      ;     [:a
-      ;       {:href "#"}
-      ;       "Solar"]]
-      ;   [:li
-      ;     [:a
-      ;       {:href "#"}
-      ;       "Wind"]]
-      ;   [:li
-      ;     [:a
-      ;       {:href "#"}
-      ;       "Legislation"]]
-      ;   [:li
-      ;     [:a
-      ;       {:href "#"}
-      ;       "Vegetables"]]
-      ;   [:li
-      ;     [:a
-      ;       {:href "#"}
-      ;       "Fruit"]]
-      ;   [:li
-      ;     [:a
-      ;       {:href "#"}
-      ;       "Polls"]]]
       [:p.text-center
        [:button.btn
         {:name     "type"
@@ -173,8 +65,8 @@
                               :format        :json
                               :params        @new-article-state
                               :error-handler #(alert-update-fn %)
-                              :handler       (fn [res]
-                                               (js/alert (str "success. Created at: " res))
-                                               (reset! new-article-state initial-article-state))})
+                              :handler       (fn [res-body]
+                                               (reset! new-article-state initial-article-state)
+                                               (utils/navigate-to res-body))})
                        (catch js/Object _ (alert-update-fn "Article title cannot be empty"))))}
         "Create the Article"]]]]]])

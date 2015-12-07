@@ -151,7 +151,7 @@
                                  (if unsigned-token
                                    (let [user (db/find-user-by-username (:username unsigned-token))
                                          persisted-article (db/add-article! (:body request) (:username user))]
-                                     (created (str "/articles/" (:_id persisted-article))))
+                                     (created (str "/articles/#!" (:_id persisted-article))))
                                    (unauthorized {:error "not auth"}))))
                         auth-backend)
 
