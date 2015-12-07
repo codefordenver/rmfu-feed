@@ -2,7 +2,8 @@
   (:require [rmfu-ui.utils :refer [get-identity-token]]
             [reagent.core :as reagent]
             [reagent.session :as session]
-            [ajax.core :refer [PUT GET]]))
+            [ajax.core :refer [PUT GET]]
+            [secretary.core :as secretary]))
 
 (defn article []
   (let [article-state (reagent/atom {:title ""
@@ -11,7 +12,9 @@
         fetch-article (fn [article-id]
                         (GET (str "api/articles/" article-id)
                              {:headers         {:identity (get-identity-token)}
-                              :error-handler   #(js/alert %)
+                              :error-handler   (fn [res]
+                                                 (session/put! :error-msg (get-in res [:response :error]))
+                                                 (secretary/dispatch! "/oops"))
                               :response-format :json
                               :keywords?       true
                               :handler         #(reset! article-state %)}))]
