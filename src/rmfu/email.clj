@@ -6,16 +6,18 @@
 
 ;; assumes MANDRILL_API_KEY env var has been defined
 
-(defn send-confirmation-email [profile]
+(defn send-confirmation-email [profile token]
   (let [{:keys [email username]} profile]
     (mandrill/send-template "RMFU Feed Email Registration"
-                            {:subject "Verify your email" :from_email rmfu-from-email :from_name "RMFU"
-                             :to      [{:email email :name username}]})))
+                            {:subject           "Verify your email" :from_email rmfu-from-email :from_name "RMFU"
+                             :to                [{:email email :name username}]
+                             :global_merge_vars [{:name "TOKEN" :content token}
+                                                 {:name "HOST"  :content (env :host-name)}]})))
 
 (defn send-reset-password-email [profile token]
   (let [{:keys [email username]} profile]
     (mandrill/send-template "RMFU Feed Reset Password"
-                            {:subject "Reset your password " :from_email rmfu-from-email :from_name "RMFU"
-                             :to      [{:email email :name username}]
+                            {:subject           "Reset your password " :from_email rmfu-from-email :from_name "RMFU"
+                             :to                [{:email email :name username}]
                              :global_merge_vars [{:name "NAME" :content username} {:name "TOKEN" :content token}
                                                  {:name "HOST" :content (env :host-name)}]})))
