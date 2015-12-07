@@ -110,7 +110,7 @@
        ^{:key id} [:tr
                    [:td id]
                    [:td.text-overflow (:title article)]
-                   [:td (:author-email article)]
+                   [:td (:author article)]
                    [:td
                     [:button.btn.btn-default
                      {:on-click (fn [_]

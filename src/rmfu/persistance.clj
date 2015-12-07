@@ -122,11 +122,11 @@
 (defn add-article!
   "Adds a new article to the database.
   Warning: This method is not idempotent currently."
-  [article author-email]
+  [article username]
   (let [{:keys [title content]} article
         is-article-valid? (validate/article article)
         article-oid (ObjectId.)
-        article-doc {:author-email author-email
+        article-doc {:author       username
                      :_id          article-oid
                      :title        title
                      :content      content

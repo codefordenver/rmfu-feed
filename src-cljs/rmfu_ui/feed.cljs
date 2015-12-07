@@ -24,7 +24,7 @@
      {:href (str "#/articles/#!" (:_id article))}
      (:title article)]]
    [:p.user
-    (:author-email article)
+    (:author article) " / "
     [:small (:created article)]]])
 
 (defn feed []
