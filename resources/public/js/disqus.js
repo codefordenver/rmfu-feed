@@ -8,16 +8,14 @@ var disqus_shortname = 'rmfu-feed'; // required: replace example with your forum
     dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
 })();
-window.disqusReset = function (identifier, url) {
-    console.log('disqusReset');
-    console.log(identifier);
-    console.log(url);
+window.disqusReset = function (identifier, url, title) {
     if (DISQUS) {
         DISQUS.reset({
             reload: true,
             config: function () {
                 this.page.identifier = identifier;
                 this.page.url = url;
+                this.page.title = title;
             }
         });
     }

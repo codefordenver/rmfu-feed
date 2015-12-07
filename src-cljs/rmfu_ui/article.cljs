@@ -18,7 +18,8 @@
     (reagent/create-class
       {:component-will-mount #(fetch-article (session/get :article-id))
        :component-did-mount  #(js/disqusReset (session/get :article-id)
-                                              (-> js/document .-location .-href))
+                                              (-> js/document .-location .-href)
+                                              (:title @article-state))
 
        :reagent-render       (fn []
                                [:div.container.jumbotron.large-main
