@@ -60,13 +60,17 @@
       (conflict (str (format "User already exist for %s" (:email body)))))))
 
 (defn verify-email [req]
-  (let [email (get-in req [:route-params :email])
-        no-user-response (not-found (format "no user found for %s" email))]
-    (if-let [user-exists (db/find-user-by-email email)]
-      (do
-        (db/update-verify-email! user-exists)
-        (redirect "/#/email-verified"))
-      no-user-response)))
+  (let [token (get-in req [:params :token])
+        no-auth (unauthorized {:error "not auth"})]
+    (if-let [unsigned-token (rmfu.auth/unsign-token token)]
+      (let [email (:email unsigned-token)]
+        (if-let [user-exists (db/find-user-by-email email)]
+          (if (= (:secret unsigned-token) (System/getenv "RMFU_SECRET"))
+            (do (db/update-verify-email! user-exists)
+                (redirect "/#/email-verified"))
+            no-auth)
+          (not-found (format "no user found for %s" email))))
+      no-auth)))
 
 (defn send-reset-password-email
   "handle reset-password request from user form,
@@ -225,7 +229,7 @@
             (GET "/reset-password-redirect" [] reset-password-redirect)
             (PUT "/reset-password-from-form" [] reset-password-from-form!)
             (PUT "/update-user-profile" [] update-user-profile)
-            (GET "/verify-email/:email" [] verify-email)
+            (GET "/verify-email" [] verify-email)
             (route/resources "/assets")                     ;; serve /assets for chosen lib jar
             (route/not-found (not-found "Resource not found")))
 

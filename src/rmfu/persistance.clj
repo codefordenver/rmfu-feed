@@ -71,8 +71,9 @@
         user-doc (merge user {:_id oid})
         claim (find-user-by-email email)]
     (if-not (and (:email claim) email)
-      (do
-        (email/send-confirmation-email user)
+      (let [signed-user-token (sign-token {:email email :secret (System/getenv "RMFU_SECRET")} {:duration 7})
+            url-safe-token (url-encode signed-user-token)]
+        (email/send-confirmation-email user url-safe-token)
         (acknowledged?
           (mc/insert db coll
                      (merge user-doc
@@ -100,8 +101,8 @@
     (if-not admin
       (let [token (sign-token profile)
             url-safe-token (url-encode token)]
-           (mc/insert-and-return db "users" profile)
-           (email/send-reset-password-email profile url-safe-token)))))
+        (mc/insert-and-return db "users" profile)
+        (email/send-reset-password-email profile url-safe-token)))))
 
 (init-admin-account!)
 
@@ -149,6 +150,6 @@
 
 (defn delete-article-by-id [id]
   (let [claim (mc/find-map-by-id db articles-coll (ObjectId. id))]
-       (if-let [oid (:_id claim)]
-         (acknowledged?
-           (mc/remove-by-id db articles-coll oid)))))
+    (if-let [oid (:_id claim)]
+      (acknowledged?
+        (mc/remove-by-id db articles-coll oid)))))
