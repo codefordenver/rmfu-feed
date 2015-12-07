@@ -110,7 +110,7 @@
 (secretary/defroute "/create" []
                     (session/put! :current-page #'createarticle))
 
-(secretary/defroute "/articles/:id" [id]
+(secretary/defroute "/articles/#!:id" [id]
                     (session/put! :article-id id)
                     (session/put! :current-page #'article))
 

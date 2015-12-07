@@ -21,7 +21,7 @@
   [:div.articlelisting
    [:p.articlelink
     [:a
-     {:href (str "#/articles/" (:_id article))}
+     {:href (str "#/articles/#!" (:_id article))}
      (:title article)]]
    [:p.user
     (:author-email article)
