@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Enriqueta'); /* Font for The Feed on login page */
+
 body {
     background: #fff url('../images/bg.png') 0 0 repeat;
 }
@@ -244,4 +246,11 @@ p.articlelink a {
 img.welcome-logo {
     margin: 0 auto;
     display: block;
+}
+
+
+.feed-welcome-title {
+    color: black;
+    font-size: 72px;
+    font-family: 'Enriqueta', 'Times New Roman', serif;
 }
