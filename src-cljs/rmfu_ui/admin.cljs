@@ -5,7 +5,7 @@
             [ajax.core :refer [PUT GET DELETE]]
             [cljsjs.jquery]
             [cljsjs.fixed-data-table]
-            [rmfu-ui.utils :refer [index-of get-identity-token]]))
+            [rmfu-ui.utils :as utils]))
 
 (declare cell-and-checkbox)
 
@@ -27,14 +27,14 @@
   (PUT "/api/block-user"
        {:params        {:email email :blocked? state}
         :format        :json
-        :headers       {:identity (get-identity-token)}
+        :headers       {:identity (utils/get-identity-token)}
         :handler       (fn [res]
                          (alert-update-display-fn (str "User with email: " email " successfully " res)))
         :error-handler #(js/alert %)}))
 
 (defn fetch-all-users []
   (GET "/api/users"
-       {:headers         {:identity (get-identity-token)}
+       {:headers         {:identity (utils/get-identity-token)}
         :error-handler   #(secretary/dispatch! "/")
         :response-format :json
         :keywords?       true
@@ -42,7 +42,7 @@
 
 (defn fetch-all-articles []
   (GET "/api/articles"
-       {:headers         {:identity (get-identity-token)}
+       {:headers         {:identity (utils/get-identity-token)}
         :error-handler   #(secretary/dispatch! "/")
         :response-format :json
         :keywords?       true
@@ -50,7 +50,7 @@
 
 (defn delete-article [id]
   (DELETE (str "/api/articles/" id)
-          {:headers       {:identity (get-identity-token)}
+          {:headers       {:identity (utils/get-identity-token)}
            :error-handler #(alert-update-display-fn %)
            :handler       #(alert-update-display-fn %)}))
 
@@ -62,7 +62,7 @@
 (defn cell-and-checkbox [row]
   (let [users (sort-by first (:users @app-state))
         users-table (mapv #(into [] (vals %)) users)
-        index (index-of users-table row)
+        index (utils/index-of users-table row)
         user (get (:users @app-state) index)]
     [:div.checkbox
      [:label
@@ -108,7 +108,7 @@
      (for [article (:articles @app-state)
            :let [id (:_id article)]]
        ^{:key id} [:tr
-                   [:td id]
+                   [:td [:a {:href (str "/#/articles/#!" id)} id]]
                    [:td.text-overflow (:title article)]
                    [:td (:author article)]
                    [:td
