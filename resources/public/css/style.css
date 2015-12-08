@@ -240,3 +240,8 @@ p.articlelink a {
 .usa-alert-no_icon {
     background-image: none;
 }
+
+img.welcome-logo {
+    margin: 0 auto;
+    display: block;
+}

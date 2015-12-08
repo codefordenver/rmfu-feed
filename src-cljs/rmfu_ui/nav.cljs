@@ -32,6 +32,7 @@
        :reagent-render
        (fn []
          [:nav {:className "navbar navbar-light bg-faded"}
+          [:img.navbar-brand.feed-logo {:href "/#/feed" :src "/images/rmfu-logo.png"}]
           (if-let [profile (session/get :profile)]
             [:div
              [:a.navbar-brand.feed-title {:href "/#/feed"} "FEED"]
