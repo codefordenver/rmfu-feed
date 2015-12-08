@@ -92,7 +92,7 @@
             [:br]
             [:div.checkbox
              [:label
-              [:input {:type "checkbox"}] "remember me?"]
+              [:input {:type "checkbox"}] "Remember me?"]
              [:p.pull-right
               [:button.btn.btn-link
                {:type     "button"
@@ -108,4 +108,9 @@
             [:div.text-center
             [:button.btn.btn-primary
              {:type     "button"
-              :on-click #(secretary/dispatch! "/sign-up")} "Sign Up Here"]]]]])})))
+              :on-click #(secretary/dispatch! "/sign-up")} "Sign Up Here"]]
+              [:br]
+              [:p.text-center [:small "Hatched with "
+                [:a {:target "blank" :href "http://www.codefordenver.org/"} "Code for Denver"]
+              " in 2015"]]
+              ]]])})))
