@@ -12,6 +12,7 @@
       [:a {:on-click #(secretary/dispatch! "/")
            :style    {:color     "dimgray"
                       :font-size "1.15em"}} "FEED"]]
+     [:img.welcome-logo {:href "/#/feed" :src "/images/rmfu-logo.png"}]
      [:hr]
      [:h4.text-center [:small "☀"]]
      [:h4.text-center
