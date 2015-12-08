@@ -17,7 +17,8 @@
 
 (defn article-nutshell
   "Component for article list item."
-  [article]
+  [article id]
+  ^{:key id} 
   [:div.articlelisting
    [:p.articlelink
     [:a
@@ -42,7 +43,9 @@
               [:h4.displayinline.greytext.pull-right [:a {:href "/#/customfeed"} "Customize"]]
               [:hr]
               [:h4 "Articles"]
-              (map article-nutshell @loaded-articles)
+              (for [article  @loaded-articles
+                :let  [id (:_id article)]]
+                 (article-nutshell article id))
               [:h5
                "Latest Comments "
                [:small [:small "what your neightbors are saying"]]]
