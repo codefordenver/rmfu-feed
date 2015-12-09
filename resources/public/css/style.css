@@ -4,6 +4,20 @@ body {
     background: #fff url('../images/bg.png') 0 0 repeat;
 }
 
+h1,h2 {
+  color: black;
+  font-family: 'Enriqueta', 'Times New Roman', serif;
+}
+
+h3,h4,h5 {
+  font-family: 'Helvetica Neue Regular', Helvetica, Arial, sans-serif;
+}
+h1 { font-size: 72px; }
+h2 { font-size: 36px; }
+h2.feedheading { font-size: 48px;}
+h3 { font-size: 24px; font-weight: bold;}
+h4 { font-size: 18px; font-weight: bold;}
+
 .feed-title {
     color: #025aa5 !important;
 }
@@ -247,22 +261,6 @@ img.welcome-logo {
     margin: 0 auto;
     display: block;
 }
-
-h1,h2 {
-  color: black;
-  font-family: 'Enriqueta', 'Times New Roman', serif;
-}
-
-h3,h4,h5 {
-  font-family: 'Helvetica Neue Regular', Helvetica, Arial, sans-serif;
-}
-h1 { font-size: 72px; }
-h2 { font-size: 36px; }
-h2.feedheading { font-size: 48px;}
-h3 { font-size: 24px; font-weight: bold;}
-h4 { font-size: 18px; font-weight: bold;}
-
- /* #0a6700;*/
 
 .feed-articles
 {
