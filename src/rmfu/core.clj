@@ -49,7 +49,7 @@
             (ok token)
             (unauthorized "User has been blocked by RMFU staff"))
           (unauthorized "Invalid email or passsword"))
-        (unauthorized "User not yet verified, please check your email"))
+        (forbidden "User not yet verified, please check your email"))
       (not-found "User not nound"))))
 
 (defn sign-up [req]
@@ -83,6 +83,20 @@
         (let [token (rmfu.auth/sign-token {:email email :secret (System/getenv "RMFU_SECRET")} {:duration 1})
               encoded-token (url-encode token)]
           (email/send-reset-password-email user-found encoded-token)
+          (accepted (str (format "User found for : %s" email) ", please check your email.")))
+        no-user-response)
+      no-user-response)))
+
+(defn resend-verify-email
+  "resends verify email"
+  [req]
+  (let [email (get-in req [:body :email])
+        no-user-response (not-found (format "no user found for %s" email))]
+    (if email
+      (if-let [user-found (db/find-user-by-email email)]
+        (let [token (rmfu.auth/sign-token {:email email :secret (System/getenv "RMFU_SECRET")} {:duration 1})
+              encoded-token (url-encode token)]
+          (email/send-confirmation-email user-found encoded-token)
           (accepted (str (format "User found for : %s" email) ", please check your email.")))
         no-user-response)
       no-user-response)))
@@ -243,6 +257,7 @@
             (POST* "/signin" [] sign-in)
             (POST "/signup" [] sign-up)
             (POST "/send-reset-password-email" [] send-reset-password-email)
+            (POST "/resend-verify-email" [] resend-verify-email)
             (GET "/reset-password-redirect" [] reset-password-redirect)
             (PUT "/reset-password-from-form" [] reset-password-from-form!)
             (PUT "/update-user-profile" [] update-user-profile)

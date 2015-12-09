@@ -1,5 +1,5 @@
 (ns rmfu-ui.utils
-  (:require [secretary.core :as secretary]))
+  (:require [ajax.core :refer [POST]]))
 
 (defn get-identity-token []
   (.getItem (.-localStorage js/window) "rmfu-feed-identity-token"))
@@ -23,3 +23,23 @@
                          js/window.location.host
                          "#"
                          url)))
+
+(defn request-password-reset [email & opts]
+  (POST "/send-reset-password-email"
+        {:params        {:email email}
+         :format        :json
+         :error-handler #(js/alert %)
+         :handler       (fn [res]
+                          (js/alert res)
+                          (when-let [callback (first opts)]
+                            (callback res)))}))
+
+(defn resend-verify-email [email & opts]
+  (POST "/resend-verify-email"
+        {:params        {:email email}
+         :format        :json
+         :error-handler #(js/alert %)
+         :handler       (fn [res]
+                          (js/alert res)
+                          (when-let [callback (first opts)]
+                            (callback res)))}))
