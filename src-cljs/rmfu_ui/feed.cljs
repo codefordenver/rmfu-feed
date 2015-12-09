@@ -6,8 +6,8 @@
             [rmfu-ui.utils :refer [get-identity-token]]))
 
 (def ^{:private true} article-state (reagent/atom {:offset     0
-                                               :prevOffset 0
-                                               :articles   []}))
+                                                   :prevOffset 0
+                                                   :articles   []}))
 
 (def page-size 12)
 

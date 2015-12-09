@@ -19,25 +19,11 @@
     [rmfu-ui.nav :refer [nav]]
     [rmfu-ui.about :refer [about]]
     [secretary.core :as secretary :include-macros true]
-    [rmfu-ui.welcome :refer [welcome-component-wrapper]])
+    [rmfu-ui.welcome :refer [welcome-component-wrapper]]
+    [rmfu-ui.utils :as utils])
   (:import goog.History))
 
 (enable-console-print!)
-
-;; -------------------------
-;; HTTP Request
-
-
-(defn request-password-reset [profile]
-  (POST "/send-reset-password-email"
-        {:params        {:email (:email profile)}
-         :format        :json
-         :error-handler #(js/alert %)
-         :handler       (fn [res]
-                          (do
-                            (println "res:" res)
-                            (js/alert res))
-                          )}))
 
 ;; -------------------------
 ;; Utility functions
@@ -47,7 +33,7 @@
 (defn reset-password-email [profile]
   (if-not (empty? (:email profile))
     (if (validation/is-email? (:email profile))
-      (request-password-reset profile)
+      (utils/request-password-reset (:email profile))
       (js/alert "Invalid Email"))))
 
 ;; -------------------------
