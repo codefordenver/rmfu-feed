@@ -17,6 +17,9 @@
     },
     "RMFU_SECRET": {
       "required": true
+    },
+    "HOSTNAME": {
+      "required": true
     }
   },
   "addons":[
