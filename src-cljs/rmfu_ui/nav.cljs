@@ -36,10 +36,12 @@
          (if (identity-token)
            (GET "/api/user"
                 {:headers         {:identity (identity-token)}
-                 :error-handler   (fn []
-                                    (logout)
-                                    (alert-update-display-fn "Session Expired" "Your session has expired, redirecting to the sign-in sreen")
-                                    #(secretary/dispatch! "/"))
+                 :error-handler   (fn [res]
+                                    (if (= 401 (res :status))
+                                      (do 
+                                        (logout)
+                                        (alert-update-display-fn "Session Expired" "Your session has expired, redirecting to the sign-in sreen"))
+                                      (secretary/dispatch! "/")))
                  :response-format :json
                  :keywords?       true
                  :handler         (fn [res]
