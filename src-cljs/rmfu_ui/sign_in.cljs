@@ -7,23 +7,32 @@
             [ajax.core :refer [POST]]
             [reagent.session :as session]
             [reagent.validation :as validation]
-            [cljsjs.fixed-data-table]))
-
-(defn identity-token []
-  (.getItem (.-localStorage js/window) "rmfu-feed-identity-token"))
+            [cljsjs.fixed-data-table]
+            [rmfu-ui.utils :as utils]))
 
 (def app-state (reagent/atom
-                 {:profile {:email    ""
-                            :password ""}
-                  :alert   {:display false
-                            :message nil
-                            :title   nil}}))
+                 {:show-resend-email-button false
+                  :profile                  {:email    ""
+                                             :password ""}
+                  :alert                    {:display false
+                                             :message nil
+                                             :title   nil}}))
 
-(defn alert-update-display-fn [res]
-  (do
-    (swap! app-state assoc-in [:alert :title] (:status-text res))
-    (swap! app-state assoc-in [:alert :message] (:response res))
-    (swap! app-state update-in [:alert :display] not)))
+(defn resend-email-verification []
+  (utils/resend-verify-email (:email (:profile @app-state))
+                                (fn [_]
+                                  (swap! app-state assoc :show-resend-email-button false))))
+
+(defn alert-update-display-fn [res resent-verification-email]
+  (if resent-verification-email
+    (swap! app-state assoc
+           :show-resend-email-button true
+           :alert {:title   (:status-text res)
+                   :message (:response res)
+                   :display true})
+    (swap! app-state assoc :alert {:title   (:status-text res)
+                                   :message (:response res)
+                                   :display true})))
 
 (defn post-sign-in [{:keys [email password]}]
   (POST "/signin"
@@ -31,7 +40,8 @@
                          :password password}
          :format        :json
          :error-handler (fn [res]
-                          (alert-update-display-fn res))
+                          (alert-update-display-fn res
+                                                   (= "Forbidden" (:status-text res))))
          :handler       (fn [res]
                           (do
                             (.setItem js/localStorage "rmfu-feed-identity-token" res)
@@ -76,7 +86,7 @@
     (reagent/create-class
       {:component-will-mount
        (fn []
-         (when (identity-token)
+         (when (utils/get-identity-token)
            (secretary/dispatch! "/feed")))
        :reagent-render
        (fn []
@@ -84,6 +94,11 @@
           [welcome-component-wrapper
            [:div.form-group {:style {:padding "1em"}}
             [alert :warning app-state 5000]
+            (when (:show-resend-email-button @app-state)
+              [:p.text-center
+               [:button.btn.btn-info
+                  {:on-click #(resend-email-verification)}
+                  "Resend Verification Email"]])
             [:p.text-center.bg-primary "Sign in"]
             [:label "email:"]
             [email-input-field]
