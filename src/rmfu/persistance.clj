@@ -1,6 +1,7 @@
 (ns rmfu.persistance
   (:require [monger.core :as mg]
             [monger.collection :as mc]
+            [monger.query :as query]
             [monger.conversion :refer [from-db-object]]
             [monger.operators :refer :all]
             [monger.result :refer [acknowledged?]]
@@ -127,11 +128,11 @@
   (let [{:keys [title content]} article
         is-article-valid? (validate/article article)
         article-oid (ObjectId.)
-        article-doc {:author       username
-                     :_id          article-oid
-                     :title        title
-                     :content      content
-                     :created      (java.util.Date.)}]
+        article-doc {:author  username
+                     :_id     article-oid
+                     :title   title
+                     :content content
+                     :created (java.util.Date.)}]
     (when is-article-valid?
       (mc/insert-and-return db articles-coll article-doc))))
 
@@ -142,11 +143,20 @@
       :_id)
     (catch IllegalArgumentException e nil)))
 
-(defn get-articles
+(defn get-all-articles
   "Gets the articles from the db."
   []
   (map #(assoc % :_id (str (:_id %)))
        (mc/find-maps db articles-coll)))
+
+(defn get-articles-with-offset [limit offset]
+  (map #(assoc % :_id (str (:_id %)))
+       (query/with-collection db articles-coll
+                              (query/find {})
+                              (query/fields [:author :title :content :created])
+                              (monger.query/sort (array-map :created -1))
+                              (query/limit limit)
+                              (query/skip offset))))
 
 (defn delete-article-by-id [id]
   (let [claim (mc/find-map-by-id db articles-coll (ObjectId. id))]

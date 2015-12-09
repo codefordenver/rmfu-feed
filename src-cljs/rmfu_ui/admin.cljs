@@ -41,7 +41,7 @@
         :handler         #(swap! app-state assoc-in [:users] %)}))
 
 (defn fetch-all-articles []
-  (GET "/api/articles"
+  (GET "/api/all-articles"
        {:headers         {:identity (utils/get-identity-token)}
         :error-handler   #(secretary/dispatch! "/")
         :response-format :json
