@@ -46,12 +46,12 @@
                                                     (delete-article-by-id (session/get :article-id)))}
                                        "Delete"]]))
                                   [:h1.text-center (:title @article-state)]
-                                  [:div.pre-scrollable.borderbox
+                                  [:div.borderbox
                                    [:p (:content @article-state)]]
                                   [:p.greytext.displayinline (:author @article-state)] [:p.date.displayinline.pull-right (:created @article-state)]
                                   [:br]
                                   [:h4.greyheading "Category"]]
                                  [:h4.greyheading.text-center "Comments"]
                                  [:div
-                                  [:div.pre-scrollable.borderboxblack.whitebackground
+                                  [:div.borderboxblack.whitebackground
                                    [:div#disqus_thread]]]]])})))
