@@ -245,3 +245,15 @@ img.welcome-logo {
     margin: 0 auto;
     display: block;
 }
+
+
+.nav-link, .feed-title
+{
+  font-size: 30px;
+  color: #a1a1a1;
+}
+
+.nav-link:hover, .nav-link:active
+{
+  color: #0a6700 !important;
+}

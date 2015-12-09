@@ -1,5 +1,6 @@
 (ns rmfu-ui.feed
-  (:require [rmfu-ui.alert :refer [alert]]
+  (:require [rmfu-ui.nav :refer [nav]]
+            [rmfu-ui.alert :refer [alert]]
             [reagent.core :as reagent]
             [ajax.core :refer [GET]]
             [rmfu-ui.utils :refer [get-identity-token]]))

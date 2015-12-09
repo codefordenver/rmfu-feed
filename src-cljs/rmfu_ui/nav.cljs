@@ -35,9 +35,9 @@
           [:img.navbar-brand.feed-logo {:href "/#/feed" :src "/images/rmfu-logo.png"}]
           (if-let [profile (session/get :profile)]
             [:div
-             [:a.navbar-brand.feed-title {:href "/#/feed"} "FEED"]
+             ;[:a.navbar-brand.feed-title {:href "/#/feed"} "FEED"]
              [:ul.nav.navbar-nav
-              (for [anchor ["about" "create" "profile"]
+              (for [anchor ["feed" "about" "create" "profile"]
                     :let [title (clojure.string/capitalize anchor)
                           class-names (if (= active anchor) "nav-item active" "nav-item")]]
                 ^{:key anchor} [:li {:className class-names}
