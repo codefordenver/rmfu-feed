@@ -27,13 +27,13 @@
   (when (nil? (System/getenv env-var))
     (throw (Exception. (str env-var " is missing.")))))
 
-(if (env :dev?)
-  (do
-    (println (format "_______ ENV DEV: %s   " (env :dev?)))
-    (println (format "_______ CLIENT/SERVER URL: %s" (env :host-name)))
-    (check-env "RMFU_SECRET")
-    (check-env "RMFU_FROM_EMAIL")
-    (check-env "MANDRILL_API_KEY")))
+(do
+  (println (format "_______ ENV DEV: %s   " (env :dev?)))
+  (check-env "RMFU_SECRET")
+  (check-env "RMFU_FROM_EMAIL")
+  (check-env "MANDRILL_API_KEY")
+  (when-not (env :dev?)
+    (check-env "HOSTNAME")))
 
 (def secret (System/getenv "RMFU_SECRET"))
 
@@ -97,7 +97,7 @@
         valid-claim? (and (= (:email unsigned-token) email)
                           (= (:secret unsigned-token) (System/getenv "RMFU_SECRET")))]
     (if valid-claim?
-      (redirect (str (env :host-name) "/#/new-password?token=" (url-encode token)))
+      (redirect (str (or (System/getenv "HOSTNAME") (env :host-name)) "#/new-password?token=" (url-encode token)))
       (unauthorized "Invalid password reset token"))))
 
 (defn reset-password-from-form! [req]

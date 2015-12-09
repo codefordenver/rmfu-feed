@@ -12,7 +12,7 @@
                             {:subject           "Verify your email" :from_email rmfu-from-email :from_name "RMFU"
                              :to                [{:email email :name username}]
                              :global_merge_vars [{:name "TOKEN" :content token}
-                                                 {:name "HOST"  :content (env :host-name)}]})))
+                                                 {:name "HOST"  :content (or (System/getenv "HOSTNAME") (env :host-name))}]})))
 
 (defn send-reset-password-email [profile token]
   (let [{:keys [email username]} profile]
@@ -20,4 +20,4 @@
                             {:subject           "Reset your password " :from_email rmfu-from-email :from_name "RMFU"
                              :to                [{:email email :name username}]
                              :global_merge_vars [{:name "NAME" :content username} {:name "TOKEN" :content token}
-                                                 {:name "HOST" :content (env :host-name)}]})))
+                                                 {:name "HOST" :content (or (System/getenv "HOSTNAME") (env :host-name))}]})))
