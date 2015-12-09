@@ -12,11 +12,14 @@ h1,h2 {
 h3,h4,h5 {
   font-family: 'Helvetica Neue Regular', Helvetica, Arial, sans-serif;
 }
-h1.welcomeheading { font-size: 72px; }
+
 h1 { font-size: 48px;}
 h2 { font-size: 36px; }
 h3 { font-size: 24px; font-weight: bold;}
 h4 { font-size: 18px; font-weight: bold;}
+
+h1.welcomeheading { font-size: 72px; }
+h1.welcomeheading a { color: black; }
 
 .feed-title {
     color: #025aa5 !important;
