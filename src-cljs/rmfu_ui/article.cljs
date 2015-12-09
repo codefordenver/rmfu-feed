@@ -1,9 +1,17 @@
 (ns rmfu-ui.article
-  (:require [rmfu-ui.utils :refer [get-identity-token]]
+  (:require [rmfu-ui.utils :refer [get-identity-token navigate-to]]
             [reagent.core :as reagent]
             [reagent.session :as session]
-            [ajax.core :refer [PUT GET]]
+            [ajax.core :refer [DELETE GET]]
             [secretary.core :as secretary]))
+
+(defn- delete-article-by-id
+  "Deletes the article"
+  [article-id]
+  (DELETE (str "api/articles/" article-id)
+          {:headers         {:identity (get-identity-token)}
+           :error-handler   #(js/alert %)
+           :handler         #(navigate-to "/")}))
 
 (defn article []
   (let [article-state (reagent/atom {:title ""
@@ -28,6 +36,15 @@
                                [:div.container.jumbotron.large-main
                                 [:div.row
                                  [:div.col-lg-12
+                                  (let [profile (session/get :profile)]
+                                    (when (and profile
+                                               (or (:is-admin? profile)
+                                                   (= (:author @article-state) (:username profile))))
+                                    [:div.pull-right
+                                     [:button.btn.btn-danger
+                                      {:on-click #(when (js/confirm "Are you sure you want to delete this article?")
+                                                    (delete-article-by-id (session/get :article-id)))}
+                                       "Delete"]]))
                                   [:h1.text-center (:title @article-state)]
                                   [:div.pre-scrollable.borderbox
                                    [:p (:content @article-state)]]

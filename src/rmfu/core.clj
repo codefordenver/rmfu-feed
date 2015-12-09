@@ -199,12 +199,16 @@
                               :middlewares [rmfu.auth/auth-mw]
                               :header-params [identity :- String]
                               (let [identity (get-in request [:headers "identity"])
-                                    unsigned-token (auth/unsign-token identity)]
-                                (if unsigned-token
+                                    unsigned-token (auth/unsign-token identity)
+                                    article (db/find-article-by-id id)]
+                                (if (and unsigned-token
+                                         article
+                                         (or (:is-admin? unsigned-token)
+                                             (= (:username unsigned-token) (:author article))))
                                   (if (db/delete-article-by-id id)
                                     (ok (format "Article %s successfully deleted" id))
-                                    (not-found (format "Unable to delete article %s" id)))
-                                  (unauthorized {:error "not auth"}))))
+                                    (internal-server-error (format "Unable to delete article %s" id)))
+                                  (unauthorized {:error "not authorized"}))))
                         auth-backend)
 
                       ;; ADMIN ONLY ROUTES
