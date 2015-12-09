@@ -8,7 +8,7 @@
    [:div.row
     [:div.col-lg-12
      [:h1.text-center
-      [:a.feed-welcome-title {:on-click #(secretary/dispatch! "/")} "The Feed"]]
+      [:a.feed-welcome-title {:on-click #(secretary/dispatch! "/")} "Feed"]]
       [:p.text-center "Growing conversation and community with"]
      [:img.welcome-logo {:href "/#/feed" :src "/images/rmfu-logo.png"}]
      [:hr]
