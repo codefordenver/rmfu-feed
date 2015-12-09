@@ -2,20 +2,22 @@
   (:require [rmfu-ui.alert :refer [alert]]
             [reagent.core :as reagent]
             [ajax.core :refer [GET]]
-            [rmfu-ui.utils :refer [get-identity-token]]))
+            [rmfu-ui.utils :refer [get-identity-token logout]]))
 
 (def ^{:private true} article-state (reagent/atom {:offset     0
-                                               :prevOffset 0
-                                               :articles   []}))
+                                                   :prevOffset 0
+                                                   :articles   []}))
 
 (def page-size 12)
 
 (defn- get-articles [offset page-size]
   (GET (str "api/articles?offset=" offset "&page-size=" page-size)
        {:headers         {:identity (get-identity-token)}
-        :error-handler   #(js/alert %)
         :response-format :json
         :keywords?       true
+        :error-handler   #(if (= 401 (:status %))
+                            (do (println "logout") (logout))
+                            (js/alert %))
         :handler         (fn [res]
                            (swap! article-state assoc-in [:articles] res))}))
 

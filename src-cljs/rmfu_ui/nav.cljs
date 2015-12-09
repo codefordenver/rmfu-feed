@@ -2,14 +2,8 @@
   (:require [secretary.core :as secretary :include-macros true]
             [reagent.core :as reagent]
             [ajax.core :refer [GET]]
-            [reagent.session :as session]))
-
-(defn logout
-  "Logs the user out by deleting key from local storage and resetting the session"
-  []
-  (do (.removeItem (.-localStorage js/window) "rmfu-feed-identity-token")
-      (session/clear!)
-      (secretary/dispatch! "/")))
+            [reagent.session :as session]
+            [rmfu-ui.utils :refer [logout]]))
 
 (defn identity-token []
   (.getItem (.-localStorage js/window) "rmfu-feed-identity-token"))
@@ -24,7 +18,7 @@
          (if (identity-token)
            (GET "/api/user"
                 {:headers         {:identity (identity-token)}
-                 :error-handler   #(secretary/dispatch! "/")
+                 :error-handler   #(logout)
                  :response-format :json
                  :keywords?       true
                  :handler         (fn [res]

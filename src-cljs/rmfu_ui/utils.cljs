@@ -1,5 +1,6 @@
 (ns rmfu-ui.utils
-  (:require [secretary.core :as secretary]))
+  (:require [secretary.core :as secretary]
+            [reagent.session :as session]))
 
 (defn get-identity-token []
   (.getItem (.-localStorage js/window) "rmfu-feed-identity-token"))
@@ -23,3 +24,11 @@
                          js/window.location.host
                          "#"
                          url)))
+
+(defn logout
+  "Logs the user out by deleting key from local storage and resetting the session"
+  []
+  (do (.removeItem (.-localStorage js/window) "rmfu-feed-identity-token")
+      (session/clear!)
+      (secretary/dispatch! "/sign-in")
+      (navigate-to "/")))
