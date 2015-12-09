@@ -256,7 +256,7 @@ img.welcome-logo {
 
 .nav-link
 {
-  font-size: 30px;
+  font-size: 25px;
   color: #a1a1a1;
   padding-right: 1.5em;
 }
@@ -270,4 +270,10 @@ img.welcome-logo {
 {
   padding-right: 5em;
   height: 3em;
+}
+
+.rmfu-nav
+{
+  padding-bottom: 0;
+  box-shadow: 2px 2px 10px #888888;
 }
