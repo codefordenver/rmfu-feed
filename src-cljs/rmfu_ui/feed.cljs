@@ -51,11 +51,11 @@
           [:div.container.jumbotron.large-main
            [:div.row
             [:div.col-lg-12
-             [:h1.displayinline "Feed"]
+             [:h2.feedheading.displayinline "Feed"]
              " "
              [:h4.displayinline.greytext.pull-right [:a {:href "/#/customfeed"} "Customize"]]
-             [:hr]
-             [:h4 "Articles"]
+
+             [:h4.feed-articles "Articles"]
              (for [article (:articles @article-state)
                    :let [id (:_id article)]]
                (article-nutshell article id))

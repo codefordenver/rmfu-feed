@@ -5,11 +5,11 @@
    [:div.container.jumbotron.large-main
     [:div.row
      [:div.col-lg-12
-      [:h1.text-center "About Feed"]
+      [:h2 "About Feed"]
       [:p "Feed is a collaboration between Rocky Mountain Farmers Union and Code for Denver to help provide a place for active engagement within RMFU's communities."]
-      [:h2 "Rocky Mountain Farmers Union"]
+      [:h3 "Rocky Mountain Farmers Union"]
       [:p "Rocky Mountain Farmers Union is an advocate for family farmers and ranchers, local communities, and consumers. We are a progressive grassroots organization whose members determine our priorities. Founded in 1907, Rocky Mountain Farmers Union represents farm and ranch families in Colorado, New Mexico and Wyoming. Working together with similar state chapters across America, we are the heart and soul of the National Farmers Union."]
-      [:h2 "Code for Denver"]
+      [:h3 "Code for Denver"]
       [:p "We believe technology and innovation are powerful tools we can all use to make our community an even more spectacular place to live.
 
 We are a diverse group of volunteers who are passionate about leveraging the power of technology to benefit the people of our Denver community.

@@ -248,10 +248,30 @@ img.welcome-logo {
     display: block;
 }
 
-.feed-welcome-title {
-    color: black;
-    font-size: 72px;
-    font-family: 'Enriqueta', 'Times New Roman', serif;
+h1,h2 {
+  color: black;
+  font-family: 'Enriqueta', 'Times New Roman', serif;
+}
+
+h3,h4,h5 {
+  font-family: 'Helvetica Neue Regular', Helvetica, Arial, sans-serif;
+}
+h1 { font-size: 72px; }
+h2 { font-size: 36px; }
+h2.feedheading { font-size: 48px;}
+h3 { font-size: 24px; font-weight: bold;}
+h4 { font-size: 18px; font-weight: bold;}
+
+ /* #0a6700;*/
+
+.feed-articles
+{
+  color: white;
+  background-color: #909090;
+  width:100%;
+  padding: 2px 6px;
+  margin-top: 20px;
+  font-weight: normal;
 }
 
 .nav-link
