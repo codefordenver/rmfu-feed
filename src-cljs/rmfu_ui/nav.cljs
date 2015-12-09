@@ -47,4 +47,4 @@
                  [:a.nav-link.active {:href "/#/admin"} "Admin"]])]
              [:form.form-inline.navbar-form.pull-right
               [:button.btn.btn-success-outline {:type "button" :on-click #(logout)} "logout"]]]
-            [:a.navbar-brand.feed-title {:href "/"} "FEED"])])})))
+            )])})))
