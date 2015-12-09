@@ -60,7 +60,7 @@
                {:style {:max-width "700px"}}
                [:div.row
                 [:div.col-lg-12
-                 [:h3.text-center "Tell Us About Yourself"]
+                 [:h2.text-center "Tell Us About Yourself"]
                  [alert :success alert-state 2500]
                  [:div.col-lg-6.col-md-6
                   [input-field-helper :first
@@ -73,18 +73,21 @@
 
                  [:div.col-lg-12 {:style {:height "20px"}}]
 
-                 [:h4.text-center "Region of Interest"]
+                 [:div.col-lg-6  [:h3 "Region of Interest"] ]
+                 [:div.col-lg-6  [:h3 "Topics of Interest"] ]
 
-                 [:div.col-lg-6.col-md-6
-                  [:div.input-group.select-group
-                   [:div.col-lg-10
+                 [:div.col-lg-6 ;.col-lg-4.col-lg-offset-4
+
+
+                  [:div.input-group.select-group.text-center
                     [input-field-helper :zipcode
-                     {:placeholder "Enter Zip Code" :type "number"}]]]]
+                     {:placeholder "Enter Zip Code" :type "number"}]]]
 
                  [:br]
                  [:br]
 
-                 [:h4 "Topics of Interest"]
+                 [:div.col-lg-6
+
 
                  [:select.interest.chosen-container.chosen-container-multi
                   {:data-placeholder "Choose an interest..."
@@ -97,7 +100,11 @@
                   [:option {:value "water/soil"} "Water Soil"]
                   [:option {:value "conservation"} "Conservation"]
                   [:option {:value "farm-technology"} "Farm Technology"]
-                  [:option {:value "energy"} "Energy"]]
+                  [:option {:value "energy"} "Energy"]] ]
+
+
+                  [:br][:br][:br][:br]
+
 
                  [:p.text-center
                   [:button.btn.btn-primary.active

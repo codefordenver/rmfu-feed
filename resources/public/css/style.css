@@ -1,6 +1,22 @@
+@import url('https://fonts.googleapis.com/css?family=Enriqueta'); /* Font for The Feed on login page */
+
 body {
     background: #fff url('../images/bg.png') 0 0 repeat;
 }
+
+h1,h2 {
+  color: black;
+  font-family: 'Enriqueta', 'Times New Roman', serif;
+}
+
+h3,h4,h5 {
+  font-family: 'Helvetica Neue Regular', Helvetica, Arial, sans-serif;
+}
+h1.welcomeheading { font-size: 72px; }
+h1 { font-size: 48px;}
+h2 { font-size: 36px; }
+h3 { font-size: 24px; font-weight: bold;}
+h4 { font-size: 18px; font-weight: bold;}
 
 .feed-title {
     color: #025aa5 !important;
@@ -244,4 +260,38 @@ p.articlelink a {
 img.welcome-logo {
     margin: 0 auto;
     display: block;
+}
+
+.feed-articles
+{
+  color: white;
+  background-color: #909090;
+  width:100%;
+  padding: 2px 6px;
+  margin-top: 20px;
+  font-weight: normal;
+}
+
+.nav-link
+{
+  font-size: 25px;
+  color: #a1a1a1;
+  padding-right: 1.5em;
+}
+
+.nav-link:hover, .nav-link:active, .nav-link:focus
+{
+  color: #0a6700 !important;
+}
+
+.feed-logo
+{
+  padding-right: 5em;
+  height: 3em;
+}
+
+.rmfu-nav
+{
+  padding-bottom: 0;
+  box-shadow: 2px 2px 10px #888888;
 }

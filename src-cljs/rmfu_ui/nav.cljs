@@ -31,13 +31,13 @@
                                     (session/put! :profile res))})))
        :reagent-render
        (fn []
-         [:nav {:className "navbar navbar-light bg-faded"}
-          [:img.navbar-brand.feed-logo {:href "/#/feed" :src "/images/rmfu-logo.png"}]
+         [:nav {:className "navbar navbar-light bg-faded rmfu-nav"}
+         [:a {:href "/#/feed"} [:img.navbar-brand.feed-logo {:src "/images/rmfu-logo.png"}]]
           (if-let [profile (session/get :profile)]
             [:div
-             [:a.navbar-brand.feed-title {:href "/#/feed"} "FEED"]
+             ;[:a.navbar-brand.feed-title {:href "/#/feed"} "FEED"]
              [:ul.nav.navbar-nav
-              (for [anchor ["about" "create" "profile"]
+              (for [anchor ["feed" "about" "create" "profile"]
                     :let [title (clojure.string/capitalize anchor)
                           class-names (if (= active anchor) "nav-item active" "nav-item")]]
                 ^{:key anchor} [:li {:className class-names}
@@ -47,4 +47,4 @@
                  [:a.nav-link.active {:href "/#/admin"} "Admin"]])]
              [:form.form-inline.navbar-form.pull-right
               [:button.btn.btn-success-outline {:type "button" :on-click #(logout)} "logout"]]]
-            [:a.navbar-brand.feed-title {:href "/"} "FEED"])])})))
+            )])})))

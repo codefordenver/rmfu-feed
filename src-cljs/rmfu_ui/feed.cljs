@@ -1,5 +1,6 @@
 (ns rmfu-ui.feed
-  (:require [rmfu-ui.alert :refer [alert]]
+  (:require [rmfu-ui.nav :refer [nav]]
+            [rmfu-ui.alert :refer [alert]]
             [reagent.core :as reagent]
             [ajax.core :refer [GET]]
             [rmfu-ui.utils :refer [get-identity-token]]))
@@ -53,8 +54,8 @@
              [:h1.displayinline "Feed"]
              " "
              [:h4.displayinline.greytext.pull-right [:a {:href "/#/customfeed"} "Customize"]]
-             [:hr]
-             [:h4 "Articles"]
+
+             [:h4.feed-articles "Articles"]
              (for [article (:articles @article-state)
                    :let [id (:_id article)]]
                (article-nutshell article id))

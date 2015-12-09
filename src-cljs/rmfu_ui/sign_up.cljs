@@ -58,7 +58,7 @@
     [:div
      [welcome-component-wrapper
       [:div.form-group {:style {:padding "1em"}}
-       [:p.text-center.bg-primary "Create Account"]
+       [:p.text-center.greytext "Create Your Account"]
        [:label "username:"]
        [username-input-field profile-state]
        [:label "email:"]
@@ -66,12 +66,18 @@
        [:label "password:"]
        [passsword-input-field profile-state]
        [:br]
-       [:button.btn.btn-default
-        {:type     "button"
-         :on-click #(secretary/dispatch! "/")
-         } "sign-in"]
-       [:button.btn.pull-right.btn-primary.active
+       [:button.btn.pull-right.btn-primary.active.pull-right
         {:type     "button"
          :on-click (fn []
                      (sign-up-handler @profile-state))
-         } "sign-up"]]]]))
+         } "Sign Me Up!"]
+
+         [:br][:br][:hr]
+         [:p.text-center.greytext "Do you already have an account?"]
+         [:div.text-center
+           [:button.btn.btn-primary
+            {:type     "button"
+             :on-click #(secretary/dispatch! "/")
+             } "Sign In To Your Account Here"]]
+
+         ]]]))
