@@ -46,7 +46,7 @@
         :on-change   #(swap! new-article-state assoc :title (get-event-value %))}]
       [:br]
 
-      [:h4 "Description of Article (optional):"]
+      [:h4 "Description of Article: " [:small.greytext "(optional)"] ]
       [:textarea.form-control
        {:rows      "14"
         :value     (:content @new-article-state)
