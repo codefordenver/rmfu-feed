@@ -84,7 +84,7 @@
           [welcome-component-wrapper
            [:div.form-group {:style {:padding "1em"}}
             [alert :warning app-state 5000]
-            [:p.text-center.bg-primary "Sign in"]
+            [:p.text-center.greytext "Sign In to Your Account"]
             [:label "email:"]
             [email-input-field]
             [:label "password:"]
@@ -92,16 +92,25 @@
             [:br]
             [:div.checkbox
              [:label
-              [:input {:type "checkbox"}] "remember me?"]
+              [:input {:type "checkbox"}] "Remember me?"]
              [:p.pull-right
-              [:button.btn.btn-sm
+              [:button.btn.btn-link
                {:type     "button"
-                :on-click #(secretary/dispatch! "/reset-password")} "forgot password?"]]]
+                :style {:padding "0"}
+                :on-click #(secretary/dispatch! "/reset-password")} "I forgot my password."]]]
             [:br]
-            [:button.btn.btn-primary.active
+            [:button.btn.btn-primary.active.pull-right
              {:type     "button"
-              :on-click #(sign-in-handler)} "sign-in"]
+              :on-click #(sign-in-handler)} "Sign In!"]
 
-            [:button.btn.btn-default.pull-right
+            [:br][:br][:hr]
+            [:p.text-center.greytext "Don't have an account?"]
+            [:div.text-center
+            [:button.btn.btn-primary
              {:type     "button"
-              :on-click #(secretary/dispatch! "/sign-up")} "sign-up"]]]])})))
+              :on-click #(secretary/dispatch! "/sign-up")} "Sign Up Here"]]
+              [:br]
+              [:p.text-center [:small "Hatched with "
+                [:a {:target "blank" :href "http://www.codefordenver.org/"} "Code for Denver"]
+              " in 2015"]]
+              ]]])})))
