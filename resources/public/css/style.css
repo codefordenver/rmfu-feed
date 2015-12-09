@@ -254,14 +254,20 @@ img.welcome-logo {
     font-family: 'Enriqueta', 'Times New Roman', serif;
 }
 
-.nav-link, .feed-title
+.nav-link
 {
   font-size: 30px;
   color: #a1a1a1;
+  padding-right: 1.5em;
 }
 
-.nav-link:hover, .nav-link:active
+.nav-link:hover, .nav-link:active, .nav-link:focus
 {
   color: #0a6700 !important;
 }
 
+.feed-logo
+{
+  padding-right: 5em;
+  height: 3em;
+}
