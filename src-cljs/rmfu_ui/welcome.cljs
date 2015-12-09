@@ -7,7 +7,7 @@
   [:div.container.jumbotron
    [:div.row
     [:div.col-lg-12
-     [:h1.text-center
+     [:h1.welcomeheading.text-center
       [:a {:on-click #(secretary/dispatch! "/")} "Feed"]]
       [:p.text-center "Growing conversation and community with"]
      [:img.welcome-logo {:href "/#/feed" :src "/images/rmfu-logo.png"}]

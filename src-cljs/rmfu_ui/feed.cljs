@@ -51,7 +51,7 @@
           [:div.container.jumbotron.large-main
            [:div.row
             [:div.col-lg-12
-             [:h2.feedheading.displayinline "Feed"]
+             [:h1.displayinline "Feed"]
              " "
              [:h4.displayinline.greytext.pull-right [:a {:href "/#/customfeed"} "Customize"]]
 
