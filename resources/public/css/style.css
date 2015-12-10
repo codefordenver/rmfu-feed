@@ -298,3 +298,8 @@ img.welcome-logo {
   padding-bottom: 0;
   box-shadow: 2px 2px 10px #888888;
 }
+
+.article-content
+{
+  white-space: pre-wrap;
+}
