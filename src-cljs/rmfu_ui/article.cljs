@@ -47,7 +47,7 @@
                                        "Delete"]]))
                                   [:h1.text-center (:title @article-state)]
                                   [:div.borderbox
-                                   [:p (:content @article-state)]]
+                                   [:p.article-content (:content @article-state)]]
                                   [:p.greytext.displayinline (:author @article-state)] [:p.date.displayinline.pull-right (:created @article-state)]
                                   [:br]
                                   [:h4.greyheading "Category"]]
